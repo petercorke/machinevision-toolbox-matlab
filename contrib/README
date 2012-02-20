@@ -1,0 +1,61 @@
+The Machine Vision Toolbox (MVTB) for MATLAB can make use of a number of pieces
+of open-source software.
+
+Snapshots of those packages are included in this directory.  Note that these
+are provided under there own licence conditions and are not part of the
+Machine Vision Toolbox for MATLAB.
+
+In some cases an MVTB wrapper function is required and these are included
+within the contrib directory and implicitly have licences compatible with 
+the software package that they wrap.
+
+EPnP
+==========================================================
+http://cvlab.epfl.ch/software/EPnP/
+
+VLFeat
+==========================================================
+http://www.vlfeat.org
+
+SURF
+==========================================================
+
+1. Use the matlab based OpenSURF from 
+http://www.mathworks.com/matlabcentral/fileexchange/28300-opensurf-including-image-warp
+
+See @SurfPointFeature/private, it needs to be patched, see the .patch files.
+
+2. Use the OpenCV based SURF implementation from
+http://www.maths.lth.se/matematiklth/personal/petter/surfmex.php
+
+See @SurfPointFeature/SURFmex-v2
+
+If you place the MEX file OpenSurf.mexXYZ into @SurfPointFeatures you
+get a signicant increase in performance, but also slightly different
+results.  This package has the potential to use the GPU but I haven't
+gotten this going yet.
+
+Graphseg
+==========================================================
+
+graphseg.cpp is the MATLAB callable wrapper around the graph-segmentation 
+code by Felzenszwalb and Huttenlocher
+
+http://people.cs.uchicago.edu/~pff/segment/
+
+Camera calibration
+==========================================================
+
+The Camera Calibration Toolbox for MATLAB
+
+http://www.vision.caltech.edu/bouguetj/calib_doc/
+
+Path setup
+==========================================================
+
+addpath contrib/vgg
+addpath contrib/EPnP/EPnP
+addpath [contrib/vlfeat-0.9.9/toolbox/mex/' mexext]
+addpath contrib/graphseg
+addpath contrib/camera_calib
+addpath contrib

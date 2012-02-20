@@ -1,0 +1,66 @@
+MATCHING SOFTWARE
+-----------------
+
+The 'match' program performs stereo matching using a number of standard 
+algorithms.
+
+The program is called as follows:
+
+  match [-d min_disparity max_disparity] 
+        [-m SAD | SSD | NCC | ZSAD | ZSSD | ZNCC | RANK | CENSUS] 
+        [-w window_size] 
+        [-t tx_window_size] 
+        <base-file> 
+        <outputfile>
+
+Optional Arguments
+------------------
+
+[-d min_disparity max_disparity]  
+Disparity range used to search for a match, Defaults to [0 100].
+
+[-m SAD | SSD | NCC | ZSAD | ZSSD | ZNCC | RANK | CENSUS] 
+Matching algorithm to use.  Defaults to SAD.
+
+[-w window_size] 
+Window size to use for matching.  A square window is always used.
+This should be an odd number so that the pixel being matched is 
+at the centre of the window.  Defaults to 11.
+
+[-t tx_window_size] 
+Used only if the matching algorithm is set to RANK or CENSUS.  This
+is the window size used to perform the rank or census transform.
+Defaults to 5.
+
+
+Required Arguments
+------------------
+
+<base-file> 
+The name of the files containing the left and right images in pgm
+format.  The suffixes '-l.pgm' and '-r.pgm' are added on to the 
+specified base file name.
+
+It is also assumed the input stereo pair is epipolar.
+
+<outputfile>
+The name of the output file which the disparity map resulting from
+the matching process is saved as.  The suffix '.pgm' is added onto
+the specified file name, and the disparity map is saved in pgm
+format.
+
+Examples of Use
+---------------
+
+match -m NCC -d 0 40 -w 5 rock rockNCC
+
+This matches the stereo pair rock-l.pgm and rock-r.pgm using the
+NCC algorithm, a match window of 5 and a disparity search range 
+of 0-40.  The disparity results are stored in the file rockNCC.pgm.
+
+match -m RANK -t 5 -m 11 rock rockRANK
+
+This matches the stereo pair rock-l.pgm and rock-r.pgm using the
+RANK method, using a rank transform window of 5 and a match window
+of 11.  The results are stored in rockRANK.pgm.
+

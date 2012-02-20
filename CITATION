@@ -1,0 +1,13 @@
+Citing the Toolbox:
+------------------
+
+@article{Corke05f,
+    Author = {P.I. Corke},
+    Journal = {IEEE Robotics and Automation Magazine},
+    Title = {Machine Vision Toolbox},
+    Month = nov,
+    Volume = {12},
+    Number = {4},
+    Year = {2005},
+    Pages = {16-25}
+}

@@ -1,0 +1,9 @@
+Makefile        this does all the work
+
+extras/         extra files to go into robot/htmldoc
+genhtml.m       Matlab script to build the HTML doco
+m2html/         Matlab library for HTML generation
+
+robot/          temporary working area
+robot.tgz       output file
+robot.zip       output file

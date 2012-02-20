@@ -1,0 +1,43 @@
+.TH MATCH 1 "June 1999"
+.UC 4
+.SH NAME
+match \- stereo matching
+.SH SYNOPSIS
+.br
+.B match
+.B [-m method] [-w wx wy]
+.B [-t tx ty] [-d dmin dmax]
+basefile outfile
+.SH DESCRIPTION
+Perform stereo matching on a pair of input images and produce a disparity
+image and a left-right validity check image.
+All images are in PGM format and names are given without extension.
+The input image file names are
+.B basefile-l.pgm
+and 
+.B basefile-r.pgm
+for the left and right images respectively.
+The outputs are
+.B outfile.pgm
+and
+.B outfile_lr.pgm
+for the disparity and left-right validity images respectively.
+Note that these are computed with respect to the right-hand input image.
+.TP 5
+.B \-m method
+Select matching method which must be one of SAD, SSD, NCC, ZSAD, ZSSD, ZNCC,
+RANK or CENSUS.  Case is ignored.  Default method is SAD.
+.TP 5
+.B \-w wx wy
+Set the x and y size (in pixels) of the matching window.
+Defaults to 11 x 11.
+.TP 5
+.B \-t tx ty
+Set the x and y size (in pixels) of the transform window.  Required only
+for RANK and CENSUS methods.  Defaults to 5 x 5.
+.TP 5
+.B \-d dmin dmax
+Range of disparities to search.  Defaults to the range 0 - 100.
+Negative disparities are allowed.
+.SH AUTHOR
+J. E. Banks

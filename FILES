@@ -1,0 +1,337 @@
+Camera class
+    @Camera/
+    @CentralCamera/
+    FishEyeCamera.m
+    @spherical/
+
+Image sequence source
+    Movie.m
+    Video.m
+    ImageSource.m
+    AxisWebCamera.m
+
+    firewire.c
+    firewire.m
+    webcam.m
+
+
+Colorimetry
+
+    blackbody.m
+    lambda2rg.m
+    lambda2xy.m
+
+    loadspectrum.m
+    ccdresponse.m
+    rluminos.m
+    luminos.m
+
+    ccxyz.m
+    cie_primaries.m
+    cmfrgb.m
+    cmfxyz.m
+    colordistance.m
+    colorname.m
+    colorspace.m
+    xy2rgb.m
+    xycolorspace.m
+    xyfalse.m
+    xyz2rgb.m
+    xyz2xy.m
+    rg_addticks.m
+    rgb2hsi.m
+    rgb2rg.m
+    rgb2xy.m
+    rgb2xyz.m
+    spec_locus.m
+
+Geometry
+    camcald.m
+    camcald4.m
+    camcalp_c.m
+    camcalt.m
+    camcalt8.m
+    camparam.m
+    campose4.m
+    epidist.m
+    epiline.m
+    epishow.m
+    fmatrix.m
+    frefine.m
+    invcamcal.m
+    invhomog.m
+    invhomog2.m
+    tganapat.m
+
+Features
+    FeatureList.m
+        @harris/
+        iharris.m
+        @isift/
+    iplessey.m
+
+    Hough.m
+    xyhough.m
+    ihough_xy.m
+    invhough.m
+    houghshow.m
+
+    Blob.m
+    iblobs.m
+    ilabel.c
+    ilabel.m
+
+    ihist.m
+    fhist.c
+
+    boundary.m
+    edgelist.m
+
+    localmax.m
+    max2d.m
+    peak.m
+    peak2.m
+    subpixel.m
+    subpix.m
+
+    niblack.m
+    otsu.m
+
+    colorseg.m
+    colorseg2.m
+    trainseg.m
+
+    imser.m
+
+    kmeans.m
+
+    imoments.m
+    moments.m
+    mpq.m
+    mpq_poly.m
+    npq.m
+    npq_poly.m
+    upq.m
+    upq_poly.m
+
+Stereo/3D
+    ransac.m
+    iransac.m
+
+    rectify.m
+
+    stereo.m
+    stereo_match.c
+    imagematching.m  ??
+    ishowmatch.m     ??
+    isimilarity.m
+    simplematch.m  ??
+    imatch.c
+    imatch.m
+    ssdmatch.m
+    zncc.c
+    zncc.m
+    zssd.m
+
+    stview.m
+    anaglyph.m
+
+Multiview
+    homography.m
+    homtrans.m
+    homline.m
+    homoTrans.m
+    homog_solve.m
+
+    oflow.m
+
+    icp3.m
+    icp3.m-old
+
+
+Graphical annotations
+    imarker.m
+    markfeatures.m
+    showcorners.m
+    showcorners2.m
+    showcorners3.m
+
+    circle.m
+    addcircle.m
+
+    plotpoly.m
+    plot_box.m
+
+    showepi.m
+    showicp.m
+
+    new common functions:
+
+    plot_point.m
+    plot_box.m
+    plot_poly.m
+    plot_circle.m
+    plot_ellipse.m
+    plot_error_ellipse.m
+    plot_ellipse_inv.m
+    plotpatch.m
+
+    plot_sphere.m
+    plot_ellipsoid.m
+
+Image primitives
+    bresenham.m
+    ipaste.m
+    mkline.m
+    mksq.m
+    iline.m
+    testpattern.m
+
+3D models
+    mkcube.m
+    mkgrid.m
+
+Point manipulation
+    transformp.m
+    e2h.m
+    h2e.m
+
+Image ops
+
+    csubtract.m
+    iisum.m
+    intgimage.m
+    im2col.m
+    columnize.m
+
+    cos4correct.m
+    flatfield.m
+
+    imeshgrid.m
+    iconcat.m
+
+
+    @Image/
+
+  Monadic
+    idouble.m
+    iint.m
+
+    imono.m
+
+    inormhist.m
+    istretch.m
+
+    igamma.m
+
+  Diadic
+
+  Shape changing
+    crop.m
+    iroi.m
+    ireplicate.m
+    idecimate.m
+    isamesize.m
+
+    ipad.m
+    itrim.m
+    iscale
+    irotscale
+
+  Spatial
+    ilaplace.m
+    ismooth.m
+    isobel.m
+
+    icanny.m
+    ipyramid.m
+
+  Spatial non-linear
+    iclose.m
+    iopen.m
+    imorph.c
+    imorph.m
+    irank.c
+    irank.m
+    ivar.c
+    ivar.m
+    iwindow.c
+    iwindow.m
+
+    zcross.m
+    igauss2.m
+
+Kernels
+    kcircle.m
+    kdgauss.m
+    kdog.m
+    kgauss.m
+    klaplace.m
+    klog.m
+    ksobel.m
+    ktriangle.m
+
+
+File i/o
+    iread.m
+    idisp.m
+
+    idisp2.m
+    idisplabel.m
+
+    xv.m
+    iprint.m
+
+    loadstereo.m
+
+    loadinr.m
+    loadpgm.m
+    loadppm.m
+
+    saveinr.m
+    savepgm.m
+    savepnm.m
+    saveppm.m
+
+    pgmfilt.m
+    pnmfilt.m
+    ppmfilt.m
+
+    yuv2rgb.m
+    yuv2rgb2.m
+    yuvclose.m
+    yuvopen.m
+    yuvread.m
+
+Support
+    randinit.m
+
+Unclassified
+    findmarker.m
+    matchobj.m
+    medfilt1.m
+    norml.m
+    radgrad.m
+    scalemax.m
+    scalespace.m
+    seg.m
+    simarea.m
+    l2m.m ??
+
+
+JUNK?
+    vgg_rq.m*
+    visjac_l.m
+    visjac_seg.m
+    homog-stuff/
+    estim.m
+    example/
+    boundmatch.m
+    FisheyeCamera.m-new
+    contents.py
+    contrib/
+    doc/
+    matching/
+    makefile-mex
+    private/
+    houghdemo.m

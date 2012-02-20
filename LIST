@@ -1,0 +1,321 @@
+Morphology
+    dxform.m
+
+    iclose.m
+
+    iendpoint.m
+    hitormiss.m
+
+    iopen.m
+    ithin.m
+    itriplepoint.m
+
+    imorph.m
+
+
+Non linear filtering
+    ithresh.m
+    ivar.m
+    iwindow.m
+    istretch.m
+    inormhist.m
+
+    imono.m
+
+Conversion
+    iint.m
+    idouble.m
+
+Size/shape changing
+    idecimate.m
+    iscale.m
+    iroi.m
+    irotscale.m
+    isamesize.m
+
+Image utility
+    ipad.m
+    ipaste.m
+    ipixswitch.m
+
+    icolor.m
+    iconcat.m
+
+    irank.m
+    iransac.m
+    ireplicate.m
+    itrim.m
+
+    isize.m
+
+Filtering
+    iconv.m
+    icanny.m
+    igamma.m
+    igauss2.m
+    ipyramid.m
+    ilaplace.m
+    isobel.m
+    ismooth.m
+
+Features/blob
+    Blob.m
+    humoments.m
+    iblobs.m
+    ilabel.m
+
+    imoments.m
+
+Features/line
+    FeatureList.m
+    Hough.m
+    houghdemo.m
+    houghshow.m
+    houghtest.m
+
+Features/point
+    Corner.m
+    iharris.m
+    iplessey.m
+    isift.m
+
+Camera models
+    CatadioptricCamera.m
+    FishEyeCamera.m
+
+    camcald.m
+    camcald4.m
+    camcalp_c.m
+    camcalt.m
+    camcalt8.m
+    camparam.m
+    campose4.m
+
+Image i/o
+    idisp.m
+    ImageSource.m
+    AxisWebCamera.m
+    Movie.m
+    Video.m
+    iread.m
+    saveinr.m
+    savepgm.m
+    savepnm.m
+    saveppm.m
+
+    loadinr.m
+    loadpgm.m
+    loadppm.m
+
+    ppmfilt.m
+    pnmfilt.m
+    pgmfilt.m
+
+Stereo
+    anaglyph.m
+    loadstereo.m
+    stview.m
+
+Light/color
+    tristim2cc.m
+    spec_locus.m
+    blackbody.m
+    ccdresponse.m
+    ccxyz.m
+    cie_primaries.m
+    cmfrgb.m
+    cmfxyz.m
+    colorname.m
+    colorseg.m
+    colorseg2.m
+    colorspace.m
+    colordistance.m
+    luminos.m
+
+    xy2rgb.m
+    xy2xyz.m
+    xycolorspace.m
+    xyfalse.m
+    xyhough.m
+    xyz2rgb.m
+    xyz2xy.m
+
+    rg_addticks.m
+    rgb2hsi.m
+    rgb2rg.m
+    rgb2xy.m
+    rgb2xyz.m
+    rluminos.m
+
+    lambda2rg.m
+    lambda2xy.m
+    loadspectrum.m
+
+Graphics/plotting
+    bresenham.m
+    addcircle.m
+    plot_box.m
+    plot_sphere.m
+    plotpatch.m
+    plotpoly.m
+
+
+Epipolar geometry
+    transformp.m
+    e2h.m
+    h2e.m
+    epidist.m
+    epiline.m
+    epishow.m
+    fmatrix.m
+    frefine.m
+    homline.m
+    homoTrans.m
+    homog_solve.m
+    homography.m
+    homtrans.m
+    homwarp.m
+
+Kernels
+    kcircle.m
+    kdgauss.m
+    kdog.m
+    kgauss.m
+    klaplace.m
+    klog.m
+    ksobel.m
+    ktriangle.m
+
+Misc
+    ihist.m
+    kmeans.m
+
+
+Segmentation/thresholding
+    niblack.m
+    otsu.m
+    imser.m
+
+
+Utility
+    randinit.m
+    imeshgrid.m
+
+Test patterns
+    testpattern.m
+    mkcube.m
+    mkgrid.m
+    mkline.m
+    mksq.m
+Similarity measures
+    sad.m
+    ssd.m
+    ncc.m
+    ssdmatch.m
+
+Moments
+    moments.m
+    mpq.m
+    mpq_poly.m
+    npq.m
+    npq_poly.m
+    upq.m
+    upq_poly.m
+
+    vgg_rq.m*
+    visjac_l.m
+    visjac_seg.m
+    webcam.m
+    xv.m
+OLD
+----------
+YUV
+    yuv2rgb.m
+    yuv2rgb2.m
+    yuvclose.m
+    yuvopen.m
+    yuvread.m
+    zcross.m
+    zncc.m
+    zsad.m
+    zssd.m
+
+    iscalemax.m
+    iscalespace.m
+    ishowmatch.m
+    isimilarity.m
+    istereo.m
+
+---
+    norml.m
+    oflow.m
+
+Peak stuff
+    peak.m
+    peak2.m
+    subpix.m
+    subpixel.m
+
+    pilu.m
+
+    pp.m
+    pptest.m
+    radgrad.m
+    ransac.m
+    rectify.m
+    rectify2.m
+    rectify3.m
+    scalespace.m
+    seg.m
+    showcorners.m
+    showcorners2.m
+    showcorners3.m
+    showepi.m
+    showicp.m
+    simarea.m
+    simplematch.m
+    startup.m
+    tganapat.m
+    trainseg.m
+
+    icp.m
+    icp3.m
+    idisp2.m
+    idisplabel.m
+    ihough_xy.m
+    iisum.m
+    iline.m
+    im2col.m
+    imagematching.m
+    imarker.m
+    imatch.m
+    intgimage.m
+    invcamcal.m
+    invhomog.m
+    invhomog2.m
+    invhough.m
+
+    kosecka.m
+
+    boundary.m
+    boundmatch.m
+    col2im.m
+    colorize.m
+    columnize.m
+    cos4correct.m
+    cpatch.m
+    crop.m
+    csubtract.m
+    edgelist.m
+    ee.m
+    estim.m
+    findmarker.m
+    firewire.m
+    flatfield.m
+    hcheck.m
+    l2m.m
+    localmax.m
+    markfeatures.m
+    matchobj.m
+    max2d.m
+    medfilt1.m

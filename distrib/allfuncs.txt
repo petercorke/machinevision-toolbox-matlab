@@ -1,0 +1,231 @@
+h1. Color
+blackbody
+ccdresponse
+cie_primaries
+cmfrgb
+cmfxyz
+colordistance
+colorname
+colorspace
+lambda2rg
+lambda2xy
+loadspectrum
+luminos
+rg_addticks
+rluminos
+tristim2cc
+xycolorspace
+
+h1. Camera models
+Camera
+CentralCamera
+CatadioptricCamera
+FishEyeCamera
+SphericalCamera
+camcald
+
+h1. Image sources
+h2. Devices
+AxisWebCamera : acquire from internet webcam
+ImageSource : abstract superclass
+Movie : acquire from a local movie file
+Video : acquire from attached video camera or webcam
+
+h2. Test patterns
+mkcube
+mkgrid
+testpattern
+
+h1. Monadic operators
+icolor
+colorize
+igamma
+imono
+inormhist
+istretch
+
+h2. Type changing
+idouble
+iint
+
+
+h1. Diadic operators
+ipixswitch
+
+h1. Spatial operators
+
+h2. Linear convolution
+icanny
+iconv
+ismooth
+isobel
+radgrad
+
+h3. Kernels
+kcircle
+kdgauss
+kdog
+kgauss
+klaplace
+klog
+ksobel
+ktriangle
+
+h2. Non-linear
+dxform
+irank
+ivar
+iwindow
+
+h2. Morphological
+imorph
+iclose
+iopen
+hitormiss
+ithin
+iendpoint
+itriplepoint
+
+h2. Similarity
+imatch
+isimilarity
+sad
+ssd
+ncc
+zsad
+zssd
+zncc
+
+h1. Features
+
+h2. Region features
+RegionFeature
+colorkmeans
+colorseg
+ithresh
+imoments
+ibbox
+iblobs
+igraphseg
+ilabel
+imser
+niblack
+otsu
+
+h2. Line features
+Hough
+LineFeature
+
+h3. Point features
+PointFeature
+ScalePointFeature
+SiftPointFeature
+SurfPointFeature
+icorner
+iscalespace
+iscalemax
+isift
+isurf
+FeatureMatch
+
+h3. Other features
+peak
+peak2
+ihist
+hist2d
+iprofile
+
+h1. Multiview
+h2. Geometric
+epidist
+epiline
+fmatrix
+homography
+
+h1. Stereo
+istereo
+anaglyph
+stdisp
+irectify
+
+h1. Image sequence
+BagOfWords
+ianimate
+Tracker
+
+
+h1. Shape changing
+homwarp
+idecimate
+ipad
+ipyramid
+ireplicate
+iroi
+irotate
+isamesize
+iscale
+itrim
+
+h1. Utility
+h2. Image utility
+idisp
+idisplabel
+iread
+pnmfilt
+
+h2. Image generation
+iconcat
+iline
+ipaste
+
+h2. Moments
+humoments
+mpq
+mpq_poly
+upq
+upq_poly
+npq
+npq_poly
+
+h2. Plotting
+plot_arrow  : draw an arrow
+plot_box    : draw a box
+plot_circle    : draw a circle
+plot_ellipse    : draw an ellipse
+plot_homline    : plot homogeneous line
+plot_point    : plot points
+plot_poly    : plot polygon
+plot_sphere    : draw a sphere
+
+
+h2. Homogeneous coordinates
+e2h       : Euclidean coordinates to homogeneous 
+h2e       : homogeneous coordinates to Euclidean
+homtrans  : apply homogeneous transform to points
+
+h2. 3D
+icp
+Ray3D
+
+h2. Integral image
+iisum
+intgimage
+
+h2. Edge representation
+edgelist
+boundmatch
+
+h2. General
+bresenham
+closest
+col2im
+distance
+im2col
+imeshgrid
+iscolor
+isize
+kmeans
+medfilt1
+ransac
+zcross
+

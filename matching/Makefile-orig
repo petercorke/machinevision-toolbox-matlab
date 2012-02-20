@@ -1,0 +1,36 @@
+match:	match.o SAD.o SSD.o NCC.o ZSAD.o ZSSD.o ZNCC.o RANK_TX.o CENSUS.o LEFT_RIGHT.o pgm.o
+	cc -o match match.o SAD.o SSD.o NCC.o ZSAD.o ZSSD.o ZNCC.o RANK_TX.o CENSUS.o LEFT_RIGHT.o pgm.o -lm
+
+SAD.o:  SAD.c
+	cc -c -DSTANDALONE SAD.c
+
+SSD.o:  SSD.c
+	cc -c -DSTANDALONE SSD.c
+
+NCC.o:  NCC.c
+	cc -c -DSTANDALONE NCC.c
+
+ZSAD.o: ZSAD.c
+	cc -c -DSTANDALONE ZSAD.c
+
+ZSSD.o: ZSSD.c
+	cc -c -DSTANDALONE ZSSD.c
+
+ZNCC.o: ZNCC.c
+	cc -c -DSTANDALONE ZNCC.c
+
+RANK_TX.o: RANK_TX.c
+	cc -c -DSTANDALONE RANK_TX.c
+
+CENSUS.o: CENSUS.c
+	cc -c -DSTANDALONE CENSUS.c
+
+LEFT_RIGHT.o: LEFT_RIGHT.c
+	cc -c -DSTANDALONE LEFT_RIGHT.c
+
+pgm.o:	pgm.c
+	cc -c pgm.c	
+
+
+
+
