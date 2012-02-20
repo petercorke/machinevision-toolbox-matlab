@@ -1,19 +1,18 @@
 %IOPEN Morphological opening
 %
-% OUT = IOPEN(IM, SE) is the image IM after morphological opening with the
-% structuring element SE.  This is an erosion followed by dilation.
+% OUT = IOPEN(IM, SE, OPTIONS) is the image IM after morphological opening 
+% with the structuring element SE.  This is an erosion followed by dilation.
 %
-% OUT = IOPEN(IM, SE, N) as above but the structuring element SE is applied 
-% N times, that is N erosions followed by N dilations.
+% OUT = IOPEN(IM, SE, N, OPTIONS) as above but the structuring element 
+% SE is applied N times, that is N erosions followed by N dilations.
 %
 % Notes::
 % - Cheaper to apply a smaller structuring element multiple times than
 %   one large one, the effective structuing element is the Minkowski sum
 %   of the structuring element with itself N times.
+% - Windowing options of IMORPH can be passed.
 %
-% See also ICLOSE, IMORPH.
-
-
+% See also ICLOSE, IDILATE, IERODE, IMORPH.
 
 % Copyright (C) 1993-2011, by Peter I. Corke
 %
@@ -32,15 +31,7 @@
 % You should have received a copy of the GNU Leser General Public License
 % along with MVTB.  If not, see <http://www.gnu.org/licenses/>.
 
-function b = iopen(a, se, n)
-	if nargin < 3,
-		n = 1;
-	end
+function b = iopen(a, se, varargin)
 
-	b = a;
-	for i=1:n,
-		b = imorph(b, se, 'min');
-	end
-	for i=1:n,
-		b = imorph(b, se, 'max');
-	end
+    b = ierode(a, se, varargin{:});
+    b = idilate(b, se, varargin{:});
