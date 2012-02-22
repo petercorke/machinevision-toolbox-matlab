@@ -803,7 +803,7 @@ Model {
       BackgroundColor	      "lightBlue"
       DropShadow	      on
       LibraryVersion	      "1.57"
-      SourceBlock	      "roblocks/camera"
+      SourceBlock	      "roblocks/Vision/camera"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
@@ -877,7 +877,7 @@ Model {
       Position		      [345, 92, 395, 148]
       BackgroundColor	      "red"
       LibraryVersion	      "1.57"
-      SourceBlock	      "roblocks/fkine"
+      SourceBlock	      "roblocks/Kinematics/fkine"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
@@ -899,7 +899,7 @@ Model {
       BackgroundColor	      "lightBlue"
       DropShadow	      on
       LibraryVersion	      "1.57"
-      SourceBlock	      "roblocks/image\nJacobian"
+      SourceBlock	      "roblocks/Vision/image\nJacobian"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
@@ -922,7 +922,7 @@ Model {
       BackgroundColor	      "red"
       DropShadow	      on
       LibraryVersion	      "1.57"
-      SourceBlock	      "roblocks/invJac"
+      SourceBlock	      "roblocks/Vision/invJac"
       SourceType	      "SubSystem"
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
@@ -943,7 +943,7 @@ Model {
       BackgroundColor	      "red"
       DropShadow	      on
       LibraryVersion	      "1.57"
-      SourceBlock	      "roblocks/invJac"
+      SourceBlock	      "roblocks/Vision/invJac"
       SourceType	      "SubSystem"
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
@@ -963,7 +963,7 @@ Model {
       Position		      [40, 88, 105, 152]
       BackgroundColor	      "red"
       LibraryVersion	      "1.57"
-      SourceBlock	      "roblocks/jacobn"
+      SourceBlock	      "roblocks/Kinematics/jacobn"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
@@ -1003,7 +1003,7 @@ Model {
       Position		      [345, 12, 425, 68]
       BackgroundColor	      "red"
       LibraryVersion	      "1.57"
-      SourceBlock	      "roblocks/plot"
+      SourceBlock	      "roblocks/Robot Graphics/plot"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"

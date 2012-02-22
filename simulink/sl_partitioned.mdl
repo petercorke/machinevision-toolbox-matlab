@@ -891,7 +891,7 @@ Model {
       BackgroundColor	      "lightBlue"
       DropShadow	      on
       LibraryVersion	      "1.54"
-      SourceBlock	      "roblocks/camera"
+      SourceBlock	      "roblocks/Vision/camera"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
@@ -964,7 +964,7 @@ Model {
       BackgroundColor	      "lightBlue"
       DropShadow	      on
       LibraryVersion	      "1.54"
-      SourceBlock	      "roblocks/image\nJacobian"
+      SourceBlock	      "roblocks/Vision/image\nJacobian"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
@@ -995,7 +995,7 @@ Model {
       BackgroundColor	      "red"
       DropShadow	      on
       LibraryVersion	      "1.54"
-      SourceBlock	      "roblocks/pinvJac"
+      SourceBlock	      "roblocks/Vision/pinvJac"
       SourceType	      "SubSystem"
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
@@ -1015,7 +1015,7 @@ Model {
       BackgroundColor	      "red"
       DropShadow	      on
       LibraryVersion	      "1.54"
-      SourceBlock	      "roblocks/pose integral"
+      SourceBlock	      "roblocks/Trajectory/pose integral"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"

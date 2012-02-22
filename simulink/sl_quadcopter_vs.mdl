@@ -922,7 +922,7 @@ Model {
       Position		      [680, 18, 755, 362]
       DropShadow	      on
       LibraryVersion	      "1.59"
-      SourceBlock	      "roblocks/Control Mixer"
+      SourceBlock	      "roblocks/Dybamics/Control Mixer"
       SourceType	      "SubSystem"
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
@@ -1156,7 +1156,7 @@ Model {
       Position		      [840, 13, 905, 297]
       DropShadow	      on
       LibraryVersion	      "1.59"
-      SourceBlock	      "roblocks/Quadcopter"
+      SourceBlock	      "roblocks/Dynamics/Quadcopter"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"

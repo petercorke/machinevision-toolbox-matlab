@@ -818,7 +818,7 @@ Model {
       Position		      [290, 68, 350, 142]
       DropShadow	      on
       LibraryVersion	      "1.54"
-      SourceBlock	      "roblocks/Bicycle"
+      SourceBlock	      "roblocks/Dynamics/Bicycle"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
@@ -849,7 +849,7 @@ Model {
       Ports		      [1, 1]
       Position		      [440, 245, 480, 305]
       LibraryVersion	      "1.54"
-      SourceBlock	      "roblocks/Inverse"
+      SourceBlock	      "roblocks/Transform/Inverse"
       SourceType	      "SubSystem"
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
@@ -888,7 +888,7 @@ Model {
       Position		      [355, 246, 415, 304]
       DropShadow	      on
       LibraryVersion	      "1.54"
-      SourceBlock	      "roblocks/Pose estimation"
+      SourceBlock	      "roblocks/Vision/Pose estimation"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
@@ -908,7 +908,7 @@ Model {
       Ports		      [1, 1]
       Position		      [515, 245, 555, 305]
       LibraryVersion	      "1.54"
-      SourceBlock	      "roblocks/Post multiply"
+      SourceBlock	      "roblocks/Transform/Post multiply"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
@@ -1020,7 +1020,7 @@ Model {
       Position		      [580, 247, 615, 303]
       BackgroundColor	      "red"
       LibraryVersion	      "1.54"
-      SourceBlock	      "roblocks/T2xyz"
+      SourceBlock	      "roblocks/Transform Conversion/T2xyz"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
@@ -1104,7 +1104,7 @@ Model {
       BackgroundColor	      "lightBlue"
       DropShadow	      on
       LibraryVersion	      "1.54"
-      SourceBlock	      "roblocks/camera"
+      SourceBlock	      "roblocks/Vision/camera"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
