@@ -140,7 +140,7 @@ classdef Camera < handle
             c.h_camera3D = [];
             c.h_visualize = [];
             c.holdon = false;
-
+            c.color = [1 1 0.8];
 
             if nargin == 0
                 % default camera parameters
@@ -157,7 +157,7 @@ classdef Camera < handle
                 opt.pixel = [1 1];
                 opt.noise = [];
                 opt.pose = [];
-                opt.color = [1 1 0.8];
+                opt.color = [];
                 opt.noise = [];
 
                 [opt,args] = tb_optparse(opt, varargin);
@@ -179,6 +179,9 @@ classdef Camera < handle
 
                 c.pp = opt.centre;
                 c.rho = opt.pixel;
+                if ~isempty(opt.color)
+                    c.color = opt.color;
+                end
                 c.color = opt.color;
                 if ~isempty(opt.noise)
                     if length(opt.noise) == 1
@@ -190,11 +193,11 @@ classdef Camera < handle
                     end
                 end
                 c.T = opt.pose;
+                if ~isempty(opt.sensor)
+                    c.rho = opt.sensor ./ c.npix;
+                end
             end
 
-            if ~isempty(opt.sensor)
-                c.rho = opt.sensor ./ c.npix;
-            end
             if length(c.rho) == 1
                 c.rho = ones(1,2) * c.rho;
             end
@@ -288,21 +291,29 @@ classdef Camera < handle
             c = transl(c.T);
         end
 
-        function hold(c, flag)
+        function ishold = hold(c, flag)
         %Camera.hold Control hold on image plane graphics
         %
         % C.hold() sets "hold on" for the camera's image plane.
         %
         % C.hold(H) hold mode is set on if H is true (or > 0), and off if
         % H is false (or 0).
-            if nargin < 2
-                flag = true;
-            end
-            c.holdon = flag;
-            if flag
-                set(c.h_image, 'NextPlot', 'add');
+            if nargout > 0
+                % i = cam.ishold(); test hold condition
+                ishold = c.holdon;
+                return;
             else
-                set(c.h_image, 'NextPlot', 'replacechildren');
+                % cam.ishold(); set hold
+                % cam.ishold(flag); set hold
+                if nargin < 2
+                    flag = true;
+                end
+                c.holdon = flag;
+                if flag
+                    set(c.h_image, 'NextPlot', 'add');
+                else
+                    set(c.h_image, 'NextPlot', 'replacechildren');
+                end
             end
         end
 
@@ -346,8 +357,6 @@ classdef Camera < handle
                 h = fig;
             end
         end
-
-            
 
         % Return the graphics handle for this camera's image plane
         % and create the graphics if it doesnt exist
@@ -523,12 +532,9 @@ classdef Camera < handle
         %            projecting points to the camera image plane.  Temporarily overrides
         %            the current camera pose C.T.
         %
-        % See also MESH, CYLINDER, SPHERE, MKCUBE, Camera.plot, Camera.hold, Camera.clf.
-
-        % TODO
-        % Additional options are considered MATLAB linestyle parameters and are passed 
-        % directly to plot.
+        % Additional arguments are passed to plot as line style parameters.
         %
+        % See also MESH, CYLINDER, SPHERE, MKCUBE, Camera.plot, Camera.hold, Camera.clf.
 
             % check that mesh matrices conform
             if ~(all(size(X) == size(Y)) && all(size(X) == size(Z)))
@@ -537,7 +543,6 @@ classdef Camera < handle
 
             opt.Tobj = [];
             opt.Tcam = [];
-
 
             [opt,arglist] = tb_optparse(opt, varargin);
             if isempty(opt.Tcam)
@@ -550,8 +555,8 @@ classdef Camera < handle
             % draw 3D line segments
             nsteps = 21;
 
-            c.clf();
             c.hold(1);
+            s = linspace(0, 1, nsteps);
 
             for i=1:numrows(X)-1
                 for j=1:numcols(X)-1
@@ -564,28 +569,20 @@ classdef Camera < handle
                         uv = c.project([P0 P1], 'setopt', opt);
                     else
                         % straight world lines are not straight, plot them piecewise
-                        P = [];
-                        for j=1:nsteps
-                            s = (j-1)/(nsteps-1);   % distance along line
-                            P = [P (1-s)*P0 + s*P1];
-                        end
+                        P = bsxfun(@times, (1-s), P0) + bsxfun(@times, s, P1);
                         uv = c.project(P, 'setopt', opt);
                     end
-                    plot(uv(1,:)', uv(2,:)', 'Parent', c.h_image);
+                    plot(uv(1,:)', uv(2,:)', arglist{:}, 'Parent', c.h_image);
 
                     if c.perspective
                         % straight world lines are straight on the image plane
                         uv = c.project([P0 P2], 'setopt', opt);
                     else
                         % straight world lines are not straight, plot them piecewise
-                        P = [];
-                        for j=1:nsteps
-                            s = (j-1)/(nsteps-1);   % distance along line
-                            P = [P (1-s)*P0 + s*P2];
-                        end
+                        P = bsxfun(@times, (1-s), P0) + bsxfun(@times, s, P2);
                         uv = c.project(P, 'setopt', opt);
                     end
-                    plot(uv(1,:)', uv(2,:)', 'Parent', c.h_image);
+                    plot(uv(1,:)', uv(2,:)', arglist{:}, 'Parent', c.h_image);
                 end
             end
 
@@ -598,14 +595,10 @@ classdef Camera < handle
                     uv = c.project([P0 P1], 'setopt', opt);
                 else
                     % straight world lines are not straight, plot them piecewise
-                    P = [];
-                    for j=1:nsteps
-                        s = (j-1)/(nsteps-1);   % distance along line
-                        P = [P (1-s)*P0 + s*P1];
-                    end
+                    P = bsxfun(@times, (1-s), P0) + bsxfun(@times, s, P1);
                     uv = c.project(P, 'setopt', opt);
                 end
-                plot(uv(1,:)', uv(2,:)', 'Parent', c.h_image);
+                plot(uv(1,:)', uv(2,:)', arglist{:}, 'Parent', c.h_image);
             end
             c.hold(0);
 
