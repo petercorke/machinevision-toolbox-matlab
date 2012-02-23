@@ -74,7 +74,7 @@ classdef ImageSource < handle
             opt.width = [];
             opt.height = [];
 
-            [opt,args] = tb_optparse(opt, varargin{:});
+            [opt,args] = tb_optparse(opt, varargin);
             
             imsource.imageType = opt.imageType;
             imsource.makeGrey = opt.grey;
