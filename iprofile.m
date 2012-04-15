@@ -38,7 +38,7 @@ function [p,uv] = iprofile(c, p1, p2)
 
     p = [];
     for point = points'
-        p = [p; c2(point(2), point(1))];
+        p = [p; c(point(2), point(1))];
     end
 
     if nargout > 1
