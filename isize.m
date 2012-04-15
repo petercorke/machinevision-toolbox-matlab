@@ -4,6 +4,8 @@
 %
 % [W,H] = ISIZE(IM) is the image height H and width W.
 %
+% WH = ISIZE(IM) is the image size WH = [W H].
+%
 % [W,H,P] = ISIZE(IM) is the image height H and width W and number of
 % planes P.  Even if the image has only two dimensions P will be one.
 %
@@ -30,14 +32,19 @@
 function [o1,o2,o3] = isize(im, idx)
 
     if nargin == 2
+        % isize(im, dim)
         o1 = size(im, idx);
     else
+        % isize(im)
         s = size(im);
-        o1 = s(2);      % width, number of columns
-        if nargout > 1
+        if nargout == 1
+            o1 = [s(2) s(1)];  % width height
+        elseif nargout == 2
+            o1 = s(2);  % width
             o2 = s(1);  % height, number of rows
-        end
-        if nargout > 2
+        elseif nargout == 3
+            o1 = s(2);  % width
+            o2 = s(1);  % height, number of rows
             if ndims(im) == 2
                 o3 = 1;
             else
