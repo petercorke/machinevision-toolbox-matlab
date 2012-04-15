@@ -35,7 +35,7 @@ function [ni,ch] = inormhist(im)
     cdf = cdf/max(cdf);
     
     if isfloat(im)
-        ni = interp1(x', cdf', im(:), 'nearest');
+        ni = interp1(x', cdf', im(:), 'nearest', 'extrap');
     else
         ni = interp1(x', cdf', double(im(:)), 'nearest');
         ni = cast(ni*double(intmax(class(im))), class(im));
