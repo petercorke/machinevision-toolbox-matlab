@@ -12,42 +12,47 @@
 % - The "line" button allows two points to be specified and a new figure
 %   displays intensity along a line between those points.
 %
-% - The "histo" button displays a histogram of the pixel values in a new figure.
-%   If the image is zoomed, the histogram is computed over only those pixels in 
-%   view.
+% - The "histo" button displays a histogram of the pixel values in a new 
+%   figure.  If the image is zoomed, the histogram is computed over only 
+%   those pixels in view.
 %
-% -  The "zoom" button requires a left-click and drag to specify a box which
-%    defines the zoomed view.
+% -  The "zoom" button requires a left-click and drag to specify a box 
+%    which defines the zoomed view.
 %
 % Options::
-% 'ncolors',N    number of colors in the color map (default 256)
-% 'nogui'        display the image without the GUI
-% 'noaxes'       no axes on the image
-% 'noframe'      no axes or frame on the image
-% 'plain'        no axes, frame or GUI
-% 'bar'          add a color bar to the image
-% 'print',F      write the image to file F in EPS format
-% 'square'       display aspect ratio so that pixels are squate
-% 'wide'         make figure very wide, useful for displaying stereo pair
-% 'flatten'      display image planes (colors or sequence) as horizontally 
-%                adjacent images
-% 'ynormal'      y-axis increases upward, image is inverted
-% 'cscale',C     C is a 2-vector that specifies the grey value range that spans
-%                the colormap.
-% 'xydata',XY    XY is a cell array whose elements are vectors that span the 
-%                x- and y-axes respectively.
-% 'colormap',C   Set colormap C (Nx3)
-% 'grey'         color map: greyscale unsigned, zero is black, maximum value 
-%                is white
-% 'invert'       color map: greyscale unsigned, zero is white, maximum value 
-%                is black
-% 'signed'       color map: greyscale signed, positive is blue, negative is red,
-%                zero is black
-% 'invsigned'    color map: greyscale signed, positive is blue, negative is red,
-%                zero is white
-% 'random'       color map: random values, highlights fine structure
-% 'dark'         color map: greyscale unsigned, darker than 'grey', good for 
-%                superimposed graphics
+% 'axis',A         display the image in the axes given by handle A, the
+%                  'nogui' option is enforced.
+% 'title',T        put the text T in the title bar of the window
+% 'clickfunc',F    invoke the function handle F(x,y) on a down-click in
+%                  the window
+% 'ncolors',N      number of colors in the color map (default 256)
+% 'nogui'          display the image without the GUI
+% 'noaxes'         no axes on the image
+% 'noframe'        no axes or frame on the image
+% 'plain'          no axes, frame or GUI
+% 'bar'            add a color bar to the image
+% 'print',F        write the image to file F in EPS format
+% 'square'         display aspect ratio so that pixels are squate
+% 'wide'           make figure very wide, useful for displaying stereo pair
+% 'flatten'        display image planes (colors or sequence) as horizontally 
+%                  adjacent images
+% 'ynormal'        y-axis increases upward, image is inverted
+% 'cscale',C       C is a 2-vector that specifies the grey value range that
+%                  spans the colormap.
+% 'xydata',XY      XY is a cell array whose elements are vectors that span
+%                  the x- and y-axes respectively.
+% 'colormap',C     Set colormap C (Nx3)
+% 'grey'           color map: greyscale unsigned, zero is black, maximum
+%                  value is white
+% 'invert'         color map: greyscale unsigned, zero is white, maximum 
+%                  value is black
+% 'signed'         color map: greyscale signed, positive is blue, negative
+%                  is red, zero is black
+% 'invsigned'      color map: greyscale signed, positive is blue, negative
+%                  is red, zero is white
+% 'random'         color map: random values, highlights fine structure
+% 'dark'           color map: greyscale unsigned, darker than 'grey', 
+%                  good for superimposed graphics
 %
 % Notes::
 % - Color images are displayed in true color mode: pixel triples map to display
@@ -57,6 +62,20 @@
 % - The minimum and maximum image values are mapped to the first and last 
 %   element of the color map, which by default ('greyscale') is the range black
 %   to white.
+%
+% Examples::
+%   Display 2 images side by side
+%        idisp({im1, im2})
+%
+%   Display image in a subplot
+%        subplot(211)
+%        idisp(im, 'axis', gca);
+%
+%   Call a user function when you click a pixel
+%        idisp(im, 'clickfunc', @(x,y) fprintf('hello %d %d\n', x,y))
+%
+%   Set a colormap, in this case a MATLAB builtin one
+%        idisp(im, 'colormap', cool);
 %
 % See also IMAGE, CAXIS, COLORMAP, ICONCAT.
 
@@ -99,7 +118,10 @@ function idisp(im, varargin)
     opt.plain = false;
     opt.flatten = false;
     opt.toolbar = false;
+    opt.title = [];
+    opt.clickfunc = [];
     opt.colormap_std = {[], 'grey', 'signed', 'invsigned', 'random', 'invert', 'dark'};
+    opt.axis = [];
 
     [opt,arglist] = tb_optparse(opt, varargin);
 
@@ -123,7 +145,12 @@ function idisp(im, varargin)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     % display the image
-    clf
+    if isempty(opt.axis)
+        clf
+    else
+        axes(opt.axis)
+        opt.nogui = true;
+    end
     ud = [];
     
     if iscell(im)
@@ -132,6 +159,7 @@ function idisp(im, varargin)
     end
 
     ud.size = size(im);
+    ud.clickfunc = opt.clickfunc;
     
     set(gca, 'CLimMode', 'Manual');
     i_min = min(im(:));
@@ -168,8 +196,7 @@ function idisp(im, varargin)
             cmap = gray(opt.ncolors);
         else
             % load a Matlab color map
-            disp('matlab color map');
-            cmap = feval(opt.colormap);
+            cmap = opt.colormap;
         end
     else
         % a builtin shorthand color map was specified
@@ -276,12 +303,18 @@ function idisp(im, varargin)
         set(gca, 'UserData', ud);
         set(hi, 'UserData', ud);
 
-        % show the variable name in the figure's title bar
-        varname = inputname(1);
-        if isempty(varname)
-            set(gcf, 'name', 'idisp');
+        % label the figure
+        if isempty(opt.title)
+            % show the variable name in the figure's title bar
+            varname = inputname(1);
+            if isempty(varname)
+                set(gcf, 'name', 'idisp');
+            else
+                set(gcf, 'name', sprintf('idisp: %s', varname));
+            end
         else
-            set(gcf, 'name', sprintf('idisp: %s', varname));
+            set(gcf, 'name', opt.title);
+            
         end
 
         % create pushbuttons
@@ -336,11 +369,13 @@ end
 % invoked on a GUI event
 function idisp_callback(cmd, src)
 
+		h = get(gcf, 'CurrentObject'); % image
+		ud = get(h, 'UserData');		% axis
+        
 %disp(['in callback: ', cmd]);
 	if isempty(cmd)
 		% mouse push or motion request
-		h = get(gcf, 'CurrentObject'); % image
-		ud = get(h, 'UserData');		% axis
+
         
         if ~isempty(ud)
             cp = get(ud.axis, 'CurrentPoint');
@@ -370,6 +405,16 @@ function idisp_callback(cmd, src)
 			% install pixel value inspector
 			set(gcf, 'WindowButtonMotionFcn', @(src,event) idisp_callback([], src) );
 			idisp_callback([], src);
+            
+            if ~isempty(ud.clickfunc)
+                
+                if ~isempty(ud.clickfunc)
+                    cp = get(ud.axis, 'CurrentPoint');
+                    x = round(cp(1,1));
+                    y = round(cp(1,2));
+                    ud.clickfunc(x, y);
+                end
+            end
 			
 		case 'up',
 			set(gcf, 'WindowButtonMotionFcn', '');
