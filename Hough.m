@@ -164,7 +164,7 @@ classdef Hough < handle
             end
 
             % now pass the x/y/strength info to xyhough
-            h.A = h.xyhough(xyz, norm2(nr,nc));
+            h.A = h.xyhough(xyz, norm([nr,nc]));
         end
 
         function show(h)
