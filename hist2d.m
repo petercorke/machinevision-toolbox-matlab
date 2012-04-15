@@ -21,5 +21,9 @@
 %        vx      bin lower x-ordinates (one for each column of h)
 %        vy      bin lower y-ordinates (one for each row of h)
 %
+% Notes::
+% - Data vectors x and y must be double
+%
+% Author::
 %Michael Maurer, 7 October 1994. 
 %Copyright 1994 by Michael Maurer.
