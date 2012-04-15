@@ -262,7 +262,7 @@ classdef RegionFeature < handle
 
             dxy = bsxfun(@minus, f.edge, [f.uc_ f.vc_]');
 
-            r = norm2(dxy)';
+            r = colnorm(dxy)';
             th = -atan2(dxy(2,:), dxy(1,:));
             [th,k] = sort(th, 'ascend');
             r = r(k);
