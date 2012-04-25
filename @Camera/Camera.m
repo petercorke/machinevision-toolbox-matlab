@@ -182,7 +182,6 @@ classdef Camera < handle
                 if ~isempty(opt.color)
                     c.color = opt.color;
                 end
-                c.color = opt.color;
                 if ~isempty(opt.noise)
                     if length(opt.noise) == 1
                         c.noise = [opt.noise opt.noise];
