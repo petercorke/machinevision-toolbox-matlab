@@ -10,21 +10,23 @@ build:
 	mkdir -p rvctools/vision rvctools/simulink rvctools/common
 
 	# create the Manifest
-	buildcontent -r 3.1 --mvtb $<
+	buildcontent -r `cat ../RELEASE` --mvtb $<
 
 	# copy all m-files and classes listed in the Manifest
 	mancp Manifest .. rvctools/vision
 	mancp Manifest $(ROOT)/common rvctools/common
 
 	# copy simulink models
-	cp -r ../simulink/*.{mdl,m} rvctools/simulink
+	cp -r ../simulink/*.mdl rvctools/simulink
 	cp -r ../examples rvctools/vision
 	cp -r ../mex rvctools/vision
 	cp -r ../private rvctools/vision
-	cp -r ../images rvctools/vision
+	#cp -r ../images rvctools/vision
+	mkdir rvctools/vision/images
 
 	# copy misc documentation files
 	cp ../README rvctools/vision
+	cp ../CHANGES rvctools/vision
 	cp ../RELEASE rvctools/vision
 	cp ../CITATION rvctools/vision
 	cp ../LGPL-LICENCE.txt rvctools/vision
@@ -35,7 +37,7 @@ build:
 
 
 	# remove all SVN files
-	\rm -rf `find . -name .svn`
+    find rvctools -name .svn -exec rm {} \;
 
 doco:
 	-\rm -rf tmpdoc
@@ -43,6 +45,7 @@ doco:
 	-mkdir -p rvctools/vision/info/html
 	-cp -r rvctools/vision/* tmpdoc
 	-cp rvctools/common/* tmpdoc
+	-rm tmpdoc/HiddenFigure.m
 
 	# build the PDF manual
 	(cd tmpdoc; help3.py -l --include @* *.m; mv all.tex ../../doc)
@@ -79,14 +82,14 @@ doco:
 
 zipit:
 	# build the distrib archives
-	zip -rq vision.zip ./rvctools
+	zip -rq vision-`cat ../RELEASE`.zip ./rvctools
 	#tar zcf vision.tgz ./rvctools
 
 dropbox:
 	cp -r ./{vision,simulink,common} $(HOME)/Dropbox
 
 install: zipit
-	#scp -C vision.zip vision.tgz geek:www/MVTB
+	scp -C vision-*.zip geek:www/MVTB
 	scp -Cr html geek:www/MVTB
 	scp -C rvctools/vision/vision.pdf geek:www/MVTB
 	ssh geek chmod -R a+rX www/MVTB
