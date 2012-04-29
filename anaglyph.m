@@ -84,7 +84,7 @@ function out = ag_insert(in, im, c)
 
     out = in;
     % map single letter color codes to image planes
-    switch c,
+    switch c
     case 'r'
         out(:,:,1) = im;        % red
     case 'g'
