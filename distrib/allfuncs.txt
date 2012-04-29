@@ -12,6 +12,7 @@ lambda2xy
 loadspectrum
 luminos
 rg_addticks
+rgb2xyz
 rluminos
 tristim2cc
 xycolorspace
@@ -23,13 +24,16 @@ CatadioptricCamera
 FishEyeCamera
 SphericalCamera
 camcald
+invcamcal
 
 h1. Image sources
 h2. Devices
 AxisWebCamera : acquire from internet webcam
 ImageSource : abstract superclass
 Movie : acquire from a local movie file
-Video : acquire from attached video camera or webcam
+VideoCamera : acquire from attached video camera or webcam
+VideoCamera_IAT
+VideoCamera_fg
 
 h2. Test patterns
 mkcube
@@ -78,9 +82,11 @@ ivar
 iwindow
 
 h2. Morphological
-imorph
+idilate
+ierode
 iclose
 iopen
+imorph
 hitormiss
 ithin
 iendpoint
@@ -228,4 +234,3 @@ kmeans
 medfilt1
 ransac
 zcross
-
