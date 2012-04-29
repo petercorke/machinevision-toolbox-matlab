@@ -922,7 +922,7 @@ Model {
       Position		      [680, 18, 755, 362]
       DropShadow	      on
       LibraryVersion	      "1.59"
-      SourceBlock	      "roblocks/Dybamics/Control Mixer"
+      SourceBlock	      "roblocks/Dynamics/Control Mixer"
       SourceType	      "SubSystem"
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
@@ -1177,7 +1177,7 @@ Model {
       Position		      [645, 396, 675, 454]
       DropShadow	      on
       LibraryVersion	      "1.59"
-      SourceBlock	      "roblocks/Quadcopter plot"
+      SourceBlock	      "roblocks/Robot Graphics/Quadcopter plot"
       SourceType	      "SubSystem"
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
@@ -1321,7 +1321,7 @@ Model {
       BackgroundColor	      "lightBlue"
       DropShadow	      on
       LibraryVersion	      "1.59"
-      SourceBlock	      "roblocks/camera"
+      SourceBlock	      "roblocks/Vision/camera"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
@@ -1395,7 +1395,7 @@ Model {
       BackgroundColor	      "lightBlue"
       DropShadow	      on
       LibraryVersion	      "1.59"
-      SourceBlock	      "roblocks/image\nJacobian\nsphere"
+      SourceBlock	      "roblocks/Vision/image\nJacobian\nsphere"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
@@ -1419,7 +1419,7 @@ Model {
       BackgroundColor	      "yellow"
       DropShadow	      on
       LibraryVersion	      "1.59"
-      SourceBlock	      "roblocks/invJac"
+      SourceBlock	      "roblocks/Vision/invJac"
       SourceType	      "SubSystem"
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
