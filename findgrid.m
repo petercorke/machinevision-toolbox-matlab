@@ -18,7 +18,7 @@ for t=tri'  % for each triangle
     if polyarea(v(1,:)', v(2,:)') < 100
         continue;
     end
-    l = [norm2(n1-n2) norm2(n1-n3) norm2(n2-n3)];
+    l = [colnorm(n1-n2) colnorm(n1-n3) colnorm(n2-n3)];
     [z,k] = max(l);
     i1 = [1 1 2]; i2 = [2 3 3];
     i1(k) = []; i2(k) = [];
