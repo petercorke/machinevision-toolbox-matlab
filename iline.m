@@ -7,7 +7,7 @@
 % OUT = ILINE(IM, P1, P2, V) as above but the pixel on the line are set to V.
 %
 % Notes::
-% - Uses the Bresenham algorith
+% - Uses the Bresenham algorithm
 % - Only works for greyscale images
 % - The line looks jagged since no anti-aliasing is performed
 %
