@@ -33,7 +33,9 @@ function zs = istretch(z, newmax)
         newmax = 1;
     end
 
-    mn = min(z(:));
-    mx = max(z(:));
+    vals = z(:);
+    vals(isinf(vals)) = [];
+    mn = min(vals);
+    mx = max(vals);
 
     zs = (z-mn)/(mx-mn)*newmax;
