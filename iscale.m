@@ -5,9 +5,8 @@
 %
 % Options::
 % 'outsize',S     set size of OUT to HxW where S=[W,H]
-% 'extrapval',V   set background pixels to V (default 0)
-% 'smooth',S      smooth image with Gaussian of standard deviation S.
-%                 S=[] means no smoothing (default S=1)
+% 'smooth',S      initially smooth image with Gaussian of standard deviation
+%                 S (default 1).  S=[] for no smoothing.
 %
 % See also IREPLICATE, IDECIMATE, IROTATE.
 
@@ -35,7 +34,6 @@ function im2 = iscale(im, factor, varargin)
     bgcolor = 0;
     
     opt.outsize = [];
-    opt.extrapval = 0;
     opt.smooth = 1;
 
     opt = tb_optparse(opt, varargin);
@@ -63,18 +61,16 @@ function im2 = iscale(im, factor, varargin)
         nrs = outsize(2);
     end
 
-
     % create the coordinate matrices for warping
     [U,V] = imeshgrid(im);
-    [Uo,Vo] = imeshgrid(ncs, nrs);
+    [Uo,Vo] = imeshgrid([ncs, nrs]);
 
     % the inverse function
     Uo = Uo/factor;
     Vo = Vo/factor;
 
-    
     for k=1:size(im,3)
-        im2(:,:,k) = interp2(U, V, im(:,:,k), Uo, Vo, 'linear', opt.extrapval);
+        im2(:,:,k) = interp2(U, V, im(:,:,k), Uo, Vo, 'linear');
     end
 
     if is_int
