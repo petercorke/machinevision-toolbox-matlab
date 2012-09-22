@@ -33,7 +33,7 @@
 % You should have received a copy of the GNU Leser General Public License
 % along with MVTB.  If not, see <http://www.gnu.org/licenses/>.
 
-function m = npq(iv, p, q)
+function m = npq_poly(iv, p, q)
 
 	if (p+q) < 2,
 		error('normalized moments: p+q >= 2');
