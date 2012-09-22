@@ -6,8 +6,8 @@
 %
 % [U,V] = IMESHGRID(W, H) as above but the domain is WxH.
 %
-% [U,V] = IMESHGRID(S) as above but the domain is described size which is
-% scalar SxS or a 2-vector S=[W, H].
+% [U,V] = IMESHGRID(S) as above but the domain is described by S which can
+% be a scalar SxS or a 2-vector S=[W, H].
 %
 % See also MESHGRID, INTERP2.
 

@@ -3,12 +3,17 @@
 % E = BLACKBODY(LAMBDA, T) is the blackbody radiation power density [W/m^3]
 % at the wavelength LAMBDA [m] and temperature T [K].
 %
-% If LAMBDA is a column vector, then E is a column vector whose 
-% elements correspond to to those in LAMBDA.  For example:
+% If LAMBDA is a column vector (Nx1), then E is a column vector (Nx1) of
+% blackbody radiation power density at the corresponding elements of LAMBDA.
 %
-%    l = [380:10:700]'*1e-9; % visible spectrum
-%    e = blackbody(l, 6500); % emission of sun
-%    plot(l, e)
+% Example::
+%         l = [380:10:700]'*1e-9; % visible spectrum
+%         e = blackbody(l, 6500); % emission of sun
+%         plot(l, e)
+%
+% References::
+%  - Robotics, Vision & Control, Section 10.1,
+%    P. Corke, Springer 2011.
 
 
 

@@ -16,7 +16,7 @@
 %   deviation should be chosen as a function of the maximum spatial frequency
 %   in the image.
 %
-% See also ISCALE, ISMOOTH.
+% See also ISCALE, ISMOOTH, IREPLICATE.
 
 
 

@@ -1,11 +1,16 @@
 %RLUMINOS Relative photopic luminosity function
 %
-% P = RUMINOS(LAMBDA) is the relative photopic luminosity function for the 
-% wavelengths in LAMBDA.  If LAMBDA is a vector, then P is a vector whose 
-% elements are the relative luminosity at the corresponding elements of LAMBDA.
+% P = RLUMINOS(LAMBDA) is the relative photopic luminosity function for the 
+% wavelengths in LAMBDA [m].  If LAMBDA is a vector (Nx1), then P (Nx1) is a
+% vector whose elements are the luminosity at the corresponding elements 
+% of LAMBDA.
 %
 % Relative luminosity lies in the interval 0 to 1 which indicate the intensity 
 % with which wavelengths are perceived by the light-adapted human eye.
+%
+% References::
+%  - Robotics, Vision & Control, Section 10.1,
+%    P. Corke, Springer 2011.
 %
 % See also LUMINOS.
 

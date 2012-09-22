@@ -5,6 +5,10 @@
 % single-pixel wide line such as found in an image skeleton.  Computed 
 % using the hit-or-miss morphological operator.
 %
+% References::
+%  - Robotics, Vision & Control, Section 12.5.3
+%    P. Corke, Springer 2011.
+%
 % See also ITRIPLEPOINT, ITHIN, HITORMISS.
 
 

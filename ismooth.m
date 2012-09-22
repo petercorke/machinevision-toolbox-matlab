@@ -15,12 +15,12 @@
 % Notes::
 % - By default (option 'full') the returned image is larger than the
 %   passed image.
-% - Smooths all planes of the input image
-% - The Gaussian kernel has a unit volume
+% - Smooths all planes of the input image.
+% - The Gaussian kernel has a unit volume.
 % - If input image is integer it is converted to float, convolved, then
 %   converted back to integer.
 %
-% See also  ICONV, KGAUSS.
+% See also ICONV, KGAUSS.
 
 
 

@@ -4,6 +4,10 @@
 % the structuring element SE.  Unlike standard morphological operations S has
 % three possible values: 0, 1 and don't care (represented by NaN).
 %
+% References::
+%  - Robotics, Vision & Control, Section 12.5.3,
+%    P. Corke, Springer 2011.
+%
 % See also IMORPH, ITHIN, ITRIPLEPOINT, IENDPOINT.
 
 

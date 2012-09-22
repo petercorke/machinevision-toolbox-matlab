@@ -2,8 +2,8 @@
 %
 % OUT = ILOGPOLAR(IM, OPTIONS) is a log-polar representation of the
 % image IM.  Every pixel in IM is rendered at the coordinate (log(r), theta)
-% in the output image OUT (WxH), and where (r,theta) is the corresponding
-% polar coordinate in the image IM.
+% in the output image OUT (WxH), and where (r,theta) is the polar coordinate 
+% of the correspondingin pixel in the image IM.
 %
 % [OUT,VTH,VLOGP] = ILOGPOLAR(IM, OPTIONS) as above but also returns
 % vectors VTH (1xW) and VLOGP (1xH) with the correspond theta and log(r)
@@ -12,10 +12,15 @@
 % ILOGPOLAR(IM, OPTIONS) as above but the image is displayed. 
 %
 % Options::
-% 'centre',C   Point from which radial distance is computed (default centre
-%              of image).
+% 'centre',C   Coordinate of the point from which radial distance is 
+%              computed (default centre of the image).
 % 'ntheta',N   Number of pixels in the theta direction (default 400).
 % 'nlogp',N    Number of pixels in the log-p direction (default 400).
+%
+% Notes::
+% - The log-polar image has the properties that:
+%   - a rotation of the image about the centre point becomes a horizontal shift.
+%   - a scale of the image (zoom) becomes a vertical shift.
 %
 % References::
 % - http://en.wikipedia.org/wiki/Log-polar_coordinates

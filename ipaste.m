@@ -1,15 +1,18 @@
 %IPASTE Paste an image into an image
 %
-% OUT = IPASTE(IM, IM2, P, OPTIONS) is the image IM with the image IM2 
+% OUT = IPASTE(IM, IM2, P, OPTIONS) is the image IM with the subimage IM2 
 % pasted in at the position P=[U,V].
 %
 % Options::
 % 'centre'   The pasted image is centred at P, otherwise P is the top-left 
-%            corner (default)
+%            corner of the subimage in IM (default)
 % 'zero'     the coordinates of P start at zero, by default 1 is assumed
 % 'set'      IM2 overwrites the pixels in IM (default)
 % 'add'      IM2 is added to the pixels in IM
 % 'mean'     IM2 is set to the mean of pixel values in IM2 and IM
+%
+% Notes::
+% - Pixels outside the pasted in region are unaffected.
 %
 % See also ILINE.
 

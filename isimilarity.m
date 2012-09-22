@@ -7,11 +7,41 @@
 % S = ISIMILARITY(T, IM, METRIC) as above but the similarity metric is specified
 % by the function METRIC which can be any of @sad, @ssd, @ncc, @zsad, @zssd.
 %
+% Example::
+%  Load an image of Wally/Waldo (the template)
+%         T = iread('wally.png', 'double');
+%  then load an image of the crowd where he is hiding
+%         crowd = iread('wheres-wally.png', 'double');
+%  Now search for him using the ZNCC matching measure
+%         S = isimilarity(T, crowd, @zncc);
+%  and display the similarity
+%         idisp(S, 'colormap', 'jet', 'bar')
+%  The magnitude at each pixel indicates how well the template centred on
+%  that point matches the surrounding pixels.  The locations of the maxima
+%  are
+%         [~,p] = peak2(S, 1, 'npeaks', 5); 
+%
+%  Now we can display the original scene
+%         idisp(crowd)
+%  and highlight the most likely places that Wally/Waldo is hiding
+%
+%         plot_circle(p, 30, 'fillcolor', 'b', 'alpha', 0.3, ...
+%           'edgecolor', 'none')
+%         plot_point(p, 'sequence', 'bold', 'textsize', 24, ...
+%           'textcolor', 'k', 'Marker', 'none')
+%
+% References::
+%  - Robotics, Vision & Control, Section 12.4,
+%    P. Corke, Springer 2011.
+%
 % Notes::
-% - Similarity is not computed where the window crosses the image
-%   boundary, and these output pixels are set to NaN.
+% - For NCC and ZNCC the maximum in S corresponds to the most likely template
+%   location.  For SAD, SSD, ZSAD and ZSSD the minimum value corresponds
+%   to the most likely location.
+% - Similarity is not computed for those pixels where the template crosses 
+%   the image boundary, and these output pixels are set to NaN.
 % - The ZNCC function is a MEX file and therefore the fastest
-% - User provided similarity metrics can be provided, the function accepts
+% - User provided similarity metrics can be used, the function accepts
 %   two regions and returns a scalar similarity score.
 %
 % See also IMATCH, SAD, SSD, NCC, ZSAD, ZSSD, ZNCC.

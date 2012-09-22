@@ -10,7 +10,8 @@
 % back substitution [pixels]. 
 % 
 % Notes:
-% - This method cannot handle lense distortion.
+% - This method assumes no lense distortion affecting the image plane
+%   coordinates.
 %
 % See also CentralCamera.
 

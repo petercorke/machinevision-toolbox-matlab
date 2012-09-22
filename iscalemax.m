@@ -5,6 +5,9 @@
 % scale-space image sequence L (HxWxN).  S (Nx1) is a vector of scale values 
 % corresponding to each plane of L.
 %
+% If the pixels are considered as cubes in a larger volume, the maxima are
+% those cubes greater than all their 26 neighbours.
+%
 % Notes::
 % - Features are sorted into descending feature strength.
 %

@@ -1,20 +1,28 @@
 %IGAMMA	Gamma correction
 %
-% OUT = IGAMMA(IM, GAMMA) is a gamma corrected version of IM.  All pixels
-% are raised to the power GAMMA.  Gamma encoding can be performed with 
+% OUT = IGAMMA(IM, GAMMA) is a gamma corrected version of the image IM.  All 
+% pixels are raised to the power GAMMA.  Gamma encoding can be performed with 
 % GAMMA > 1 and decoding with GAMMA < 1.
 %
 % OUT = IGAMMA(IM, 'sRGB') is a gamma decoded version of IM using the sRGB 
 % decoding function (JPEG images sRGB encoded).
 %
 % Notes::
+% - Gamma decoding should be applied to any color image prior to colometric
+%   operations.
+% - The exception to this is colorspace conversion using COLORSPACE which
+%   expects RGB images to be gamma encoded.
 % - Gamma encoding is typically performed in a camera with GAMMA=0.45.
 % - Gamma decoding is typically performed in the display with GAMMA=2.2.
 % - For images with multiple planes the gamma correction is applied to all 
 %   planes.
+% - For images sequences the gamma correction is applied to all elements.
 % - For images of type double the pixels are assumed to be in the range 0 to 1.
-% - For images of type int the pixels are assumed in the range 0 to max integer 
-%   value.
+% - For images of type int the pixels are assumed in the range 0 to the maximum
+%   value of their class.  Pixels are converted first to double, processed,
+%   then converted back to the integer class.
+%
+% See also IREAD, COLORSPACE.
 
 
 

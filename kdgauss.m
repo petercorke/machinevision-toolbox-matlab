@@ -11,7 +11,7 @@
 % - The vertical derivative, dG/dy, is K'.
 % - This kernel is an effective edge detector.
 %
-% See also KGAUSS, KDOG, KLOG, ICONV.
+% See also KGAUSS, KDOG, KLOG, ISOBEL, ICONV.
 
 
 

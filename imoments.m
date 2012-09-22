@@ -4,12 +4,13 @@
 % moments of the image IM.  
 %
 % F = IMOMENTS(U, V) as above but the moments are computed from the pixel 
-% coordinates given as vectors U and V.  All pixels are equally weighted,
-% effectively a binary image.
+% coordinates given as vectors U (Nx1) and V (Nx1).  All pixels are equally
+% weighted and is effectively a binary image.
 %
 % F = IMOMENTS(U, V, W) as above but the pixels have weights given by the
-% vector W, effectively a greyscale image.
+% vector W and is effectively a greyscale image.
 %
+% Properties::
 % The RegionFeature object has many properties including:
 %
 %  uc        centroid, horizontal coordinate
@@ -22,13 +23,16 @@
 %  moments   a structure containing moments of order 0 to 2, the elements
 %            are m00, m10, m01, m20, m02, m11.
 %
+% See RegionFeature help for more details.
+%
 % Notes::
 % - For a binary image the zeroth moment is the number of non-zero pixels, or
 %   its area.
-% - This function does not perform connectivity, if connected blobs
-%   are required then the ILABEL function must be used first.
+% - This function does not perform connectivity it considers all non-zero
+%   pixels in the image.  If connected regions are required then use IBLOBS
+%   instead.
 %
-% See also RegionFeature, ILABEL, IMOMENTS.
+% See also RegionFeature, IBLOBS.
 
 
 

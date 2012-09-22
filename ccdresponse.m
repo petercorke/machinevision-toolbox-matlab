@@ -1,13 +1,18 @@
 %CCDRESPONSE    CCD spectral response
 %
 % R = CCDRESPONSE(LAMBDA) is the spectral response of a typical silicon
-% imaging sensor at the wavelength LAMBDA.  The response is normalized
+% imaging sensor at the wavelength LAMBDA [m].  The response is normalized
 % in the range 0 to 1.  If LAMBDA is a vector then R is a vector of the
 % same length whose elements are the response at the corresponding element
 % of LAMBDA.
 %
-% Reference::
-% An ancient Fairchild data book for a sensor with no IR filter fitted.
+% Notes::
+% - Deprecated, use loadspectrum(lambda, 'ccd') instead.
+%
+% References::
+% - An ancient Fairchild data book for a silicon sensor.
+% - Robotics, Vision & Control, Section 10.2,
+%   P. Corke, Springer 2011.
 %
 % See also RLUMINOS.
 

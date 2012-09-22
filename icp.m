@@ -1,7 +1,7 @@
 %ICP Point cloud alignment
 %
 % T = ICP(P1, P2, OPTIONS) is the homogeneous transformation that best
-% transforms the set of points P2 to P1 using the iterative closest point
+% transforms the set of points P1 to P2 using the iterative closest point
 % algorithm.
 %
 % [T,D] = ICP(P1, P2, OPTIONS) as above but also returns the norm of the
@@ -20,15 +20,28 @@
 % 'distthresh',T   eliminate correspondences more than T x the median distance
 %                  at each iteration.
 %
+% Example::
+% Create a 3D point cloud
+%         p1 = randn(3,20);                                       
+% Transform it by an arbitrary amount
+%         T = transl(1,2,3)*eul2tr(0.1, 0.2, 0.3)
+%         p2 = homtrans( T, p1);
+% Perform ICP to determine the transformation that maps p1 to p2
+%         icp(p1, p2)
+%
 % Notes::
+% - Does not require knowledge of correspondence between the points.
+%   - The point sets may have different numbers of points.
+%   - Points in either set may have no corresponding point.
 % - Points can be 2- or 3-dimensional.
 % - For noisy data setting distthresh and maxtheta can help to prevent the
-%   the solution from diverging.
+%   solution from diverging.
 %
 % Reference::
-% "A method for registration of 3D shapes",
-% P.Besl and H.McKay,
-% IEEETrans. Pattern Anal. Mach. Intell., vol. 14, no. 2, pp. 239-256, Feb. 1992.
+% - "A method for registration of 3D shapes",
+%   P.Besl and H.McKay,
+%   IEEETrans. Pattern Anal. Mach. Intell., vol. 14, no. 2,
+%   pp. 239-256, Feb. 1992.
 
 
 

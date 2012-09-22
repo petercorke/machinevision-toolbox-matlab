@@ -4,15 +4,18 @@
 % that has been rotated about its centre.
 %
 % Options::
-% 'outsize',S     set size of OUT to HxW where S=[W,H]
+% 'outsize',S     set size of output image to HxW where S=[W,H]
 % 'crop'          return central part of image, same size as IM
 % 'scale',S       scale the image size by S (default 1)
 % 'extrapval',V   set background pixels to V (default 0)
-% 'smooth',S      smooth image with Gaussian of standard deviation S
+% 'smooth',S      initially smooth the image with a Gaussian of standard 
+%                 deviation S
 %
 % Notes::
-% - Rotation is defined with respect to a z-axis into the image.
+% - Rotation is defined with respect to a z-axis which is into the image.
 % - Counter-clockwise is a positive angle.
+% - The pixels in the corners of the resulting image will be undefined and
+%   set to the 'extrapval'.
 %
 % See also ISCALE.
 

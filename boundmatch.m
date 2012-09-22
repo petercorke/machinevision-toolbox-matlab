@@ -2,12 +2,15 @@
 %
 % X = BOUNDMATCH(R1, R2) is the correlation of the two boundary profiles
 % R1 and R2.  Each is an Nx1 vector of distances from the centroid of
-% an object to points on its perimeter at equal angular increments.  X
-% is also Nx1 and is a correlation whose peak indicates the relative 
-% orientation of one profile with respect to the other.
+% an object to points on its perimeter at equal angular increments spanning
+% 2pi radians.  X is also Nx1 and is a correlation whose peak indicates the 
+% relative orientation of one profile with respect to the other.
 %
 % [X,S] = BOUNDMATCH(R1, R2) as above but also returns the relative scale
 % S which is the size of object 2 with respect to object 1.
+%
+% Notes::
+% - Can be considered as matching two functions defined over S(1).
 %
 % See also RegionFeature.boundary, XCORR.
 

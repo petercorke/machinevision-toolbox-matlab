@@ -1,15 +1,15 @@
 %ILINE Draw a line in an image
 %
-% OUT = ILINE(IM, P1, P2) is a copy of the image IM with a line drawn
-% between the points P1 and P2, each a 2-vector [X,Y].  The pixels on the
-% line are set to 1.
+% OUT = ILINE(IM, P1, P2) is a copy of the image IM with a single-pixel thick
+% line drawn between the points P1 and P2, each a 2-vector [U,V].  The pixels 
+% on the line are set to 1.
 %
-% OUT = ILINE(IM, P1, P2, V) as above but the pixel on the line are set to V.
+% OUT = ILINE(IM, P1, P2, V) as above but the pixels on the line are set to V.
 %
 % Notes::
-% - Uses the Bresenham algorithm
-% - Only works for greyscale images
-% - The line looks jagged since no anti-aliasing is performed
+% - Uses the Bresenham algorithm.
+% - Only works for greyscale images.
+% - The line looks jagged since no anti-aliasing is performed.
 %
 % See also BRESENHAM, IPROFILE, IPASTE.
 

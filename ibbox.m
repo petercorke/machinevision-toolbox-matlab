@@ -3,10 +3,11 @@
 % BOX = IBBOX(P) is the minimal bounding box that contains the points
 % described by the columns of P (2xN).
 %
-% BOX = IBBOX(IM) is the minimal bounding box that contains the non-zero
+% BOX = IBBOX(IM) as above but the box minimally contains the non-zero
 % pixels in the image IM.
 %
-% The bounding box is a 2x2 matrix [XMIN XMAX; YMIN YMAX].
+% Notes::
+% - The bounding box is a 2x2 matrix [XMIN XMAX; YMIN YMAX].
 
 
 % Copyright (C) 1993-2011, by Peter I. Corke

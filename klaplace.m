@@ -1,12 +1,12 @@
 %KLAPLACE Laplacian kernel
 %
 % K = KLAPLACE() is the Laplacian kernel:
-%       |0   1  0|
-%       |1  -4  1|
-%       |0   1  0|
+%        |0   1  0|
+%        |1  -4  1|
+%        |0   1  0|
 %
 % Notes::
-% - This kernel has an isotropic response to gradient.
+% - This kernel has an isotropic response to image gradient.
 %
 % See also ILAPLACE, ICONV.
 

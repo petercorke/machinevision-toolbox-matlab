@@ -10,7 +10,11 @@
 % Notes::
 % - The file is assumed to have its first column as wavelength in metres, the 
 %   remainding columns are linearly interpolated and returned as columns of S.
-
+% - The files are kept in the private folder inside the MVTB folder.
+%
+% References::
+%  - Robotics, Vision & Control, Section 14.3,
+%    P. Corke, Springer 2011.
 
 
 % Copyright (C) 1993-2011, by Peter I. Corke

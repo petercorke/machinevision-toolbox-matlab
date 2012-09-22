@@ -1,14 +1,14 @@
 %ISAMESIZE Automatic image trimming
 %
 % OUT = ISAMESIZE(IM1, IM2) is an image derived from IM1 that has
-% the same dimensions as IM2 which is achieved by cropping and scaling.
+% the same dimensions as IM2.  This is achieved by cropping and scaling.
 %
 % OUT = ISAMESIZE(IM1, IM2, BIAS) as above but BIAS controls which part
 % of the image is cropped.  BIAS=0.5 is symmetric cropping, BIAS<0.5 moves
 % the crop window up or to the left, while BIAS>0.5 moves the crop window
 % down or to the right.
 %
-% See also ISCALE.
+% See also ISCALE, IROI, ITRIM.
 
 
 % Copyright (C) 1993-2011, by Peter I. Corke

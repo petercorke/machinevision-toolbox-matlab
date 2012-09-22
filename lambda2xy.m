@@ -4,7 +4,12 @@
 % at the corresponding elements of LAMBDA.
 %
 % XY = LAMBDA2XY(LAMBDA, E) is the rg-chromaticity coordinate (1x2) for an 
-% illumination spectrum E (Nx1) and LAMBDA (Nx1).
+% illumination spectrum E (Nx1) defined at corresponding wavelengths
+% LAMBDA (Nx1).
+%
+% References::
+%  - Robotics, Vision & Control, Section 10.2,
+%    P. Corke, Springer 2011.
 %
 % See also CMFXYZ, LAMBDA2RG.
 

@@ -1,12 +1,12 @@
 %IMSER Maximally stable extremal regions
 %
-% L = IMSER(IM, OPTIONS) is a greyscale segmentation of the image IM based on
-% maximally stable extremal regions.  L is an image of the same size as IM
-% where each element is the label assigned to the corresponding pixel in IM.
-% The labels 
+% LABEL = IMSER(IM, OPTIONS) is a segmentation of the greyscale image IM (HxW)
+% based on maximally stable extremal regions.  LABEL (HxW) is an image where 
+% each element is the integer label assigned to the corresponding pixel in IM.
+% The labels are consecutive integers starting at zero.
 %
-% [L,M] = IMSER(IM, OPTIONS) as above but M is the number of regions
-% found.
+% [LABEL,NREG] = IMSER(IM, OPTIONS) as above but NREG is the number of regions
+% found, or one plus the maximum value of LABEL.
 %
 % Options::
 % 'dark'    looking for dark features against a light background (default)
@@ -15,20 +15,20 @@
 % Example::
 %
 %     im = iread('castle_sign2.png', 'grey', 'double');
-%     [label,m] = imser(im, 'light');
-%     idisp(im)
+%     [label,n] = imser(im, 'light');
+%     idisp(label)
+%
+% Notes::
+% - Is a wrapper for vl_mser, part of VLFeat (vlfeat.org), by Andrea Vedaldi
+%   and Brian Fulkerson.
+% - vl_mser is a MEX file.
 %
 % Reference::
 %
 % "Robust wide-baseline stereo from maximally stable extremal regions",
 % J. Matas, O. Chum, M. Urban, and T. Pajdla, 
 % Image and Vision Computing,
-% vol. 22, pp. 761–767, Sept. 2004.
-%
-% Notes::
-% - Is a wrapper for vl_mser, part of VLFeat (vlfeat.org), by Andrea Vedaldi
-%   and Brian Fulkerson
-% - vl_mser is a MEX file
+% vol. 22, pp. 761-767, Sept. 2004.
 %
 % See also ITHRESH, IGRAPHSEG.
 

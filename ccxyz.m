@@ -1,12 +1,16 @@
 %CCXYZ XYZ chromaticity coordinates
 %
-% XYZ = CCXYZ(LAMBDA) is the xyz-chromaticity coordinates for illumination
-% at wavelength LAMBDA.  If LAMBDA is a vector then each row of XYZ
-% is the chromaticity of the corresponding element of LAMBDA. 
+% XYZ = CCXYZ(LAMBDA) is the xyz-chromaticity coordinates (3x1) for illumination
+% at wavelength LAMBDA.  If LAMBDA is a vector (Nx1) then each row of XYZ (Nx3)
+% is the XYZ-chromaticity of the corresponding element of LAMBDA. 
 %
-% XYZ = CCXYZ(LAMBDA, E) is the xyz-chromaticity coordinates for an illumination
-% spectrum E.  E and LAMBDA are vectors of the same length and the elements of E 
-% represent the intensity of light at the corresponding wavelength in LAMBDA.
+% XYZ = CCXYZ(LAMBDA, E) is the xyz-chromaticity coordinates (Nx3) for an 
+% illumination spectrum E (Nx1) defined at corresponding wavelengths
+% LAMBDA (Nx1).
+%
+% References::
+%  - Robotics, Vision & Control, Section 10.2,
+%    P. Corke, Springer 2011.
 %
 % See also CMFXYZ.
 

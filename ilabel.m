@@ -1,19 +1,19 @@
 %ILABEL Label an image
 %
-% L = ILABEL(IM) performs connectivity analysis on the image IM and returns a
-% label image L, same size as IM, where each pixel value represents the integer
-% region label assigned to the corresponding pixel in IM.  Region labels are in
-% the range 1 to M.
+% L = ILABEL(IM) is a label image that indicates connected components within
+% the image IM (HxW).  Each pixel in L (HxW) is an integer label that indicates
+% which connected region the corresponding pixel in IM belongs to.  Region 
+% labels are in the range 1 to M.
 %
 % [L,M] = ILABEL(IM) as above but returns the value of the maximum
 % label value.
 %
 % [L,M,PARENTS] = ILABEL(IM) as above but also returns region hierarchy
-% information.  The value of PARENTS(I) is the label of the parent or 
-% enclosing	region of region I.  A value of 0 indicates that the region has
+% information.  The value of PARENTS(I) is the label of the parent, or 
+% enclosing, region of region I.  A value of 0 indicates that the region has
 % no single enclosing region, for a binary image this means the region
-% touches the edge of the image, for a multilevel image it means that it
-% touches more than one other region.
+% touches the edge of the image, for a multilevel image it means that the
+% region touches more than one other region.
 %
 % [L,MAXLABEL,PARENTS,CLASS] = ILABEL(IM) as above but also returns the class
 % of pixels within each region.  The value of CLASS(I) is the value of the
@@ -24,16 +24,18 @@
 % edge of the image, otherwise it does not.
 %
 % Notes::
-% - Is a MEX file.
-% - The image can be binary or multi-level
-% - Connectivity is performed using 4 nearest neighbours by default. To use
-%   8-way connectivity pass a second argument of 8, eg. ILABEL(IM, 8).
+% - This algorithm is variously known as region labelling, connectivity 
+%   analysis, connected component analysis, blob labelling.
+% - All pixels within a region have the same value (or class).
 % - This is a "low level" function, IBLOBS is a higher level interface.
-% - Connectivity is only performed within a 2D image.
+% - Is a MEX file.
+% - The image can be binary or greyscale.
+% - Connectivity is only performed in 2 dimensions.
+% - Connectivity is performed using 4 nearest neighbours by default.
+%   - To use 8-way connectivity pass a second argument of 8, eg. ILABEL(IM, 8).
+%   - 8-way connectivity introduces ambiguities, a chequerboard is two blobs.
 %
 % See also IBLOBS, IMOMENTS.
-
-
 
 % Copyright (C) 1993-2011, by Peter I. Corke
 %

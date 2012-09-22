@@ -3,8 +3,9 @@
 % OUT = INORMHIST(IM) is a histogram normalized version of the image IM.
 %
 % Notes::
-% - The histogram of the normalized image is approximately uniform.
 % - Highlights image detail in dark areas of an image.
+% - The histogram of the normalized image is approximately uniform, that is,
+%   all grey levels ae equally likely to occur.
 %
 % See also IHIST.
 

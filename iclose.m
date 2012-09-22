@@ -1,16 +1,20 @@
 %ICLOSE	Morphological closing
 %
 % OUT = ICLOSE(IM, SE, OPTIONS) is the image IM after morphological closing 
-% with the structuring element SE.  This is a dilation followed by an erosion.
+% with the structuring element SE.  This is a morphological dilation followed 
+% by an erosion.
 %
 % OUT = ICLOSE(IM, SE, N, OPTIONS) as above but the structuring element 
 % SE is applied N times, that is N erosions followed by N dilations.
 %
 % Notes::
+% - For binary image a closing operation can be used to eliminate small black
+%   holes in white regions.
 % - Cheaper to apply a smaller structuring element multiple times than
-%   one large one, the effective structuing element is the Minkowski sum
+%   one large one, the effective structuring element is the Minkowski sum
 %   of the structuring element with itself N times.
-% - Windowing options of IMORPH can be passed.
+% - Windowing options of IMORPH can be passed.  By default output image is
+%   same size as input image.
 %
 % See also IOPEN, IDILATE, IERODE, IMORPH.
 

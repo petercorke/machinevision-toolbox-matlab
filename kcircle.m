@@ -1,9 +1,10 @@
 %KCIRCLE Circular structuring element
 %
-% K = KCIRCLE(R) is a square matrix SxS where S=2R+1 of zeros with a maximal 
-% centered circular region of radius R pixels set to one.
+% K = KCIRCLE(R) is a square matrix (WxW) where W=2R+1 of zeros with a maximal 
+% centred circular region of radius R pixels set to one.
 %
-% K = KCIRCLE(R,S) as above but S is explicitly specified.
+% K = KCIRCLE(R,W) as above but the dimension of the kernel is explicitly 
+% specified.
 %
 % Notes::
 % - If R is a 2-element vector the result is an annulus of ones, and

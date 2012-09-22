@@ -1,11 +1,15 @@
 %LUMINOS Photopic luminosity function
 %
 % P = LUMINOS(LAMBDA) is the photopic luminosity function for the wavelengths
-% in LAMBDA.  If LAMBDA is a vector (Nx1), then P (Nx2) is a vector whose 
+% in LAMBDA [m].  If LAMBDA is a vector (Nx1), then P (Nx1) is a vector whose 
 % elements are the luminosity at the corresponding elements of LAMBDA.
 %
 % Luminosity has units of lumens which are the intensity with 
 % which wavelengths are perceived by the light-adapted human eye.
+%
+% References::
+%  - Robotics, Vision & Control, Section 10.1,
+%    P. Corke, Springer 2011.
 %
 % See also RLUMINOS.
 
