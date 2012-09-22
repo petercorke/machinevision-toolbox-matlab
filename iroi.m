@@ -1,15 +1,18 @@
 %IROI Extract region of interest
 %
-% OUT = IROI(IM,R) is a subimage of the image IM described by the 
-% rectangle R=[umin,umax; vmin,vmax].
+% OUT = IROI(IM,RECT) is a subimage of the image IM described by the 
+% rectangle RECT=[umin,umax; vmin,vmax].
 %
-% OUT = IROI(IM) as above but the image is displayed and the user is prompted to
-% adjust a rubber band box to select the region of interest.
+% OUT = IROI(IM,C,S) as above but the region is centered at C=(U,V) and
+% has a size S.  If S is scalar then W=H=S otherwise S=(W,H).
 %
-% [OUT,R] = IROI(IM) as above but returns the selected region of 
-% interest R=[umin umax;vmin vmax].
+% OUT = IROI(IM) as above but the image is displayed and the user is prompted
+% to adjust a rubber band box to select the region of interest.
 %
-% See also IDISP, ILINE.
+% [OUT,RECT] = IROI(IM) as above but returns the selected region of 
+% interest RECT=[umin umax;vmin vmax].
+%
+% See also IDISP.
 
 % TODO
 %   IROI(image, centre, width)
@@ -38,7 +41,12 @@ function [im, region] = iroi(image, reg, wh)
 
     if nargin == 3
         xc = reg(1); yc = reg(2);
-        w = round(wh(1)/2); h = round(h(2)/2);
+        if length(wh) == 1
+            w = round(wh/2);
+            h = w;
+        else
+            w = round(wh(1)/2); h = round(h(2)/2);
+        end
         im = image(yc-h:yc+h,xc-w:xc+w,:);
     elseif nargin == 2
         im = image(reg(2,1):reg(2,2),reg(1,1):reg(1,2),:);
@@ -84,10 +92,10 @@ function [im, region] = iroi(image, reg, wh)
         im = img(top:bot,left:right,:);
         
         figure
-        idisp2(im);
+        idisp(im);
         title(sprintf('ROI (%d,%d) %dx%d', left, top, right-left, bot-top));
         
-        if nargout == 2,
+        if nargout == 2
             region = [left right; top bot];
         end
     end
