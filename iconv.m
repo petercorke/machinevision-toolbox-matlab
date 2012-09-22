@@ -1,9 +1,7 @@
 %ICONV Image convolution
 %
-% C = ICONV(IM1, IM2, OPTIONS) convolves IM1 with IM2.  The smaller image
-% is taken as the kernel and convolved with the larger image.  If the larger
-% image is color (has multiple planes) the kernel is applied to each plane,
-% resulting in an output image with the same number of planes.
+% C = ICONV(IM1, IM2, OPTIONS) is the convolution of images IM1 and IM2.  The 
+% smaller image is taken as the kernel and convolved with the larger image. 
 %
 % Options::
 %  'same'    output image is same size as largest input image (default)
@@ -12,7 +10,12 @@
 %            valid pixels
 %
 % Notes::
-% - This function is a convenience wrapper for the builtin function CONV2.
+% - If the larger image is color (has multiple planes) the kernel is applied to 
+%   each plane, resulting in an output image with the same number of planes.
+% - The kernel must be greyscale.
+% - This function is a convenience wrapper for the MATLAB function CONV2.
+% - Works for double, uint8 or uint16 images.  Image and kernel must be of
+%   the same type and the result is of the same type.
 %
 % See also CONV2.
 
@@ -41,11 +44,13 @@ function C = iconv(A, B, opt)
 
     if numcols(A) < numcols(B)
         % B is the image
+        A = fliplr(flipud(A));
         for k=1:size(B,3)
             C(:,:,k) = conv2(B(:,:,k), A, opt);
         end
     else
         % A is the image
+        B = fliplr(flipud(B));
         for k=1:size(A,3)
             C(:,:,k) = conv2(A(:,:,k), B, opt);
         end
