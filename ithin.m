@@ -7,6 +7,10 @@
 % of the skeletonization algorithm with a pause of DELAY seconds between 
 % each iteration.
 %
+% References::
+%  - Robotics, Vision & Control, Section 12.5.3,
+%    P. Corke, Springer 2011.
+%
 % See also HITORMISS, ITRIPLEPOINT, IENDPOINT.
 
 
@@ -27,7 +31,7 @@
 % You should have received a copy of the GNU Leser General Public License
 % along with MVTB.  If not, see <http://www.gnu.org/licenses/>.
 
-function o = ithin(im, delay)
+function out = ithin(im, delay)
 
     % create a binary image
     im = im > 0;
@@ -57,3 +61,6 @@ function o = ithin(im, delay)
         o = im;
     end
     o = im;
+    if nargout > 0
+        out = o;
+    end
