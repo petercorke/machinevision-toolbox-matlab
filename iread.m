@@ -1,11 +1,20 @@
 %IREAD  Read image from file
 %
 % IM = IREAD() presents a file selection GUI from which the user can select
-% an image file which is returned as 2D or 3D matrix.  On subsequent calls 
+% an image file which is returned as a matrix.  On subsequent calls 
 % the initial folder is as set on the last call.
 %
-% IM = IREAD(FILE, OPTIONS) reads the specified file and returns a matrix.  If
-% the path is relative it is searched for on Matlab search path.
+% IM = IREAD([], OPTIONS) as above but allows options to be specified.
+%
+% IM = IREAD(PATH, OPTIONS) as above but the GUI is set to the folder specified
+% by PATH.  If the path is not absolute it is searched for on the MATLAB search 
+% path.
+%
+% IM = IREAD(FILE, OPTIONS) reads the specified image file and returns a matrix.
+% If the path is not absolute it is searched for on MATLAB search path.
+%
+% The image can be greyscale or color in any of a wide range of formats 
+% supported by the MATLAB IMREAD function.
 %
 % Wildcards are allowed in file names.  If multiple files match a 3D or 4D image
 % is returned where the last dimension is the number of images in the sequence.
@@ -17,12 +26,25 @@
 %              in the range 0 to 1.
 % 'double'     return an image with double precision floating point pixels
 %              in the range 0 to 1.
-% 'grey'       convert image to greyscale if it's color using ITU rec 601
-% 'grey_709'   convert image to greyscale if it's color using ITU rec 709
-% 'gamma',G    gamma value, either numeric or 'sRGB'
+% 'grey'       convert image to greyscale, if it's color, using ITU rec 601
+% 'grey_709'   convert image to greyscale, if it's color, using ITU rec 709
+% 'gamma',G    apply this gamma correction, either numeric or 'sRGB'
 % 'reduce',R   decimate image by R in both dimensions
 % 'roi',R      apply the region of interest R to each image, 
 %              where R=[umin umax; vmin vmax].
+%
+% Examples::
+%  Read a color image and display it
+%         >> im = iread('lena.png');
+%         >> about im
+%         im [uint8] : 512x512x3 (786.4 kB)
+%         >> idisp(im);
+%
+%  Read a greyscale image sequence
+%         >> im = iread('seq/*.png');
+%         >> about im
+%         im [uint8] : 512x512x9 (2.4 MB)
+%         >> ianimate(im, 'loop');
 % Notes::
 % - A greyscale image is returned as an HxW matrix
 % - A color image is returned as an HxWx3 matrix
@@ -31,7 +53,7 @@
 % - A color image sequence is returned as an HxWx3xN matrix where N is the 
 %   sequence length 
 %
-% See also IDISP, IMONO, IGAMMA, IMWRITE, PATH.
+% See also IDISP, IANIMATE, IMONO, IGAMMA, IMREAD, IMWRITE, PATH.
 
 
 
@@ -54,7 +76,7 @@
 
 
 function [I,info] = iread(filename, varargin)
-    persistent mypath
+    persistent lastPath
 
     % options
     %
@@ -78,44 +100,52 @@ function [I,info] = iread(filename, varargin)
     opt.disp = [];
 
     opt = tb_optparse(opt, varargin);
-
     im = [];
     
-    if nargin == 0,
-        % invoke file browser GUI
-        [file, npath] = uigetfile(...
-            {'*.png;*.pgm;*.ppm;*.jpg;*.tif', 'All images';
-            '*.pgm', 'PGM images';
-            '*.jpg', 'JPEG images';
-            '*.gif;*.png;*.jpg', 'web images';
+    fileFilter = {
+            '*.gif;*.png;*.pgm;*.ppm;*.pnm;*.jpg;*.tif;*.GIF;*.PNG;*.PGM;*.PPM;*.PNM;*.JPG;*.TIF;', 'All images';
+            '*.pgm;*.PGM', 'PGM images';
+            '*.jpg;*.JPG', 'JPEG images';
+            '*.pgm;*.ppm;*.pnm;*.PGM;*.PPM;*.PNM', 'PBMplus images';
+            '*.gif;*.png;*.jpg;*.GIF;*.PNG;*.JPG', 'web images';
             '*.*', 'All files';
-            }, 'iread');
-        if file == 0,
+            };
+    
+    if nargin == 0 || isempty(filename)
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %invoke file browser GUI
+        
+        if ~isempty(lastPath)
+            [file, npath] = uigetfile(fileFilter, 'iread', lastPath);
+        else
+            [file, npath] = uigetfile(fileFilter, 'iread');
+        end
+        
+        if file == 0
             fprintf('iread canceled from GUI\n');
             return; % cancel button pushed
         else
             % save the path away for next time
-            mypath = npath;
-            filename = fullfile(mypath, file);
+            lastPath = npath;
+            filename = fullfile(lastPath, file);
             im = loadimg(filename, opt);
         end
-    elseif (nargin == 1) & exist(filename,'dir'),
-        % invoke file browser GUI
-        if isempty(findstr(filename, '*')),
-            filename = strcat(filename, '/*.*');
-        end
-        [file,npath] = uigetfile(filename, 'iread');
-        if file == 0,
+    elseif exist(filename,'dir') == 7
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % invoke file browser GUI on specified path
+        [file,npath] = uigetfile(fileFilter, 'iread', filename);
+        if file == 0
             fprintf('iread canceled from GUI\n');
             return; % cancel button pushed
         else
             % save the path away for next time
-            mypath = npath;
-            filename = fullfile(mypath, file);
+            lastPath = npath;
+            filename = fullfile(lastPath, file);
             im = loadimg(filename, opt);
         end
     else
-        % some kind of filespec has been given
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % some kind of wildcard filespec has been given
         if ~isempty(strfind(filename, '*')) | ~isempty(strfind(filename, '?')),
             % wild card files, eg.  'seq/*.png', we need to look for a folder
             % seq somewhere along the path.
@@ -138,7 +168,7 @@ function [I,info] = iread(filename, varargin)
             end
             s = dir( fullfile(folderonpath, [name, ext]));      % do a wildcard lookup
 
-            if length(s) == 0,
+            if length(s) == 0
                 error('no matching files found');
             end
 
@@ -155,6 +185,7 @@ function [I,info] = iread(filename, varargin)
                 end
             end
         else
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             % simple file, no wildcard
             if strncmp(filename, 'http://', 7)
                 im = loadimg(filename, opt);
@@ -168,14 +199,13 @@ function [I,info] = iread(filename, varargin)
                         break;
                     end
                 end
-  
             end
         end
     end
 
                       
     if isempty(im)
-        error(sprintf('cant open file: %s', filename));
+        error(sprintf('can''t find/open file: %s', filename));
     end
     if nargout > 0
         I = im;
@@ -190,16 +220,17 @@ function [I,info] = iread(filename, varargin)
     end
 end
 
-function im = loadimg(name, opt)
+% load image from file name and apply options
+function im = loadimg(filename, opt)
 
     % now we read the image
-    im = imread(name);
+    im = imread(filename);
 
     if opt.verbose
         if ndims(im) == 2
-            fprintf('loaded %s, %dx%d\n', name, size(im,2), size(im,1));
+            fprintf('loaded %s, %dx%d\n', filename, size(im,2), size(im,1));
         elseif ndims(im) == 3
-            fprintf('loaded %s, %dx%dx%d\n', name, size(im,2), size(im,1), size(im,3));
+            fprintf('loaded %s, %dx%dx%d\n', filename, size(im,2), size(im,1), size(im,3));
         end
     end
 
@@ -214,8 +245,8 @@ function im = loadimg(name, opt)
     end
 
     % optionally decimate it
-    if opt.reduce > 1,
-        im = im(1:opt.reduce:end, 1:opt.reduce:end, :);
+    if opt.reduce > 1
+        im = idecimate(im, opt.reduce);
     end
 
     % optionally convert to specified numeric type
@@ -236,4 +267,14 @@ function im = loadimg(name, opt)
         idisp(im);
     end
 
+end
+
+function c = path2cell(s)
+    remain = s;
+    c = {};
+    while true
+        [str, remain] = strtok(remain, ':');
+        if isempty(str), break; end
+        c = [c str];
+    end
 end
