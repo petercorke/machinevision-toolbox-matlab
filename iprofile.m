@@ -34,13 +34,16 @@
 
 function [p,uv] = iprofile(c, p1, p2)
 
+    % coordinates must be integers
+    p1 = round(p1); p2 = round(p2);
+    
     points = bresenham(p1, p2);
 
     p = [];
     for point = points'
-        p = [p; c(point(2), point(1))];
+        p = [p; c(point(2), point(1), :)];
     end
 
     if nargout > 1
-        uv = points';
+        uv = squeeze(points');
     end
