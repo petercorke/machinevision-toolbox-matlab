@@ -56,43 +56,47 @@ function Z = testpattern(type, w, varargin)
 
     z = zeros(w);
     switch type,
-    case {'sinx'},
+    case {'sinx'}
         if nargin > 2,
             ncycles = varargin{1};
         else
             ncycles = 1;
         end
-        for i=1:numcols(z),
-            z(:,i) = sin(i/numcols(z)*ncycles*2*pi);
-        end
-    case {'siny'},
-        if nargin > 2,
+        x = 0:(numcols(z)-1);
+        clength = numcols(z)/ncycles;
+        z = repmat( sin(x/(clength)*ncycles*2*pi), numrows(z), 1);
+
+    case {'siny'}
+        if nargin > 2
             ncycles = varargin{1};
         else
             ncycles = 1;
         end
-        for i=1:numcols(z),
-            z(i,:) = sin(i/numcols(z)*ncycles*2*pi);
-        end
-    case {'rampx'},
-        if nargin > 2,
+        clength = numrows(z)/ncycles;
+        y = [0:(numrows(z)-1)]';
+        z = repmat( sin(y/(clength)*ncycles*2*pi), 1, numrows(z));
+        
+    case {'rampx'}
+        if nargin > 2
             ncycles = varargin{1};
         else
             ncycles = 1;
         end
-        for i=1:numcols(z),
-            z(:,i) = mod(i/numcols(z)*ncycles,1);
-        end
-    case {'rampy'},
-        if nargin > 2,
+        clength = numcols(z)/ncycles;
+        x = 0:(numcols(z)-1);
+        z = repmat( mod(x, clength) / (clength-1), numrows(z), 1);
+        
+    case {'rampy'}
+        if nargin > 2
             ncycles = varargin{1};
         else
             ncycles = 1;
         end
-        for i=1:numrows(z),
-            z(i,:) = mod(i/numrows(z)*ncycles,1);
-        end
-    case {'line'},
+        clength = numrows(z)/ncycles;
+        y = [0:(numrows(z)-1)]';
+        z = repmat( mod(y, clength) / (clength-1), 1, numcols(z));
+        
+    case {'line'}
         % args:
         %   angle intercept
         nr = numrows(z);
@@ -116,7 +120,8 @@ function Z = testpattern(type, w, varargin)
         for k=s,    
             z(y(k),x(k)) = 1;
         end
-    case {'squares'},
+        
+    case {'squares'}
         % args:
         %   pitch diam 
         nr = numrows(z);
@@ -128,19 +133,20 @@ function Z = testpattern(type, w, varargin)
         end
         rad = floor(d/2);
         d = 2*rad;
-        for r=pitch/2:pitch:(nr-pitch/2),
+        for r=pitch/2:pitch:(nr-pitch/2)
             for c=pitch/2:pitch:(nc-pitch/2),
                 z(r-rad:r+rad,c-rad:c+rad) = ones(d+1);
             end
         end
-    case {'dots'},
+        
+    case {'dots'}
         % args:
         %   pitch diam 
         nr = numrows(z);
         nc = numcols(z);
         d = varargin{2};
         pitch = varargin{1};
-        if d > (pitch/2),
+        if d > (pitch/2)
             fprintf('warning: dots will overlap\n');
         end
         rad = floor(d/2);
@@ -157,7 +163,7 @@ function Z = testpattern(type, w, varargin)
         im = [];
     end
 
-    if nargout == 0,
+    if nargout == 0
         idisp(z);
     else
         Z = z;
