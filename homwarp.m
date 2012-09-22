@@ -7,14 +7,15 @@
 % warped tile OUT with respect to the origin of IM.
 %
 % Options::
-% 'full'          output image contains all the warped pixels, but its
-%                 position with respect to the input image is given by the
-%                 second return value OFFS.
-% 'extrapval',V   set unmapped pixels to this value
-% 'roi',R         output image contains the specified ROI in the input image
-% 'scale',S       scale the output by this factor
-% 'dimension',D   ensure output image is DxD
-% 'size',S        size of output image S=[W,H]
+% 'full'            output image contains all the warped pixels, but its
+%                   position with respect to the input image is given by the
+%                   second return value OFFS.
+% 'extrapval',V     set unmapped pixels to this value (default NaN)
+% 'roi',R           output image contains the specified ROI in the input image
+% 'scale',S         scale the output by this factor
+% 'dimension',D     ensure output image is DxD
+% 'size',S          size of output image S=[W,H]
+% 'coords',{U,V}    coordinate matrices for im, each same size as im.
 %
 % Notes::
 % - The edges of the resulting output image will in general not be
@@ -51,6 +52,7 @@ function [w,foffs] = homwarp(H, im, varargin)
     opt.roi = [];
     opt.scale = 1;
     opt.dimension = [];
+    opt.coords = [];
 
     opt = tb_optparse(opt, varargin);
 
@@ -102,7 +104,12 @@ function [w,foffs] = homwarp(H, im, varargin)
         sz = round([xmax-xmin+1, ymax-ymin+1]);
     end
     
-    [Ui,Vi] = imeshgrid(im);
+    if isempty(opt.coords)
+        [Ui,Vi] = imeshgrid(im);
+    else
+        Ui = opt.coords{1};
+        Vi = opt.coords{2};
+    end
 
     % determine size of the output image
     if ~isempty(opt.size)
