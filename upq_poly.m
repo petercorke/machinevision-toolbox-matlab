@@ -33,10 +33,10 @@
 % You should have received a copy of the GNU Leser General Public License
 % along with MVTB.  If not, see <http://www.gnu.org/licenses/>.
 
-function m = upq(iv, p, q)
+function m = upq_poly(iv, p, q)
 
 	m00 = mpq_poly(iv, 0, 0);
 	xc =  mpq_poly(iv, 1, 0) / m00;
 	yc =  mpq_poly(iv, 0, 1) / m00;
 
-	m = mpq_poly(iv - ones(numrows(iv),1)*[xc yc], p, q);
+	m = mpq_poly( bsxfun(@minus, iv, [xc yc]'), p, q);
