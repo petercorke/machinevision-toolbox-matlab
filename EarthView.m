@@ -20,6 +20,10 @@
 % - There are lots of conditions on what you can do with the images, particularly with respect to publication.
 %   See the Google web site for details.
 %
+% Author::
+%  Peter Corke, with some lines of code from from get_google_map by Val
+%  Schmidt.
+%
 % See also ImageSource.
 
 classdef EarthView < ImageSource
@@ -33,13 +37,29 @@ classdef EarthView < ImageSource
 
     properties
         key
+        type
+        scale
     end
 
     methods
         function ev = EarthView(key, varargin)
         %EarthView.EarthView
         %
+        
+        %TODO
+        %  clone this for new StreetView API
+        %  method to return lat/long or NE matrices corresp to pixels
+        
             ev = ev@ImageSource(varargin);
+            
+            opt.type = {'satellite', 'map', 'hybrid'};
+            opt.scale = 18;
+            
+            [opt,args] = tb_optparse(opt, varargin);
+            
+            ev.type = opt.type;
+            ev.scale = 1;
+          
 
             % set default size params if not set
             if isempty(ev.width)
@@ -52,13 +72,30 @@ classdef EarthView < ImageSource
             else
                 ev.key = key;
             end
+            
         end
 
-        function im = grab(ev, varargin)
+        function [im,E,N] = grab(ev, varargin)
         % EarthView.grab Grab an aerial image
         %
+        % im = EarthView.grab(lat, long, OPTIONS) is an image of the Earth
+        % centred at the geographic coordinate (lat, long).
+        %
+        % im = EarthView.grab(lat, long, zoom, OPTIONS) as above with the specified
+        % zoom.
+        %
+        % [im,E,N] = EarthView.grab(lat, long, OPTIONS) as above but also
+        % returns the estimated easting E and northing N for the corresponding pixels 
+        % in im. 
+        %
+        % Notes::
+        % - If northing/easting outputs are requested the function
+        %   deg2utm is required (from MATLAB Central)
+        % - The easting/northing is somewhat approximate, see
+        %   get_google_map on MATLAB Central.
 
             opt.type = {'satellite', 'map', 'hybrid'};
+            opt.scale = ev.scale;
 
             [opt,args] = tb_optparse(opt, varargin);
 
@@ -91,11 +128,15 @@ classdef EarthView < ImageSource
             else
                 lat = args{1};
                 lon = args{2};
-                zoom = args{3};
+                if length(args) == 3
+                    zoom = args{3};
+                else
+                    zoom = 18;
+                end
+                
             end
-
             % now read the map
-            url = sprintf('http://maps.google.com/staticmap?center=%.6f,%.6f&zoom=%d&size=%dx%d&format=png&maptype=%s&key=%s&sensor=false', lat, lon, zoom, ev.width, ev.height, opt.type, ev.key);
+            url = sprintf('http://maps.google.com/staticmap?center=%.6f,%.6f&zoom=%d&size=%dx%d&scale=%d&format=png&maptype=%s&key=%s&sensor=false', lat, lon, zoom, ev.width, ev.height, opt.scale, opt.type, ev.key);
 
             [idx,cmap] = imread(url, 'png');
             cmap = iint(cmap);
@@ -111,6 +152,33 @@ classdef EarthView < ImageSource
                 idisp(view);
             else
                 im = view;
+            end
+            
+            if nargout > 1
+                % compute the northing/easting at each pixel.
+                %
+                % the following lines of code from get_google_map by Val Schmidt 
+                % ESTIMATE BOUNDS OF IMAGE:
+                %
+                % Normally one must specify a center (lat,lon) and zoom level for a map.
+                % Zoom Notes:
+                % ZL: 15, hxw = 640x640, image dim: 2224.91 x 2224.21 (mean 2224.56)
+                % ZL: 16, hxw = 640x640, image dim: 1128.01m x 1111.25m (mean 1119.63)
+                % This gives an equation of roughly (ZL-15)*3.4759 m/pix * pixels
+                % So for an image at ZL 16, the LHS bound is 
+                % LHS = centerlonineastings - (zl-15) * 3.4759 * 640/2;
+                [lonutm latutm zone] = deg2utm(lat,lon);
+                Hdim = (2^15/2^zoom) * 3.4759 * ev.width;
+                Vdim = (2^15/2^zoom) * 3.4759 * ev.height;
+
+                ell = lonutm - Hdim/2;
+                nll = latutm - Vdim/2;
+                eur = lonutm + Hdim/2;
+                nur = latutm + Vdim/2;
+
+                Nvec = linspace(nur,nll,ev.height); % lat is highest at image row 1
+                Evec = linspace(ell,eur,ev.width);
+                [E,N] = meshgrid(Evec, Nvec);
             end
         end
 
