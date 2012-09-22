@@ -11,8 +11,17 @@
 %
 % [G,L,S] = ISCALESPACE(IM, N) as above but SIGMA=1.
 %
+% Examples::
+%  Create a scale-space image sequence
+%         im = iread('lena.png', 'double', 'grey');
+%         [G,L,s] = iscalespace(im, 50, 2);
+%  Then find scale-space maxima, an array of ScalePointFeature objects.
+%         f = iscalemax(L, s);
+%  Look at the scalespace volume
+%         slice(L, [], [], 5:10:50); shading interp
+%
 % Notes::
-% - The Laplacian is computed from the difference of adjacent Gaussians.
+% - The Laplacian is approximated by the the difference of adjacent Gaussians.
 %
 % See also ISCALEMAX, ISMOOTH, ILAPLACE, KLOG.
 

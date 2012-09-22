@@ -5,6 +5,8 @@
 % different colors.  By default the left image is red, and the right 
 % image is cyan.
 %
+% ANAGLYPH(LEFT, RIGHT) as above but display the anaglyph.
+%
 % A = ANAGLYPH(LEFT, RIGHT, COLOR) as above but the string COLOR describes
 % the color coding as a string with 2 letters, the first for left, the second 
 % for right, and each is one of:
@@ -19,7 +21,19 @@
 % correction.  If DISP is positive the disparity is increased, if negative it
 % is reduced.  These adjustments are achieved by trimming the images.  Use 
 % this option to make the images more natural/comfortable to view, useful 
-% if the images were captured with a non-human stereo baseline or field of view.
+% if the images were captured with a stereo baseline significantly different
+% the human eye separation (typically 65mm).
+%
+% Example::
+% Load the left and right images
+%         L = iread('rocks2-l.png', 'reduce', 2);
+%         R = iread('rocks2-r.png', 'reduce', 2);
+% then display the anaglyph for viewing with red-cyan glasses
+%         anaglyph(L, R);
+%
+% References::
+%  - Robotics, Vision & Control, Section 14.3,
+%    P. Corke, Springer 2011.
 %
 % See also STDISP.
 

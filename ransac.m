@@ -75,7 +75,6 @@
 %  - M.A. Fishler and  R.C. Boles. "Random sample concensus: A paradigm
 %    for model fitting with applications to image analysis and automated
 %    cartography". Comm. Assoc. Comp, Mach., Vol 24, No 6, pp 381-395, 1981
-%
 %  - Richard Hartley and Andrew Zisserman. "Multiple View Geometry in
 %    Computer Vision". pp 101-113. Cambridge University Press, 2001
 %

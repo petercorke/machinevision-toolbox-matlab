@@ -6,11 +6,25 @@
 % OUT = IERODE(IM, SE, N, OPTIONS) as above but the structuring element 
 % SE is applied N times, that is N erosions.
 %
+% Options::
+% 'border'   the border value is replicated (default)
+% 'none'     pixels beyond the border are not included in the window
+% 'trim'     output is not computed for pixels where the structuring element
+%            crosses the image border, hence output image had reduced 
+%            dimensions.
+% 'wrap'     the image is assumed to wrap around, left to right, top to
+%            bottom.
+% 
 % Notes::
 % - Cheaper to apply a smaller structuring element multiple times than
 %   one large one, the effective structuing element is the Minkowski sum
 %   of the structuring element with itself N times.
 % - Windowing options of IMORPH can be passed.
+%
+% Reference::
+%  - Robotics, Vision & Control, Section 12.5,
+%    P. Corke, Springer 2011.
+%
 %
 % See also IDILATE, ICLOSE, IOPEN, IMORPH.
 

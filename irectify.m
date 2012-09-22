@@ -9,8 +9,14 @@
 % the homographies H1 and H2 that warp IM1 to OUT1 and IM2 to OUT2 respectively.
 %
 % Notes::
-% - The resulting image pair are epipolar aligned.
+% - The resulting image pair are epipolar aligned, equivalent to the view
+%   if the two original camera axes were parallel.
+% - Rectified images are required for dense stereo matching.
+% - The effect of lense distortion is not removed, use the camera calibration
+%   toolbox to unwarp each image prior to rectification.
 % - The resulting images may have negative disparity.
+% - Some output pixels may have no corresponding input pixels and will be
+%   set to NaN.
 %
 % See also FeatureMatch, ISTEREO, HOMWARP, CentralCamera.
 

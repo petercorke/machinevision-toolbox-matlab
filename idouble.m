@@ -1,10 +1,15 @@
 %IDOUBLE Convert integer image to double
 %
-% IMD = IDOUBLE(IM) returns an image with double precision elements in the
-% range 0 to 1. The integer pixels are assumed to span the range 0 to the 
-% maximum value of their integer class.
+% IMD = IDOUBLE(IM) is an image with double precision elements in the
+% range 0 to 1 corresponding to the elements of IM. The integer pixels IM
+% are assumed to span the range 0 to the maximum value of their integer class.
 %
-% See also IINT.
+% Notes::
+% - Works for an image with arbitrary number of dimensions, eg. a color
+%   image or image sequence.
+% - There is a linear mapping (scaling) of the values of IMD to IM.
+%
+% See also IINT, CAST.
 
 
 % Copyright (C) 1993-2011, by Peter I. Corke

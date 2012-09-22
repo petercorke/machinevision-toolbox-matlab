@@ -1,7 +1,7 @@
 %IISUM Sum of integral image
 %
-% S = IISUM(II, Y1, Y2, X1, X2) is the sum of pixels in the rectangular image
-% region defined by its top-left (X1,Y1) and bottom-right (X2,Y2).  II is
+% S = IISUM(II, U1, V1, U2, V2) is the sum of pixels in the rectangular image
+% region defined by its top-left (U1,V1) and bottom-right (U2,V2).  II is
 % a precomputed integral image.
 %
 % See also INTGIMAGE.
@@ -24,7 +24,7 @@
 % You should have received a copy of the GNU Leser General Public License
 % along with MVTB.  If not, see <http://www.gnu.org/licenses/>.
 
-function s = iisum(ii, r1, r2, c1, c2)
+function s = iisum(ii, c1, r1, c2, r2)
 
     r1 = r1 - 1;
     if r1 < 1

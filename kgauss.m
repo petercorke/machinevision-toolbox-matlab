@@ -1,10 +1,13 @@
 %KGAUSS Gaussian kernel
 %
-% K = KGAUSS(SIGMA) is a 2-dimensional unit-volume Gaussian kernel of
-% width (standard deviation) SIGMA, and  centred within the matrix K
-% whose half-width is H=2xSIGMA and W=2xH+1.
+% K = KGAUSS(SIGMA) is a 2-dimensional Gaussian kernel of standard deviation
+% SIGMA, and  centred within the matrix K whose half-width is H=2xSIGMA and
+% W=2xH+1.
 %
 % K = KGAUSS(SIGMA, H) as above but the half-width H is specified.
+%
+% Notes::
+% - The volume under the Gaussian kernel is one.
 %
 % See also KDGAUSS, KDOG, KLOG, ICONV.
 

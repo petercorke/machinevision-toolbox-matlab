@@ -8,9 +8,10 @@
 %  'connect',C	     set connectivity, 4 (default) or 8
 %  'greyscale'	     compute greyscale moments 0 (default) or 1
 %  'boundary'        compute boundary (default off)
-%  'area',[A1,A2]    accept only blobs with area in interval A1 to A2
-%  'shape',[S1,S2]   accept only blobs with shape in interval S1 to S2
-%  'touch'           ignore blobs that touch the edge (default accept)
+%  'area',[A1,A2]    accept only blobs with area in the interval A1 to A2
+%  'shape',[S1,S2]   accept only blobs with shape in the interval S1 to S2
+%  'touch',T         accept only blobs that touch (1) or do not touch (0)
+%                    the edge (default accept all)
 %  'class',C         accept only blobs of pixel value C (default all)
 %
 % The RegionFeature object has many properties including:
@@ -37,11 +38,15 @@
 %  circularity   1 for a circle, less for other shapes
 %  moments       a structure containing moments of order 0 to 2
 %
+% References::
+%  - Robotics, Vision & Control, Section 13.1,
+%    P. Corke, Springer 2011.
+
 % Notes::
-% - the RegionFeature objects are ordered by the raster order of the top most
+% - The RegionFeature objects are ordered by the raster order of the top most
 %   point (smallest v coordinate) in each blob.
 %
-% See also RegionFeature, ILABEL, IMOMENTS.
+% See also RegionFeature, ILABEL, IDISPLABEL, IMOMENTS.
 
 
 % Copyright (C) 1993-2011, by Peter I. Corke

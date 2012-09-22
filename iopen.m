@@ -1,16 +1,20 @@
 %IOPEN Morphological opening
 %
 % OUT = IOPEN(IM, SE, OPTIONS) is the image IM after morphological opening 
-% with the structuring element SE.  This is an erosion followed by dilation.
+% with the structuring element SE.  This is a morphological erosion followed 
+% by dilation.
 %
 % OUT = IOPEN(IM, SE, N, OPTIONS) as above but the structuring element 
 % SE is applied N times, that is N erosions followed by N dilations.
 %
 % Notes::
-% - Cheaper to apply a smaller structuring element multiple times than
-%   one large one, the effective structuing element is the Minkowski sum
+% - For binary image an opening operation can be used to eliminate small white
+%   noise regions.
+% - It is cheaper to apply a smaller structuring element multiple times than
+%   one large one, the effective structuring element is the Minkowski sum
 %   of the structuring element with itself N times.
-% - Windowing options of IMORPH can be passed.
+% - Windowing options of IMORPH can be passed.  By default output image is
+%   same size as input image.
 %
 % See also ICLOSE, IDILATE, IERODE, IMORPH.
 

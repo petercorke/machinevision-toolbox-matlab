@@ -1,25 +1,34 @@
 %ICONCAT Concatenate images
 %
-% C = ICONCAT(IM,OPTIONS) concatenates images from the cell array IM.  The
-% images do not have to be of the same size, and smaller images are surrounded
-% by background pixels which can be specified.
+% C = ICONCAT(IM,OPTIONS) concatenates images from the cell array IM.
 %
 % ICONCAT(IM,OPTIONS) as above but displays the concatenated images 
-% using idisp.
+% using IDISP.
 %
 % [C,U] = ICONCAT(IM,OPTIONS) as above but also returns the vector U whose
 % elements are the coordinates of the left (or top in vertical mode) edge of
-% the corresponding image.
+% the corresponding image within the concatenated image.
 %
 % Options::
 % 'dir',D     direction of concatenation: 'horizontal' (default) or 'vertical'.
-% 'bgval',B   value of unset background pixels
+% 'bgval',B   value of padding pixels (default NaN)
+%
+% Examples::
+%
+% Horizontally concatenate three images
+%         c = iconcat({im1, im2, im3}, 'h'); 
+%
+% Find the first column of each of the three images
+%         [c,u] = iconcat({im1, im2, im3}, 'h'); 
+% where u is a 3-vector such that im3 starts in the u(3)'rd column of c.
 %
 % Notes::
-% - Works for color or greyscale images
-% - Direction can be abbreviated to first character, 'h' or 'v'
-% - In vertical mode all images are right justified
-% - In horizontal mode all images are top justified
+% - The images do not have to be of the same size, and smaller images are 
+%   surrounded by background pixels which can be specified.
+% - Works for color or greyscale images.
+% - Direction can be abbreviated to first character, 'h' or 'v'.
+% - In vertical mode all images are right justified.
+% - In horizontal mode all images are top justified.
 %
 % See also IDISP.
 

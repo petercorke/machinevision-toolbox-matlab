@@ -1,9 +1,12 @@
 %ICORNER Corner detector
 %
 % F = ICORNER(IM, OPTIONS) is a vector of PointFeature objects describing
-% detected corner features.  This is a non-scale space detector and by
-% default the Harris method is used.  If IM is an image sequence a cell array
-% of PointFeature vectors is returned.
+% corner features detected in the image IM.  This is a non-scale space detector 
+% and by default the Harris method is used but Shi-Tomasi and Noble are also
+% supported.
+%
+% If IM is an image sequence a cell array of PointFeature vectors for the 
+% correspnding frames of IM.
 %
 % The PointFeature object has many properties including:
 %  u            horizontal coordinate
@@ -11,29 +14,39 @@
 %  strength     corner strength
 %  descriptor   corner descriptor (vector)
 %
+% See PointFeature for full details
+%
 % Options::
-% 'cmin',CM         minimum corner strength
-% 'cminthresh',CT   minimum corner strength as a fraction of maximum corner 
-%                   strength
-% 'edgegap',E       don't return features closer than E to the edge of 
-%                   image (default 2)
-% 'suppress',R      don't return a feature closer than R pixels to an earlier 
-%                   feature (default 0)
-% 'nfeat',N         return the N strongest corners (default Inf)
 % 'detector',D      choose the detector where D is one of 'harris' (default),
 %                   'noble' or 'klt'
 % 'sigma',S         kernel width for smoothing (default 2)
 % 'deriv',D         kernel for gradient (default kdgauss(2))
-% 'k',K             set the value of k for Harris detector
+% 'cmin',CM         minimum corner strength
+% 'cminthresh',CT   minimum corner strength as a fraction of maximum corner 
+%                   strength
+% 'edgegap',E       don't return features closer than E pixels to the edge of 
+%                   image (default 2)
+% 'suppress',R      don't return a feature closer than R pixels to an earlier 
+%                   feature (default 0)
+% 'nfeat',N         return the N strongest corners (default Inf)
+% 'k',K             set the value of k for the Harris detector
 % 'patch',P         use a PxP patch of surrounding pixel values as the 
 %                   feature vector.  The vector has zero mean and unit norm.
 % 'color'           specify that IM is a color image not a sequence
 %
+% Example::
+%
+% Compute the 100 strongest Harris features for the image
+%         c = icorner(im, 'nfeat', 100);
+% and overlay them on the image
+%         idisp(im);
+%         c.plot();
+%
 % Notes::
 % - Corners are processed in order from strongest to weakest.
 % - The function stops when:
-%     - the corner strength drops below cmin
-%     - the corner strenght drops below cMinThresh x strongest corner
+%     - the corner strength drops below cmin, or
+%     - the corner strength drops below cMinThresh x strongest corner, or
 %     - the list of corners is exhausted
 % - Features are returned in descending strength order
 % - If IM has more than 2 dimensions it is either a color image or a sequence
@@ -51,15 +64,15 @@
 % - "A combined corner and edge detector", 
 %   C.G. Harris and M.J. Stephens,
 %   Proc. Fourth Alvey Vision Conf., Manchester, pp 147-151, 1988.
-%
 % - "Finding corners", 
 %   J.Noble, 
 %   Image and Vision Computing, vol.6, pp.121-128, May 1988.
-%   
 % - "Good features to track",
 %   J. Shi and C. Tomasi, 
 %   Proc. Computer Vision and Pattern Recognition, pp. 593-593,
 %   IEEE Computer Society, 1994.
+%  - Robotics, Vision & Control, Section 13.3,
+%    P. Corke, Springer 2011.
 %
 % See also PointFeature, ISURF.
 
@@ -87,6 +100,7 @@ function [features, corner_strength] = icorner(im, varargin)
 
     % TODO, can handle image sequence, return 3D array of corner_strength if requested 
     % and cell array of corner vectors
+    % handle tiling
 
     % parse options into parameter struct
     opt.k = 0.04;

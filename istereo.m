@@ -1,11 +1,11 @@
 %ISTEREO Stereo matching
 %
-% D = ISTEREO(IML, IMR, H, RANGE, OPTIONS) is a disparity image computed
-% from the epipolar aligned stereo pair: the left image IML (HxW) and the
-% right image IMR (HxW).  D (HxW) is the disparity and the value at each 
+% D = ISTEREO(LEFT, RIGHT, H, RANGE, OPTIONS) is a disparity image computed
+% from the epipolar aligned stereo pair: the left image LEFT (HxW) and the
+% right image RIGHT (HxW).  D (HxW) is the disparity and the value at each 
 % pixel is the horizontal shift of the corresponding pixel in IML as observed 
-% in IMR. That is, the disparity d=D(v,u) means that IMR(v,u-d) is the same
-% world point as IML(v,u).
+% in IMR. That is, the disparity d=D(v,u) means that the pixel at RIGHT(v,u-d)
+% is the same world point as the pixel at LEFT(v,u).
 %
 % H is the half size of the matching window, which can be a scalar for NxN or a
 % 2-vector [N,M] for an NxM window.
@@ -21,7 +21,7 @@
 %
 % [D,SIM,DSI] = ISTEREO(IML, IMR, W, RANGE, OPTIONS) as above but returns DSI 
 % which is the disparity space image (HxWxN) where N=DMAX-DMIN+1. The I'th 
-% plane is the similarity of IML to IMR shifted by DMIN+I-1.
+% plane is the similarity of IML to IMR shifted to the left by DMIN+I-1.
 %
 % [D,SIM,P] = ISTEREO(IML, IMR, W, RANGE, OPTIONS) if the 'interp' option is 
 % given then disparity is estimated to sub-pixel precision using quadratic
@@ -39,11 +39,28 @@
 % 'interp'     enable subpixel interpolation and D contains non-integer
 %              values (default false)
 %
+% Example::
+%
+% Load the left and right images
+%         L = iread('rocks2-l.png', 'reduce', 2);
+%         R = iread('rocks2-r.png', 'reduce', 2);
+% then compute stereo disparity and display it
+%         d = istereo(L, R, [40, 90], 3);
+%         idisp(d);
+%
+% References::
+%  - Robotics, Vision & Control, Section 14.3,
+%    P. Corke, Springer 2011.
+%
 % Notes::
 % - Images must be greyscale.
 % - Disparity values pixels within a half-window dimension (H) of the edges 
 %   will not be valid and are set to NaN.
-% - SIM = max(DSI, 3)
+% - The C term of the interpolation polynomial is not computed or returned.
+% - The A term is high where the disparity function has a sharp peak.
+% - Disparity and similarity score can be obtained from the disparity space
+%   image by [SIM,D] = max(DSI, [], 3)
+%
 %
 % See also IRECTIFY, STDISP.
 

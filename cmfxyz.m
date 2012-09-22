@@ -8,11 +8,15 @@
 % is the color matching function of the corresponding element of LAMBDA. 
 %
 % XYZ = CMFXYZ(LAMBDA, E) is the CIE XYZ color matching (1x3) function for an 
-% illumination spectrum defined by intensity E (Nx1) and wavelength 
-% LAMBDA (Nx1) [m].
+% illumination spectrum E (Nx1) defined at corresponding wavelengths
+% LAMBDA (Nx1).
 %
 % Note::
 % - CIE 1931 2-deg XYZ CMFs from cvrl.ioo.ucl.ac.uk
+%
+% References::
+%  - Robotics, Vision & Control, Section 14.3,
+%    P. Corke, Springer 2011.
 %
 % See also CMFRGB, CCXYZ.
 

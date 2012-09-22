@@ -1,8 +1,8 @@
 %KMEANS K-means clustering
 %
-% [L,C] = KMEANS(X, K, OPTIONS) is K-means clustering of multi-dimensional data
-% points X (DxN) where N is the number of points, and D is the dimension.  The
-% data is organized into K clusters based on Euclidean distance from cluster
+% [L,C] = KMEANS(X, K, OPTIONS) is a K-means clustering of multi-dimensional 
+% data points X (DxN) where N is the number of points, and D is the dimension.
+% The data is organized into K clusters based on Euclidean distance from cluster
 % centres C (DxK). L is a vector (Nx1) whose elements indicates which 
 % cluster the corresponding element of X belongs to.  
 %
@@ -21,10 +21,9 @@
 %            hypercube spanned by X.
 %
 % Reference::
+% "Pattern Recognition Principles",
 % Tou and Gonzalez,
-% Pattern Recognition Principles,
-% pp 94
-
+% Addison-Wesley 1977, pp 94
 
 
 % Copyright (C) 1993-2011, by Peter I. Corke

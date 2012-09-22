@@ -32,10 +32,10 @@
 % Notes::
 % - The k-means clustering algorithm used in the first three forms is
 %   computationally expensive and time consuming.
-% - Clustering is performed in rg-chromaticity space.
+% - Clustering is performed in xy-chromaticity space.
 % - The residual is an indication of quality of fit, low is good.
 %
-% See also
+% See also RGB2XYZ, KMEANS.
 
 
 

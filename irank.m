@@ -5,29 +5,30 @@
 % are ranked and the ORDER'th value in rank becomes the corresponding output 
 % pixel value.  The highest rank, the maximum, is ORDER=1.
 %
-% OUT = IMORPH(IMAGE, SE, OP, NBINS) as above but the number of histogram
+% OUT = IRANK(IMAGE, SE, OP, NBINS) as above but the number of histogram
 % bins can be specified.
 %
-% OUT = IMORPH(IMAGE, SE, OP, NBINS, EDGE) as above but the processing of edge 
+% OUT = IRANK(IMAGE, SE, OP, NBINS, EDGE) as above but the processing of edge 
 % pixels can be controlled.  The value of EDGE is:
 % 'border'   the border value is replicated (default)
 % 'none'     pixels beyond the border are not included in the window
 % 'trim'     output is not computed for pixels whose window crosses
 %            the border, hence output image had reduced dimensions.
-% 'wrap'     the image is assumed to wrap around
+% 'wrap'     the image is assumed to wrap around left-right, top-bottom.
 %
 % Examples::
 %
-% 5x5 median filter:
+% 5x5 median filter, 25 elements in the window, the median is the 12thn in rank
 %    irank(im, 12, ones(5,5));
 %
-% 3x3 non-local maximum:
+% 3x3 non-local maximum, find where a pixel is greater than its eight neighbours
 %    se = ones(3,3); se(2,2) = 0;
 %    im > irank(im, 1, se);
 %
 % Notes::
+% - The structuring element should have an odd side length.
 % - Is a MEX file.
-% - A histogram method is used with NBINS (default 256).
+% - The median is estimated from a histogram with NBINS (default 256).
 %
 % See also IMORPH, IVAR, IWINDOW.
 

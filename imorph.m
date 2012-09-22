@@ -2,7 +2,7 @@
 %
 % OUT = IMORPH(IM, SE, OP) is the image IM after morphological processing 
 % with the operator OP and structuring element SE.
-
+%
 % The structuring element SE is a small matrix with binary values that indicate
 % which elements of the template window are used in the operation. 
 %

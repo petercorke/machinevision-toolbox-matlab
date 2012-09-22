@@ -22,6 +22,16 @@
 % 'suppress',R   set the suppression radius (default 0).  Features are not
 %                returned if they are within R [pixels] of an earlier (stronger)
 %                feature.
+% Example::
+%
+% Load the image
+%         im = iread('lena.pgm');
+% Find the 10 strongest SURF features
+%         sf = isurf(im, 'nfeat', 10);
+% and overlay them on the original image as blue circles
+%         idisp(im);
+%         sf.plot_scale()
+%
 % Notes::
 % - Color images, or sequences, are first converted to greyscale.
 % - Features are returned in descending strength order
@@ -31,12 +41,16 @@
 % - Wraps an M-file implementation of OpenSurf by D. Kroon (U. Twente) or
 %   a MEX-file OpenCV wrapper by Petter Strandmark.
 % - The sign of the Laplacian is not retained.
+% - The SURF algorithm is covered by an extensive suite of international
+%   patents including US 8,165,401, EP 1850270 held by Toyota, KU Leuven
+%   and ETHZ.  See http://www.kooaba.com/en/plans_and_pricing/ip_licensing
 % 
 % Reference::
-% Herbert Bay, Andreas Ess, Tinne Tuytelaars, Luc Van Gool,
 % "SURF: Speeded Up Robust Features", 
+% Herbert Bay, Andreas Ess, Tinne Tuytelaars, Luc Van Gool,
 % Computer Vision and Image Understanding (CVIU), 
 % Vol. 110, No. 3, pp. 346--359, 2008
+%
 %
 % See also SurfPointFeature, ISIFT, ICORNER.
 
