@@ -7,13 +7,15 @@
 % an image with multiple planes H is a matrix with one column per image plane.
 %
 % [H,X] = IHIST(IM, OPTIONS) as above but also returns the bin coordinates as
-% a column vectors.
+% a column vector X.
 %
 % Options::
 % 'nbins'     number of histogram bins (default 256)
 % 'cdf'       compute a cumulative histogram
-% 'normcdf'   compute a normalized cumulative histogram
-% 'sorted'    histogram but with occurrence sorted in descending order
+% 'normcdf'   compute a normalized cumulative histogram, whose maximum value
+%             is one
+% 'sorted'    histogram but with occurrence sorted in descending magnitude
+%             order.  Bin coordinates X reflect this sorting.
 %
 % Example::
 %
@@ -24,10 +26,11 @@
 %    plot(x,h);
 %
 % Notes::
-% - For a uint8 image the histogram spans the greylevel range 0-255
-% - For a floating point image the histogram spans the greylevel range 0-1
+% - For a uint8 image the MEX function FHIST is used (if available)
+%   - The histogram always contains 256 bins
+%   - The bins spans the greylevel range 0-255.
+% - For a floating point image the histogram spans the greylevel range 0-1.
 % - For floating point images all NaN and Inf values are first removed.
-% - For a uint8 image the MEX function fhist is used
 %
 % See also HIST.
 
@@ -110,7 +113,8 @@ function [h,xbin] = ihist(im, varargin)
         n = cumsum(n);
         n = n ./ n(end);
     case 'sorted'
-        n = sort(n, 'descend');
+        [n,i] = sort(n, 'descend');
+        x = x(i);
     end
 
 	if nargout == 0
