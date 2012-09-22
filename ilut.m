@@ -3,20 +3,18 @@
 % OUT = ILUT(IM, LUT) is an image the same size as IM (NxMxP) where each
 % pixel value is mapped through the lookup table LUT (Kx1).  
 %
-% If IM is an integer image then pixel value of 0 is mapped through LUT(1)
-% and so on.  The LUT must be long enough to accomodate the maximum pixel
-% value in IM.
-%
-% If IM is a double image with pixels in the range [0,1] then the lookup table
-% is assumed to also span the range [0,1] irrespective of the number of 
-% elements it contains, and interpolation is used.
-%
 % OUT = ILUT(IM, LUT) is an image (NxMxP) formed by mapping the image
 % of index values IM (NxM) through the lookup table LUT (KxP).  An input
 % pixel value of I is mapped to an output value taken from the (I+1)'th row
 % of LUT.
 %
 % Notes::
+% - If IM is an integer image then pixel value of 0 is mapped through LUT(1)
+%   and so on.  The LUT must be long enough to accomodate the maximum pixel
+%   value in IM.
+% - If IM is a double image with pixels in the range [0,1] then the lookup table
+%   is assumed to also span the range [0,1] irrespective of the number of 
+%   elements it contains, and interpolation is used.
 % - Various MATLAB color map generating functions can be used.
 %
 % See also IGAMMA, INORMHIST.
@@ -54,7 +52,7 @@ function out = ilut(im, lut)
         end
 
         col = im2col(im);
-        out = lut(col,:);
+        out = lut(col+1,:);
         out = col2im(out, im);
     else
         % map pixel values through LUT vector
