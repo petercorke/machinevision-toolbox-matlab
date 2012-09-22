@@ -1,47 +1,46 @@
 %IDISP	Interactive image display tool
 %
 % IDISP(IM, OPTIONS) displays an image and allows interactive investigation
-% of pixel value, linear profile, histogram and zooming.  The image is
+% of pixel values, linear profiles, histograms and zooming.  The image is
 % displayed in a figure with a toolbar across the top.  If IM is a cell
 % array of images, they are first concatenated (horizontally).
 %
-% User interface:
+% User interface::
 %
 % - Left clicking on a pixel will display its value in a box at the top.
-%
 % - The "line" button allows two points to be specified and a new figure
 %   displays intensity along a line between those points.
-%
 % - The "histo" button displays a histogram of the pixel values in a new 
 %   figure.  If the image is zoomed, the histogram is computed over only 
 %   those pixels in view.
-%
-% -  The "zoom" button requires a left-click and drag to specify a box 
-%    which defines the zoomed view.
+% - The "zoom" button requires a left-click and drag to specify a box 
+%   which defines the zoomed view.
 %
 % Options::
+% 'nogui'          don't display the GUI
+% 'noaxes'         don't display axes on the image
+% 'noframe'        don't display axes or frame on the image
+% 'plain'          don't display axes, frame or GUI
 % 'axis',A         display the image in the axes given by handle A, the
 %                  'nogui' option is enforced.
+% 'here'           display the image in the current axes
 % 'title',T        put the text T in the title bar of the window
 % 'clickfunc',F    invoke the function handle F(x,y) on a down-click in
 %                  the window
 % 'ncolors',N      number of colors in the color map (default 256)
-% 'nogui'          display the image without the GUI
-% 'noaxes'         no axes on the image
-% 'noframe'        no axes or frame on the image
-% 'plain'          no axes, frame or GUI
 % 'bar'            add a color bar to the image
 % 'print',F        write the image to file F in EPS format
 % 'square'         display aspect ratio so that pixels are squate
-% 'wide'           make figure very wide, useful for displaying stereo pair
+% 'wide'           make figure full screen width, useful for displaying stereo pair
 % 'flatten'        display image planes (colors or sequence) as horizontally 
 %                  adjacent images
 % 'ynormal'        y-axis increases upward, image is inverted
+% 'histeq'         apply histogram equalization
 % 'cscale',C       C is a 2-vector that specifies the grey value range that
 %                  spans the colormap.
 % 'xydata',XY      XY is a cell array whose elements are vectors that span
 %                  the x- and y-axes respectively.
-% 'colormap',C     Set colormap C (Nx3)
+% 'colormap',C     set the colormap to C (Nx3)
 % 'grey'           color map: greyscale unsigned, zero is black, maximum
 %                  value is white
 % 'invert'         color map: greyscale unsigned, zero is white, maximum 
@@ -53,15 +52,19 @@
 % 'random'         color map: random values, highlights fine structure
 % 'dark'           color map: greyscale unsigned, darker than 'grey', 
 %                  good for superimposed graphics
+% 'new'            create a new figure
 %
 % Notes::
-% - Color images are displayed in true color mode: pixel triples map to display
-%   pixels
-% - Grey scale images are displayed in indexed mode: the image pixel value is 
+% - Is a wrapper around the MATLAB builtin function IMAGE. See the MATLAB help
+%   on "Display Bit-Mapped Images" for details of color mapping.
+% - Color images are displayed in MATLAB true color mode: pixel triples map to 
+%   display RGB values.  (0,0,0) is black, (1,1,1) is white.
+% - Greyscale images are displayed in indexed mode: the image pixel value is 
 %   mapped through the color map to determine the display pixel value.
-% - The minimum and maximum image values are mapped to the first and last 
-%   element of the color map, which by default ('greyscale') is the range black
-%   to white.
+% - For grey scale images the minimum and maximum image values are mapped to 
+%   the first and last element of the color map, which by default ('greyscale')
+%   is the range black to white. To set your own scaling between displayed 
+%   grey level and pixel value use the 'cscale' option.
 %
 % Examples::
 %   Display 2 images side by side
@@ -76,6 +79,10 @@
 %
 %   Set a colormap, in this case a MATLAB builtin one
 %        idisp(im, 'colormap', cool);
+%
+%   Display an image which contains a map of a region, perhaps an obstacle grid,
+%   that spans real world dimensions x, y in the range -10 to 10.
+%        idisp(map, 'xyscale', {[-10 10], [-10 10]});
 %
 % See also IMAGE, CAXIS, COLORMAP, ICONCAT.
 
@@ -97,7 +104,16 @@
 % 
 % You should have received a copy of the GNU Leser General Public License
 % along with MVTB.  If not, see <http://www.gnu.org/licenses/>.
+
+% TODO
+%  put operations off a menubutton
+%  for zooming show the window within the big big picture, use an inset
+%  image
+
 function idisp(im, varargin)
+
+%TODO
+% display Inf/NaN as red
 
     if ~(isnumeric(im) || islogical(im) || iscell(im))
         error('expecting an image (2D or 3D matrix)');
@@ -122,8 +138,15 @@ function idisp(im, varargin)
     opt.clickfunc = [];
     opt.colormap_std = {[], 'grey', 'signed', 'invsigned', 'random', 'invert', 'dark'};
     opt.axis = [];
-
+    opt.histeq = false;
+    opt.here = false;
+    opt.new = false;
+    
     [opt,arglist] = tb_optparse(opt, varargin);
+    
+    if opt.new
+        figure
+    end
 
     if opt.plain
         opt.frame = false;
@@ -133,13 +156,23 @@ function idisp(im, varargin)
         opt.gui = false;
     end
     if opt.flatten
-        im = reshape( im, size(im,1), size(im,2)*size(im,3) );
+        if size(im, 4) > 1
+            im = permute(im, [1 2 4 3]);
+        end
+            im = reshape( im, size(im,1), size(im,2)*size(im,3), size(im,4) );
+    end
+    if ~isempty(opt.axis)
+        opt.gui = false;
     end
 
     if length(arglist) ~= 0
         warning(['Unknown options: ', arglist]);
     end
 
+    if opt.here
+        opt.axis = gca;
+        opt.gui = false;
+    end
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % command line invocation, display the image
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -151,6 +184,7 @@ function idisp(im, varargin)
         axes(opt.axis)
         opt.nogui = true;
     end
+
     ud = [];
     
     if iscell(im)
@@ -161,15 +195,23 @@ function idisp(im, varargin)
     ud.size = size(im);
     ud.clickfunc = opt.clickfunc;
     
+    if opt.histeq
+        im = inormhist(im);
+    end
+    
+    % get the min/max values to do some color map scaling
     set(gca, 'CLimMode', 'Manual');
     i_min = min(im(:));
     i_max = max(im(:));
-
-    if i_min == i_max
-        if isfloat(im)
+   
+    % handle the case they are equal
+    if isfloat(im)
+        if abs(i_min - i_max) < eps
             i_min = 0;
             i_max = 1;
-        else
+        end
+    else
+        if i_min == i_max
             i_min = 0;
             i_max = intmax(class(im));
         end
@@ -278,7 +320,9 @@ function idisp(im, varargin)
         set(gca, 'Clim', opt.cscale);
     end
     
-    figure(gcf);    % bring to top
+    if isempty(opt.axis)
+        figure(gcf);    % bring to top
+    end
 
     if opt.print
         print(opt.print, '-depsc');
@@ -295,7 +339,7 @@ function idisp(im, varargin)
                 'pos', [.5 .935 .48 .05], ...
                 'background', [1 1 1], ...
                 'HorizontalAlignment', 'left', ...
-                'string', ' Machine Vision Toolbox for Matlab  ' ...
+                'string', ' Machine Vision Toolbox for MATLAB  ' ...
             );
         ud.axis = gca;
         ud.panel = htf;
@@ -432,6 +476,11 @@ function idisp_callback(cmd, src)
 			x2 = round(x2); y2 = round(y2);
 			set(ud.panel, 'String', '');
 			imdata = get(ud.image, 'CData');
+            
+            % draw a green line to show where the profile was taken
+            hold on
+            plot([x1 x2], [y1 y2], 'g');
+            hold off
 			dx = x2-x1; dy = y2-y1;
 			if abs(dx) > abs(dy),
 				x = x1:x2;
@@ -493,6 +542,9 @@ function idisp_callback(cmd, src)
             rect = rbbox;	    % return on up click
 
             cp1 = floor( get(gca, 'CurrentPoint') );
+            
+            cp0
+            cp1
 
             % determine the bounds of the ROI
             top = cp0(1,2);
