@@ -55,7 +55,7 @@ function d = dtransform(world, varargin)
     while 1
         world = imorph(world, m, 'plusmin');
         count = count+1;
-        if ~isempty(opt.show)
+        if opt.show
             cmap = gray(256);
             cmap = [1 0 0; cmap];
             colormap(cmap)
@@ -71,7 +71,7 @@ function d = dtransform(world, varargin)
         end
     end
 
-    if show
+    if opt.show
         fprintf('%d iterations\n', count);
     end
 
