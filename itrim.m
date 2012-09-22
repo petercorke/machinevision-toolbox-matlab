@@ -1,5 +1,15 @@
 %ITRIM Trim images
 %
+% This function has two different modes of functionality.
+%
+% OUT = ITRIM(IM, SIDES, N) is the image IM with N pixels removed from the
+% image sides as specified by SIDES which is a string containing one or 
+% more of the characters:
+%   't'   top
+%   'b'   bottom
+%   'l'   left
+%   'r'   right
+%
 % [OUT1,OUT2] = ITRIM(IM1,IM2) returns the central parts of images IM1 and 
 % IM2 as OUT1 and OUT2 respectively.  When images are rectified or warped
 % the shapes can become quite distorted and are embedded in rectangular images
@@ -10,8 +20,9 @@
 %
 % [OUT1,OUT2] = ITRIM(IM1,IM2,T) as above but the threshold T in the range
 % 0 to 1 is used to adjust the level of cropping.  The default is 0.5, a 
-% higher value will include fewer NaN value in the result, a lower value will
-% include more.
+% higher value will include fewer NaN value in the result (smaller region),
+% a lower value will include more (larger region).  A value of 0 will ensure
+% that there are no NaN values in the returned region.
 %
 % See also HOMWARP, IRECTIFY.
 
@@ -34,32 +45,55 @@
 % along with MVTB.  If not, see <http://www.gnu.org/licenses/>.
 function [out1,out2] = itrim(in1, in2, thresh)
 
-    if nargin < 3
-        thresh = 0.75;
-    end
-    
-    out1 = trimx(in1, thresh);
-    out2 = trimx(in2, thresh);
-    
-    z = iconcat({out1, out2});
-    
-    z = trimy(z, thresh);
-    
-    w1 = size(out1, 2);
-    
-    out1 = z(:,1:w1);
-    out2 = z(:,w1+1:end);
-    
-    [w1,h1] = isize(out1);
-    [w2,h2] = isize(out2);
-    
-    if w1 > w2
-        out1 = out1(:,1:w2);
+    if ischar(in2)
+        % itrim(image, edge, numpix)
+
+        d = thresh;
+        sides = in2;
+
+        out1 = in1;
+        for side=sides
+            switch side
+                case 't'
+                    out1 = out1(d+1:end,:,:);
+                case 'b'
+                    out1 = out1(1:end-d,:,:);
+                case 'l'
+                    out1 = out1(:,d+1:end,:);
+                case 'r'
+                    out1 = out1(:,1:end-d,:);
+            end
+        end
     else
-        out2 = out2(:,1:w1);   
+        % itrim(im1, im2, thresh)
+
+        if nargin < 3
+            thresh = 0.75;
+        end
+        
+        out1 = trimx(in1, thresh);
+        out2 = trimx(in2, thresh);
+        
+        z = iconcat({out1, out2});
+        
+        z = trimy(z, thresh);
+        
+        w1 = size(out1, 2);
+        
+        out1 = z(:,1:w1);
+        out2 = z(:,w1+1:end);
+        
+        [w1,h1] = isize(out1);
+        [w2,h2] = isize(out2);
+        
+        if w1 > w2
+            out1 = out1(:,1:w2);
+        else
+            out2 = out2(:,1:w1);   
+        end
     end
-    
-end
+
+end % itrim
     
     
     function out = trim(in, thresh)
