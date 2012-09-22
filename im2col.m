@@ -1,8 +1,13 @@
 %IM2COL Convert an image to pixel per row format
 %
-% OUT = IM2COL(IM) returns the image (HxWxP) as a pixel vector (NxP) where
-% each row is a pixel value (1xP).  The pixels are in image column order 
-% and there are N=WxH rows.
+% OUT = IM2COL(IM) is a matrix (NxP) where each row represents a single
+% of the image IM (HxWxP).  The pixels are in image column order (ie. column
+% 1, column 2 etc) and there are N=WxH rows.
+%
+% OUT = IM2COL(IM, MASK) as above but only includes pixels if:
+% - the corresponding element of MASK (HxW) is non-zero
+% - the corresponding element of MASK (N) is non-zero where N=HxW
+% - the pixel index is included in the vector MASK
 %
 % See also COL2IM.
 
@@ -25,12 +30,23 @@
 % You should have received a copy of the GNU Leser General Public License
 % along with MVTB.  If not, see <http://www.gnu.org/licenses/>.
 
-function c = im2col(im)
+function c = im2col(im, mask)
 
-    im = shiftdim(im, 2);
-
-    if ndims(im) == 3,
-        c = reshape(im, 3, [])';
+    if ndims(im) == 3
+        c = reshape(shiftdim(im, 2), 3, [])';
     else
         c = reshape(im, 1, [])';
+    end
+    
+    if nargin > 1 && ~isempty(mask)
+        d = size(im);
+        if ndims(mask) == 2 && all(d(1:2) == size(mask))
+            k = find(mask);
+        elseif isvector(mask)
+            k = mask;
+        else
+            error('MVTB:im2col:badarg', 'mask must be same size as image or a vector');
+        end
+        
+        c = c(k,:);
     end
