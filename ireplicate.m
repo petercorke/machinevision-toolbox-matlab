@@ -1,10 +1,7 @@
 %IREPLICATE  Expand image
 %
-% OUT = IREPLICATE(IM, K) is an image where each pixel is replicated into
-% a KxK tile.  If IM is HxW the result is (KH)x(KW).
-%
-% Notes::
-% - Color images are not supported.
+% OUT = IREPLICATE(IM, K) is an expanded version of the image (HxW) where 
+% each pixel is replicated into a KxK tile.  If IM is HxW the result is (KH)x(KW).
 %
 % See also IDECIMATE, ISCALE.
 
@@ -29,7 +26,12 @@
 function ir2 = ireplicate(im, M)
 
     if size(im, 3) > 1
-        error('color images not supported');
+        % deal with multi-plane image
+        ir2 = [];
+        for i=1:size(im, 3)
+            ir2 = cat(3, ir2, ireplicate(im(:,:,i), M) );
+        end
+        return
     end
 
     if nargin < 2
@@ -40,13 +42,13 @@ function ir2 = ireplicate(im, M)
     nr = dims(1); nc = dims(2);
 
     % replicate the columns
-    ir = zeros(M*nr,nc);
+    ir = zeros(M*nr,nc, class(im));
     for i=1:M
         ir(i:M:end,:) = im;
     end
 
     % replicate the rows
-    ir2 = zeros(M*nr,M*nc);
+    ir2 = zeros(M*nr,M*nc, class(im));
     for i=1:M
         ir2(:,i:M:end) = ir;
     end
