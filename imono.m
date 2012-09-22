@@ -1,11 +1,17 @@
 %IMONO Convert color image to monochrome
 %
 % OUT = IMONO(IM, OPTIONS) is a greyscale equivalent to the color image IM.
-% Different conversion functions are supported.
 %
 % Options::
 % 'r601'       ITU recommendation 601 (default)
 % 'r709'       ITU recommendation 709
+% 'value'      HSV value component
+%
+% Notes::
+% - This function returns a greyscale image whether passed a color or a
+%   greyscale image.  If a greyscale image is passed it is simply returned.
+% - Can convert a color image sequence (HxWx3xN) to a monochrome
+%   sequence (HxWxN).
 %
 % See also COLORIZE, ICOLOR, COLORSPACE.
 
@@ -27,11 +33,14 @@
 % 
 % You should have received a copy of the GNU Leser General Public License
 % along with MVTB.  If not, see <http://www.gnu.org/licenses/>.
-function im = imono(rgb, opt)
+function out = imono(im, opt)
 
-    if size(rgb,3) == 1
+    % WxHx3 is color
+    % WxHxN is mono sequence
+    % WxHx3xN is color sequence
+    if ndims(im) == 3 && size(im,3) ~= 3
         % image is already monochrome
-        im = rgb;
+        out = im;
         return;
     end
 
@@ -39,25 +48,29 @@ function im = imono(rgb, opt)
         opt = 'r601';
     end
 
-    switch (lower(opt))
-    case {'r601', 'grey', 'gray', 'mono', 'grey_601','gray_601'}
-        % rec 601 luma
-        im = 0.299*rgb(:,:,1) + 0.587*rgb(:,:,2) + 0.114*rgb(:,:,3);
+    for i=1:size(im,4)
+        rgb = im(:,:,:,i);
 
-    case {'r709', 'grey_709','gray_709'}
-        % rec 709 luma
-        im = 0.2126*rgb(:,:,1) + 0.7152*rgb(:,:,2) + 0.0722*rgb(:,:,3);
-    case 'value'
-        % 'value', the V in HSV, not CIE L*
-        % the mean of the max and min of RGB values at each pixel
-        mx = max(rgb, [], 3);
-        mn = min(rgb, [], 3);
-        if isfloat(rgb)
-            im = 0.5*(mx+mn);
-        else
-            im = (int32(mx) + int32(mn))/2;
-            im = uint8(mx);
+        switch (lower(opt))
+            case {'r601', 'grey', 'gray', 'mono', 'grey_601','gray_601'}
+                % rec 601 luma
+                out(:,:,i) = 0.299*rgb(:,:,1) + 0.587*rgb(:,:,2) + 0.114*rgb(:,:,3);
+                
+            case {'r709', 'grey_709','gray_709'}
+                % rec 709 luma
+                out(:,:,i) = 0.2126*rgb(:,:,1) + 0.7152*rgb(:,:,2) + 0.0722*rgb(:,:,3);
+            case 'value'
+                % 'value', the V in HSV, not CIE L*
+                % the mean of the max and min of RGB values at each pixel
+                mx = max(rgb, [], 3);
+                mn = min(rgb, [], 3);
+                if isfloat(im)
+                    out = 0.5*(mx+mn);
+                else
+                    z = (int32(mx) + int32(mn))/2;
+                    out(:,:,i) = cast(z, class(out));
+                end
+            otherwise
+                error('unknown option');
         end
-    otherwise
-        error('unknown option');
     end

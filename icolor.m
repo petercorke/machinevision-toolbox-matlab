@@ -9,10 +9,16 @@
 % Examples::
 %
 % Create a color image that looks the same as the greyscale image
-%    c = icolor(im);
+%         c = icolor(im);
+% each set pixel in im is set to [1 1 1] in the output.
 %
-% Create an aqua tinted version of the greyscale image
-%    c = icolor(im, [0 1 1]);
+% Create an rose tinted version of the greyscale image
+%         c = icolor(im, colorname('pink'));
+% each set pixel in im is set to [0 1 1] in the output.
+%
+% Notes::
+% - Can convert a monochrome sequence (HxWxN) to a color image 
+%   sequence (HxWx3xN).
 %
 % See also IMONO, COLORIZE, IPIXSWITCH.
 
@@ -34,12 +40,17 @@
 % You should have received a copy of the GNU Leser General Public License
 % along with MVTB.  If not, see <http://www.gnu.org/licenses/>.
 
-function c = icolor(im, color)
+function out = icolor(im, color)
 
     if nargin < 2
         color = [1 1 1];
     end
-    c = [];
-    for i=1:numel(color)
-        c = cat(3, c, im*color(i));
+    
+    for i=1:size(im,3)
+        c = [];
+        
+        for k=1:numel(color)
+            c = cat(3, c, im(:,:,i)*color(k));
+        end
+        out(:,:,:,i) = c;      
     end
