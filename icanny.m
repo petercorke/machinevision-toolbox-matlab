@@ -1,13 +1,25 @@
 %ICANNY	Canny edge detection
 %
-% E = ICANNY(IM, OPTIONS) returns an edge image using the Canny edge detector.  
-% The edges within IM are marked by non-zero values in E, and larger values
-% correspond to stronger edges.
+% E = ICANNY(IM, OPTIONS) is an edge image obtained using the Canny edge 
+% detector algorithm.  Hysteresis filtering is applied to the gradient
+% image: edge pixels > th1 are connected to adjacent pixels > th0, those
+% below th0 are set to zero.
 %
 % Options::
 %  'sd',S    set the standard deviation for smoothing (default 1)
 %  'th0',T   set the lower hysteresis threshold (default 0.1 x strongest edge)
 %  'th1',T   set the upper hysteresis threshold (default 0.5 x strongest edge)
+%
+% Reference::
+% - "A Computational Approach To Edge Detection", 
+%   J. Canny,
+%   IEEE Trans. Pattern Analysis and Machine Intelligence, 8(6):679–698, 1986.
+%
+% Notes::
+% - Produces a zero image with single pixel wide edges having non-zero values.
+% - Larger values correspond to stronger edges.
+% - If th1 is zero then no hysteresis filtering is performed.
+% - A color image is automatically converted to greyscale first.
 %
 % Author::
 % Oded Comay, Tel Aviv University, 1996-7.
@@ -15,6 +27,11 @@
 % See also ISOBEL, KDGAUSS.
 
 function E = icanny(I, varargin)
+
+    % convert color image to greyscale
+    if size(I) > 1
+        I = imono(I);
+    end
 
     opt.sd = 1;
     opt.th0 = 0.1;
