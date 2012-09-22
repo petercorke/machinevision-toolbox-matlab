@@ -1,10 +1,17 @@
 %ISTRETCH Image normalization
 %
-% OUT = ISTRETCH(IM) is a normalized image in which all pixel values lie in 
-% the range 0 to 1.  That is, a linear mapping where the minimum value of 
-% IM is mapped to 0 and the maximum value of IM is mapped to 1.
+% OUT = ISTRETCH(IM, OPTIONS) is a normalized image in which all pixel 
+% values lie in the range 0 to 1.  That is, a linear mapping where the 
+% minimum value of IM is mapped to 0 and the maximum value of IM is 
+% mapped to 1.
 %
-% OUT = ISTRETCH(IM,MAX) as above but pixel values lie in the range 0 to MAX.
+% Options::
+% 'max',M     Pixels are mapped to the range 0 to M
+% 'range',R   R(1) is mapped to zero, R(2) is mapped to 1 (or max value).
+%
+% Notes::
+% - For an integer image the result is a double image in the range 0 to max
+%   value.
 %
 % See also INORMHIST.
 
@@ -27,15 +34,26 @@
 % along with MVTB.  If not, see <http://www.gnu.org/licenses/>.
 
 
-function zs = istretch(z, newmax)
+function zs = istretch(z, varargin)
 
-    if nargin == 1
-        newmax = 1;
-    end
+    opt.max = 1;
+    opt.range = [];
+    opt = tb_optparse(opt, varargin);
 
     vals = z(:);
     vals(isinf(vals)) = [];
-    mn = min(vals);
-    mx = max(vals);
+    
+    if isempty(opt.range)
+        mn = min(vals);
+        mx = max(vals);
+    else
+        mn = opt.range(1);
+        mx = opt.range(2);
+    end
+    
 
-    zs = (z-mn)/(mx-mn)*newmax;
+    zs = (z-mn)/(mx-mn)*opt.max;
+
+    if ~isempty(opt.range)
+        zs = max(0, min(opt.max, zs));
+    end
