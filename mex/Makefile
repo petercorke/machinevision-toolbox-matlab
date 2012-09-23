@@ -15,19 +15,20 @@
 # You should have received a copy of the GNU Leser General Public License
 # along with MVTB.  If not, see <http://www.gnu.org/licenses/>.
 
-#DEBUG = -g
+DEBUG = -g
+CFLAGS="-std=gnu99"
 
 mex:
-	mex $(DEBUG) closest.c
-	mex $(DEBUG) fhist.c
-	mex $(DEBUG) hist2d.c
-	mex $(DEBUG) ilabel.c
-	mex $(DEBUG) imatch.c
-	mex $(DEBUG) imorph.c
-	mex $(DEBUG) irank.c
-	mex $(DEBUG) ivar.c
-	mex $(DEBUG) iwindow.c
-	mex $(DEBUG) stereo_match.c
+	mex CFLAGS=$(CFLAGS) $(DEBUG) closest.c
+	mex CFLAGS=$(CFLAGS) $(DEBUG) fhist.c
+	mex CFLAGS=$(CFLAGS) $(DEBUG) hist2d.c
+	mex CFLAGS=$(CFLAGS) $(DEBUG) ilabel.c
+	mex CFLAGS=$(CFLAGS) $(DEBUG) imatch.c
+	mex CFLAGS=$(CFLAGS) $(DEBUG) imorph.c
+	mex CFLAGS=$(CFLAGS) $(DEBUG) irank.c
+	mex CFLAGS=$(CFLAGS) $(DEBUG) ivar.c
+	mex CFLAGS=$(CFLAGS) $(DEBUG) iwindow.c
+	mex CFLAGS=$(CFLAGS) $(DEBUG) stereo_match.c
 
 	
 UNAME = $(shell uname)
@@ -45,7 +46,8 @@ ifeq ($(UNAME), Darwin)
 	mex $(DEBUG) -output framegrabber -cxx framegrabber_qtkit.o 
 endif
 ifeq ($(UNAME), Linux)
-	mex -output framegrabber framegrabber_firewire.c -ldc1394_control -lraw1394
+	mex $(DEBUG) CFLAGS=$(CFLAGS) -output framegrabber framegrabber_v4l2.c
+	#mex -output framegrabber framegrabber_firewire.c -ldc1394_control -lraw1394
 endif
 
 clean:
