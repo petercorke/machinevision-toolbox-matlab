@@ -616,7 +616,7 @@ classdef Camera < handle
             h = plot(uv(1,:), uv(2,:), varargin{:});
         end % point
 
-        function h =  line(c, lines, varargin)
+        function h =  homline(c, lines, varargin)
         %Camera.line Plot homogeneous lines on image plane
         %
         % C.line(L) plots lines on the camera image plane which are defined by columns 
@@ -645,6 +645,15 @@ classdef Camera < handle
                 end
             end
         end % line
+        
+        function h = lineseg(c, p0, p1, varargin)
+            % get handle for this camera image plane
+            h = c.plot_create
+            c.hold(1)
+            for i=1:numcols(p0)
+                plot([p0(1,i) p1(1,i)], [p0(2,i) p1(2,i)], varargin{:}, 'Parent', c.h_image);
+            end
+        end
 
         function newcam = move(cam, T)
         %Camera.move Instantiate displaced camera 
