@@ -1,6 +1,6 @@
 Model {
   Name			  "sl_ibvs"
-  Version		  7.5
+  Version		  7.9
   MdlSubVersion		  0
   GraphicalInterface {
     NumRootInports	    0
@@ -16,7 +16,7 @@ Model {
       Name		      "v"
     }
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.30"
+    ComputedModelVersion    "1.31"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -26,8 +26,10 @@ Model {
   OverrideScopeRefreshTime on
   DisableAllScopes	  off
   DataTypeOverride	  "UseLocalSettings"
+  DataTypeOverrideAppliesTo "AllNumericTypes"
   MinMaxOverflowLogging	  "UseLocalSettings"
   MinMaxOverflowArchiveMode "Overwrite"
+  FPTRunName		  "Run 1"
   MaxMDLFileLineLength	  120
   InitFcn		  "cam = CentralCamera('default')"
   Created		  "Sat Jan 26 02:15:13 2002"
@@ -36,9 +38,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "corkep"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Mon Dec 13 07:21:37 2010"
-  RTWModifiedTimeStamp	  214125556
-  ModelVersionFormat	  "1.%<AutoIncrement:30>"
+  LastModifiedDate	  "Sun Sep 23 11:14:54 2012"
+  RTWModifiedTimeStamp	  270299650
+  ModelVersionFormat	  "1.%<AutoIncrement:31>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -46,6 +48,7 @@ Model {
   WideLines		  on
   ShowLineDimensions	  on
   ShowPortDataTypes	  off
+  ShowDesignRanges	  off
   ShowLoopsOnError	  on
   IgnoreBidirectionalLines off
   ShowStorageClass	  off
@@ -113,13 +116,13 @@ Model {
     Dimension		    1
     Simulink.ConfigSet {
       $ObjectID		      1
-      Version		      "1.10.0"
+      Version		      "1.12.0"
       Array {
 	Type			"Handle"
 	Dimension		8
 	Simulink.SolverCC {
 	  $ObjectID		  2
-	  Version		  "1.10.0"
+	  Version		  "1.12.0"
 	  StartTime		  "0.0"
 	  StopTime		  "10"
 	  AbsTol		  "auto"
@@ -137,6 +140,8 @@ Model {
 	  MaxConsecutiveMinStep	  "1"
 	  RelTol		  "1e-3"
 	  SolverMode		  "Auto"
+	  EnableConcurrentExecution off
+	  ConcurrentTasks	  off
 	  Solver		  "ode45"
 	  SolverName		  "ode45"
 	  SolverJacobianMethodControl "auto"
@@ -152,7 +157,7 @@ Model {
 	}
 	Simulink.DataIOCC {
 	  $ObjectID		  3
-	  Version		  "1.10.0"
+	  Version		  "1.12.0"
 	  Decimation		  "1"
 	  ExternalInput		  "[t, u]"
 	  FinalStateName	  "xFinal"
@@ -164,6 +169,7 @@ Model {
 	  SaveFinalState	  off
 	  SaveCompleteFinalSimState off
 	  SaveFormat		  "Structure"
+	  SignalLoggingSaveFormat "ModelDataLogs"
 	  SaveOutput		  on
 	  SaveState		  off
 	  SignalLogging		  on
@@ -183,18 +189,19 @@ Model {
 	}
 	Simulink.OptimizationCC {
 	  $ObjectID		  4
-	  Version		  "1.10.0"
+	  Version		  "1.12.0"
 	  BlockReduction	  off
 	  BooleanDataType	  off
 	  ConditionallyExecuteInputs on
 	  InlineParams		  off
 	  UseIntDivNetSlope	  off
+	  UseFloatMulNetSlope	  off
+	  UseSpecifiedMinMax	  off
 	  InlineInvariantSignals  off
 	  OptimizeBlockIOStorage  on
 	  BufferReuse		  on
 	  EnhancedBackFolding	  off
 	  StrengthReduction	  off
-	  EnforceIntegerDowncast  on
 	  ExpressionFolding	  on
 	  BooleansAsBitfields	  off
 	  BitfieldContainerType	  "uint_T"
@@ -221,10 +228,11 @@ Model {
 	  BufferReusableBoundary  on
 	  SimCompilerOptimization "Off"
 	  AccelVerboseBuild	  off
+	  ParallelExecutionInRapidAccelerator on
 	}
 	Simulink.DebuggingCC {
 	  $ObjectID		  5
-	  Version		  "1.10.0"
+	  Version		  "1.12.0"
 	  RTPrefix		  "error"
 	  ConsistencyChecking	  "none"
 	  ArrayBoundsChecking	  "none"
@@ -247,6 +255,8 @@ Model {
 	  MinStepSizeMsg	  "warning"
 	  TimeAdjustmentMsg	  "none"
 	  MaxConsecutiveZCsMsg	  "error"
+	  MaskedZcDiagnostic	  "warning"
+	  IgnoredZcDiagnostic	  "warning"
 	  SolverPrmCheckMsg	  "none"
 	  InheritedTsInSrcMsg	  "warning"
 	  DiscreteInheritContinuousMsg "warning"
@@ -277,12 +287,14 @@ Model {
 	  UnconnectedOutputMsg	  "warning"
 	  UnconnectedLineMsg	  "warning"
 	  SFcnCompatibilityMsg	  "none"
+	  FrameProcessingCompatibilityMsg "warning"
 	  UniqueDataStoreMsg	  "none"
 	  BusObjectLabelMismatch  "warning"
 	  RootOutportRequireBusObject "warning"
 	  AssertControl		  "UseLocalSettings"
 	  EnableOverflowDetection off
 	  ModelReferenceIOMsg	  "none"
+	  ModelReferenceMultiInstanceNormalModeStructChecksumCheck "error"
 	  ModelReferenceVersionMismatchMessage "none"
 	  ModelReferenceIOMismatchMessage "none"
 	  ModelReferenceCSMismatchMessage "none"
@@ -292,19 +304,32 @@ Model {
 	  ModelReferenceExtraNoncontSigs "error"
 	  StateNameClashWarn	  "warning"
 	  SimStateInterfaceChecksumMismatchMsg "warning"
+	  SimStateOlderReleaseMsg "error"
+	  InitInArrayFormatMsg	  "warning"
 	  StrictBusMsg		  "None"
 	  BusNameAdapt		  "WarnAndRepair"
 	  NonBusSignalsTreatedAsBus "none"
 	  LoggingUnavailableSignals "error"
 	  BlockIODiagnostic	  "none"
+	  SFUnusedDataAndEventsDiag "warning"
+	  SFUnexpectedBacktrackingDiag "warning"
+	  SFInvalidInputDataAccessInChartInitDiag "warning"
+	  SFNoUnconditionalDefaultTransitionDiag "warning"
+	  SFTransitionOutsideNaturalParentDiag "warning"
+	  SFUnconditionalTransitionShadowingDiag "warning"
 	}
 	Simulink.HardwareCC {
 	  $ObjectID		  6
-	  Version		  "1.10.0"
+	  Version		  "1.12.0"
 	  ProdBitPerChar	  8
 	  ProdBitPerShort	  16
 	  ProdBitPerInt		  32
 	  ProdBitPerLong	  32
+	  ProdBitPerFloat	  32
+	  ProdBitPerDouble	  64
+	  ProdBitPerPointer	  32
+	  ProdLargestAtomicInteger "Char"
+	  ProdLargestAtomicFloat  "None"
 	  ProdIntDivRoundTo	  "Undefined"
 	  ProdEndianess		  "Unspecified"
 	  ProdWordSize		  32
@@ -314,6 +339,11 @@ Model {
 	  TargetBitPerShort	  16
 	  TargetBitPerInt	  32
 	  TargetBitPerLong	  32
+	  TargetBitPerFloat	  32
+	  TargetBitPerDouble	  64
+	  TargetBitPerPointer	  32
+	  TargetLargestAtomicInteger "Char"
+	  TargetLargestAtomicFloat "None"
 	  TargetShiftRightIntArith on
 	  TargetIntDivRoundTo	  "Undefined"
 	  TargetEndianess	  "Unspecified"
@@ -327,10 +357,11 @@ Model {
 	}
 	Simulink.ModelReferenceCC {
 	  $ObjectID		  7
-	  Version		  "1.10.0"
+	  Version		  "1.12.0"
 	  UpdateModelReferenceTargets "IfOutOfDateOrStructuralChange"
 	  CheckModelReferenceTargetMessage "error"
 	  EnableParallelModelReferenceBuilds off
+	  ParallelModelReferenceErrorOnInvalidPool on
 	  ParallelModelReferenceMATLABWorkerInit "None"
 	  ModelReferenceNumInstancesAllowed "Multi"
 	  PropagateVarSize	  "Infer from blocks in model"
@@ -341,7 +372,7 @@ Model {
 	}
 	Simulink.SFSimCC {
 	  $ObjectID		  8
-	  Version		  "1.10.0"
+	  Version		  "1.12.0"
 	  SFSimEnableDebug	  on
 	  SFSimOverflowDetection  on
 	  SFSimEcho		  on
@@ -350,12 +381,13 @@ Model {
 	  SimExtrinsic		  on
 	  SimIntegrity		  on
 	  SimUseLocalCustomCode	  off
+	  SimParseCustomCode	  on
 	  SimBuildMode		  "sf_incremental_build"
 	}
 	Simulink.RTWCC {
 	  $BackupClass		  "Simulink.RTWCC"
 	  $ObjectID		  9
-	  Version		  "1.10.0"
+	  Version		  "1.12.0"
 	  SystemTargetFile	  "grt.tlc"
 	  GenCodeOnly		  off
 	  MakeCommand		  "make_rtw"
@@ -385,6 +417,9 @@ Model {
 	  GenerateTraceReportSf	  off
 	  GenerateTraceReportEml  off
 	  GenerateCodeInfo	  off
+	  GenerateWebview	  off
+	  GenerateCodeMetricsReport off
+	  GenerateCodeReplacementReport	off
 	  RTWCompilerOptimization "Off"
 	  CheckMdlBeforeBuild	  "Off"
 	  CustomRebuildMode	  "OnUpdate"
@@ -393,7 +428,7 @@ Model {
 	    Dimension		    2
 	    Simulink.CodeAppCC {
 	      $ObjectID		      10
-	      Version		      "1.10.0"
+	      Version		      "1.12.0"
 	      ForceParamTrailComments off
 	      GenerateComments	      on
 	      IgnoreCustomStorageClasses on
@@ -406,6 +441,7 @@ Model {
 	      IncAutoGenComments      off
 	      SimulinkDataObjDesc     off
 	      SFDataObjDesc	      off
+	      MATLABFcnDesc	      off
 	      IncDataTypeInIds	      off
 	      MangleLength	      1
 	      CustomSymbolStrGlobalVar "$R$N$M"
@@ -420,7 +456,9 @@ Model {
 	      ParamNamingRule	      "None"
 	      SignalNamingRule	      "None"
 	      InsertBlockDesc	      off
+	      InsertPolySpaceComments off
 	      SimulinkBlockComments   on
+	      MATLABSourceComments    off
 	      EnableCustomComments    off
 	      InlinedPrmAccess	      "Literals"
 	      ReqsInCode	      off
@@ -429,14 +467,14 @@ Model {
 	    Simulink.GRTTargetCC {
 	      $BackupClass	      "Simulink.TargetCC"
 	      $ObjectID		      11
-	      Version		      "1.10.0"
+	      Version		      "1.12.0"
 	      TargetFcnLib	      "ansi_tfl_table_tmw.mat"
 	      TargetLibSuffix	      ""
 	      TargetPreCompLibLocation ""
-	      TargetFunctionLibrary   "ANSI_C"
+	      CodeReplacementLibrary  "ANSI_C"
 	      UtilityFuncGeneration   "Auto"
 	      ERTMultiwordTypeDef     "System defined"
-	      ERTCodeCoverageTool     "None"
+	      CodeExecutionProfiling  off
 	      ERTMultiwordLength      256
 	      MultiwordLength	      2048
 	      GenerateFullHeader      on
@@ -446,9 +484,11 @@ Model {
 	      ModelReferenceCompliant off
 	      ParMdlRefBuildCompliant on
 	      CompOptLevelCompliant   off
+	      ConcurrentExecutionCompliant on
 	      IncludeMdlTerminateFcn  on
 	      GeneratePreprocessorConditionals "Disable all"
 	      CombineOutputUpdateFcns off
+	      CombineSignalStateStructs	off
 	      SuppressErrorStatus     off
 	      ERTFirstTimeCompliant   off
 	      IncludeFileDelimiter    "Auto"
@@ -469,6 +509,7 @@ Model {
 	      ModelStepFunctionPrototypeControlCompliant off
 	      CPPClassGenCompliant    off
 	      AutosarCompliant	      off
+	      GRTInterface	      on
 	      UseMalloc		      off
 	      ExtMode		      off
 	      ExtModeStaticAlloc      off
@@ -480,6 +521,7 @@ Model {
 	      RTWCAPISignals	      off
 	      RTWCAPIParams	      off
 	      RTWCAPIStates	      off
+	      RTWCAPIRootIO	      off
 	      GenerateASAP2	      off
 	    }
 	    PropName		    "Components"
@@ -489,7 +531,7 @@ Model {
       }
       Name		      "Configuration"
       CurrentDlgPage	      "Solver"
-      ConfigPrmDlgPosition    " [ 452, 45, 1332, 675 ] "
+      ConfigPrmDlgPosition     [ 452, 45, 1332, 675 ] 
     }
     PropName		    "ConfigurationSets"
   }
@@ -497,6 +539,7 @@ Model {
     $PropName		    "ActiveConfigurationSet"
     $ObjectID		    1
   }
+  ExplicitPartitioning	  off
   BlockDefaults {
     ForegroundColor	    "black"
     BackgroundColor	    "white"
@@ -532,6 +575,7 @@ Model {
     Block {
       BlockType		      Clock
       DisplayTime	      off
+      Decimation	      "10"
     }
     Block {
       BlockType		      Constant
@@ -540,10 +584,6 @@ Model {
       SamplingMode	      "Sample based"
       OutMin		      "[]"
       OutMax		      "[]"
-      OutDataTypeMode	      "Inherit from 'Constant value'"
-      OutDataType	      "fixdt(1,16,0)"
-      ConRadixGroup	      "Use specified scaling"
-      OutScaling	      "[]"
       OutDataTypeStr	      "Inherit: Inherit from 'Constant value'"
       LockScale		      off
       SampleTime	      "inf"
@@ -563,16 +603,9 @@ Model {
       Multiplication	      "Element-wise(K.*u)"
       ParamMin		      "[]"
       ParamMax		      "[]"
-      ParameterDataTypeMode   "Same as input"
-      ParameterDataType	      "fixdt(1,16,0)"
-      ParameterScalingMode    "Best Precision: Matrix-wise"
-      ParameterScaling	      "[]"
       ParamDataTypeStr	      "Inherit: Same as input"
       OutMin		      "[]"
       OutMax		      "[]"
-      OutDataTypeMode	      "Same as input"
-      OutDataType	      "fixdt(1,16,0)"
-      OutScaling	      "[]"
       OutDataTypeStr	      "Inherit: Same as input"
       LockScale		      off
       RndMeth		      "Floor"
@@ -590,19 +623,14 @@ Model {
     Block {
       BlockType		      Outport
       Port		      "1"
-      UseBusObject	      off
-      BusObject		      "BusObject"
+      OutMin		      "[]"
+      OutMax		      "[]"
+      OutDataTypeStr	      "Inherit: auto"
+      LockScale		      off
       BusOutputAsStruct	      off
       PortDimensions	      "-1"
       VarSizeSig	      "Inherit"
       SampleTime	      "-1"
-      OutMin		      "[]"
-      OutMax		      "[]"
-      DataType		      "auto"
-      OutDataType	      "fixdt(1,16,0)"
-      OutScaling	      "[]"
-      OutDataTypeStr	      "Inherit: auto"
-      LockScale		      off
       SignalType	      "auto"
       SamplingMode	      "auto"
       SourceOfInitialOutputValue "Dialog"
@@ -625,6 +653,7 @@ Model {
       YMax		      "5"
       SaveToWorkspace	      off
       SaveName		      "ScopeData"
+      DataFormat	      "Array"
       LimitDataPoints	      on
       MaxDataPoints	      "5000"
       Decimation	      "1"
@@ -641,9 +670,6 @@ Model {
       AccumDataTypeStr	      "Inherit: Inherit via internal rule"
       OutMin		      "[]"
       OutMax		      "[]"
-      OutDataTypeMode	      "Same as first input"
-      OutDataType	      "fixdt(1,16,0)"
-      OutScaling	      "[]"
       OutDataTypeStr	      "Inherit: Same as first input"
       LockScale		      off
       RndMeth		      "Floor"
@@ -653,7 +679,7 @@ Model {
   }
   System {
     Name		    "sl_ibvs"
-    Location		    [885, 165, 1822, 758]
+    Location		    [43, 50, 980, 643]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -667,15 +693,15 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    69
+    SIDHighWatermark	    "71"
     Block {
       BlockType		      Scope
       Name		      "Cartesian velocity"
-      SID		      50
+      SID		      "50"
       Ports		      [1]
       Position		      [265, 394, 295, 426]
       Floating		      off
-      Location		      [1769, 549, 2555, 996]
+      Location		      [805, 435, 1438, 758]
       Open		      on
       NumInputPorts	      "1"
       ZoomMode		      "yonly"
@@ -683,6 +709,17 @@ Model {
 	ListType		AxesTitles
 	axes1			"%<SignalLabel>"
       }
+      List {
+	ListType		ScopeGraphics
+	FigureColor		"[0.5 0.5 0.5]"
+	AxesColor		"[0 0 0]"
+	AxesTickColor		"[1 1 1]"
+	LineColors		"[1 1 0;1 0 1;0 1 1;1 0 0;0 1 0;0 0 1]"
+	LineStyles		"-|-|-|-|-|-"
+	LineWidths		"[0.5 0.5 0.5 0.5 0.5 0.5]"
+	MarkerStyles		"none|none|none|none|none|none"
+      }
+      ShowLegends	      off
       TimeRange		      "20"
       YMin		      "-0.4"
       YMax		      "1.9"
@@ -692,7 +729,7 @@ Model {
     Block {
       BlockType		      Display
       Name		      "Cartesian velocity dmd"
-      SID		      1
+      SID		      "1"
       Ports		      [1]
       Position		      [80, 349, 170, 471]
       BlockMirror	      on
@@ -703,15 +740,14 @@ Model {
     Block {
       BlockType		      Clock
       Name		      "Clock"
-      SID		      39
+      SID		      "39"
       Position		      [600, 20, 680, 40]
       DisplayTime	      on
-      Decimation	      "10"
     }
     Block {
       BlockType		      MATLABFcn
       Name		      "MATLAB Fcn"
-      SID		      3
+      SID		      "3"
       Ports		      [1, 1]
       Position		      [425, 290, 485, 320]
       BackgroundColor	      "lightBlue"
@@ -728,7 +764,7 @@ Model {
     Block {
       BlockType		      MATLABFcn
       Name		      "MATLAB Fcn1"
-      SID		      4
+      SID		      "4"
       Ports		      [1, 1]
       Position		      [565, 340, 625, 370]
       ShowName		      off
@@ -737,7 +773,7 @@ Model {
     Block {
       BlockType		      Reshape
       Name		      "Reshape"
-      SID		      69
+      SID		      "69"
       Ports		      [1, 1]
       Position		      [240, 473, 270, 497]
       OutputDimensionality    "Customize"
@@ -746,7 +782,7 @@ Model {
     Block {
       BlockType		      Sum
       Name		      "Sum"
-      SID		      10
+      SID		      "10"
       Ports		      [2, 1]
       Position		      [365, 295, 385, 315]
       BackgroundColor	      "lightBlue"
@@ -757,7 +793,7 @@ Model {
     Block {
       BlockType		      Display
       Name		      "T"
-      SID		      40
+      SID		      "40"
       Ports		      [1]
       Position		      [235, 16, 570, 114]
       Decimation	      "1"
@@ -766,7 +802,7 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "camera"
-      SID		      47
+      SID		      "47"
       Ports		      [1, 1]
       Position		      [250, 166, 330, 244]
       BackgroundColor	      "lightBlue"
@@ -774,21 +810,13 @@ Model {
       LibraryVersion	      "1.54"
       SourceBlock	      "roblocks/Vision/camera"
       SourceType	      ""
-      ShowPortLabels	      "FromPortIcon"
-      SystemSampleTime	      "-1"
-      FunctionWithSeparateData off
-      RTWMemSecFuncInitTerm   "Inherit from model"
-      RTWMemSecFuncExecute    "Inherit from model"
-      RTWMemSecDataConstants  "Inherit from model"
-      RTWMemSecDataInternal   "Inherit from model"
-      RTWMemSecDataParameters "Inherit from model"
       cam		      "cam"
       points		      "mkgrid(2, 0.5, transl(0,0,3))"
     }
     Block {
       BlockType		      Constant
       Name		      "desired\nimage plane\ncoordinates"
-      SID		      16
+      SID		      "16"
       Position		      [205, 279, 320, 331]
       BackgroundColor	      "green"
       Value		      "[412 412 612 612; 412 612 612 412]"
@@ -797,7 +825,7 @@ Model {
     Block {
       BlockType		      Display
       Name		      "feature error"
-      SID		      17
+      SID		      "17"
       Ports		      [1]
       Position		      [410, 345, 500, 515]
       BlockMirror	      on
@@ -808,7 +836,7 @@ Model {
     Block {
       BlockType		      Display
       Name		      "feature error\nnorm"
-      SID		      18
+      SID		      "18"
       Ports		      [1]
       Position		      [740, 340, 830, 370]
       Decimation	      "1"
@@ -817,11 +845,11 @@ Model {
     Block {
       BlockType		      Scope
       Name		      "feature error2"
-      SID		      19
+      SID		      "19"
       Ports		      [1]
       Position		      [605, 414, 635, 446]
       Floating		      off
-      Location		      [1769, 71, 2555, 518]
+      Location		      [808, 71, 1435, 384]
       Open		      on
       NumInputPorts	      "1"
       ZoomMode		      "yonly"
@@ -829,6 +857,17 @@ Model {
 	ListType		AxesTitles
 	axes1			"%<SignalLabel>"
       }
+      List {
+	ListType		ScopeGraphics
+	FigureColor		"[0.5 0.5 0.5]"
+	AxesColor		"[0 0 0]"
+	AxesTickColor		"[1 1 1]"
+	LineColors		"[1 1 0;1 0 1;0 1 1;1 0 0;0 1 0;0 0 1]"
+	LineStyles		"-|-|-|-|-|-"
+	LineWidths		"[0.5 0.5 0.5 0.5 0.5 0.5]"
+	MarkerStyles		"none|none|none|none|none|none"
+      }
+      ShowLegends	      off
       TimeRange		      "20"
       YMin		      "-150"
       YMax		      "150"
@@ -839,7 +878,7 @@ Model {
     Block {
       BlockType		      Gain
       Name		      "lambda"
-      SID		      51
+      SID		      "51"
       Position		      [670, 265, 710, 320]
       BlockRotation	      270
       BlockMirror	      on
@@ -848,49 +887,33 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "pinvJac"
-      SID		      54
+      SID		      "54"
       Ports		      [2, 2]
       Position		      [575, 190, 615, 250]
       BackgroundColor	      "red"
       DropShadow	      on
       LibraryVersion	      "1.54"
       SourceBlock	      "roblocks/Vision/pinvJac"
-      SourceType	      "SubSystem"
-      ShowPortLabels	      "FromPortIcon"
-      SystemSampleTime	      "-1"
-      FunctionWithSeparateData off
-      RTWMemSecFuncInitTerm   "Inherit from model"
-      RTWMemSecFuncExecute    "Inherit from model"
-      RTWMemSecDataConstants  "Inherit from model"
-      RTWMemSecDataInternal   "Inherit from model"
-      RTWMemSecDataParameters "Inherit from model"
+      SourceType	      ""
     }
     Block {
       BlockType		      Reference
-      Name		      "pose "
-      SID		      46
+      Name		      "pose integral"
+      SID		      "71"
       Ports		      [1, 1]
       Position		      [90, 178, 160, 232]
       BackgroundColor	      "red"
       DropShadow	      on
       LibraryVersion	      "1.54"
-      SourceBlock	      "roblocks/Trajectory/pose integral"
+      SourceBlock	      "roblocks/Kinematics/pose integral"
       SourceType	      ""
-      ShowPortLabels	      "FromPortIcon"
-      SystemSampleTime	      "-1"
-      FunctionWithSeparateData off
-      RTWMemSecFuncInitTerm   "Inherit from model"
-      RTWMemSecFuncExecute    "Inherit from model"
-      RTWMemSecDataConstants  "Inherit from model"
-      RTWMemSecDataInternal   "Inherit from model"
-      RTWMemSecDataParameters "Inherit from model"
       T0		      "transl(0,0,1)*trotz(1.5)"
       dt		      "0.02"
     }
     Block {
       BlockType		      Display
       Name		      "visjac\ncondition"
-      SID		      26
+      SID		      "26"
       Ports		      [1]
       Position		      [740, 220, 830, 250]
       Decimation	      "1"
@@ -899,7 +922,7 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "visual\nJacobian"
-      SID		      48
+      SID		      "48"
       Ports		      [1, 1]
       Position		      [450, 179, 520, 231]
       BackgroundColor	      "lightBlue"
@@ -907,35 +930,23 @@ Model {
       LibraryVersion	      "1.54"
       SourceBlock	      "roblocks/Vision/image\nJacobian"
       SourceType	      ""
-      ShowPortLabels	      "FromPortIcon"
-      SystemSampleTime	      "-1"
-      FunctionWithSeparateData off
-      RTWMemSecFuncInitTerm   "Inherit from model"
-      RTWMemSecFuncExecute    "Inherit from model"
-      RTWMemSecDataConstants  "Inherit from model"
-      RTWMemSecDataInternal   "Inherit from model"
-      RTWMemSecDataParameters "Inherit from model"
       cam		      "cam"
       z			      "2"
     }
     Block {
       BlockType		      Outport
       Name		      "p"
-      SID		      52
+      SID		      "52"
       Position		      [395, 163, 425, 177]
       IconDisplay	      "Port number"
-      OutDataType	      "fixdt(1, 16)"
-      OutScaling	      "2^0"
     }
     Block {
       BlockType		      Outport
       Name		      "v"
-      SID		      53
+      SID		      "53"
       Position		      [305, 478, 335, 492]
       Port		      "2"
       IconDisplay	      "Port number"
-      OutDataType	      "fixdt(1, 16)"
-      OutScaling	      "2^0"
     }
     Line {
       SrcBlock		      "camera"
@@ -1019,7 +1030,7 @@ Model {
       DstPort		      1
     }
     Line {
-      SrcBlock		      "pose "
+      SrcBlock		      "pose integral"
       SrcPort		      1
       Points		      [35, 0]
       Branch {
@@ -1044,11 +1055,6 @@ Model {
       SrcPort		      1
       Points		      [0, 220; -490, 0]
       Branch {
-	Points			[-180, 0; 0, -340]
-	DstBlock		"pose "
-	DstPort			1
-      }
-      Branch {
 	Points			[0, -60]
 	Branch {
 	  Points		  [0, -75]
@@ -1066,6 +1072,11 @@ Model {
 	  DstPort		  1
 	}
       }
+      Branch {
+	Points			[-180, 0; 0, -340]
+	DstBlock		"pose integral"
+	DstPort			1
+      }
     }
     Line {
       SrcBlock		      "Reshape"
@@ -1074,6 +1085,7 @@ Model {
       DstPort		      1
     }
     Annotation {
+      SID		      "70"
       Name		      "desired camera velocity"
       Position		      [542, 559]
     }
