@@ -80,6 +80,7 @@ function h = plot_camera(c, varargin)
                 text(P(1), P(2), P(3), c.name);
             end
             c.h_visualize = h;  % save handle for later
+            xlabel('X'); ylabel('Y'); zlabel('Z');
         end
     end
 
