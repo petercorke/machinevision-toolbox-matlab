@@ -703,11 +703,11 @@ classdef CentralCamera < Camera
             set(h, 'BackFaceLighting', 'unlit');
 
             % draw the x-, y- and z-axes
-            h = plot3([0,a*s], [0,0], [0,0], 'k')
+            h = plot3([0,a*s], [0,0], [0,0], 'k');
             set(h, 'Parent', hg);
-            h = plot3([0,0], [0,a*s], [0,0], 'k')
+            h = plot3([0,0], [0,a*s], [0,0], 'k');
             set(h, 'Parent', hg);
-            h = plot3([0,0], [0,0], [0,a*s], 'k')
+            h = plot3([0,0], [0,0], [0,a*s], 'k');
             set(h, 'Parent', hg);
 
             if opt.label
