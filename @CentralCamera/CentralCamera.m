@@ -191,7 +191,18 @@ classdef CentralCamera < Camera
 
             [opt,args] = tb_optparse(opt, varargin);
 
-            c.f = opt.focal;
+            % assign defaults first, the remaining options can modify
+            % these settings.
+            if opt.default
+                c.f = 8e-3;     % f
+                c.rho = [10e-6, 10e-6];      % square pixels 10um side
+                c.npix = [1024, 1024];  % 1Mpix image plane
+                c.pp = [512, 512];      % principal point in the middle
+                c.limits = [0 1024 0 1024];
+            end
+            if ~isempty(opt.focal)
+                c.f = opt.focal;
+            end
             if ~isempty(opt.distortion)
                 if length(opt.distortion) == 5
                     c.distortion = opt.distortion;
@@ -206,13 +217,6 @@ classdef CentralCamera < Camera
                 else
                     error('distortion vector is [k1 k2 p1 p2 k3]');
                 end
-            end
-            if opt.default
-                c.f = 8e-3;     % f
-                c.rho = [10e-6, 10e-6];      % square pixels 10um side
-                c.npix = [1024, 1024];  % 1Mpix image plane
-                c.pp = [512, 512];      % principal point in the middle
-                c.limits = [0 1024 0 1024];
             end
         end
 
