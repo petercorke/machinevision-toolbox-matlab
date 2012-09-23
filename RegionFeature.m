@@ -33,10 +33,11 @@
 %  theta         angle of major ellipse axis to horizontal axis
 %  shape         aspect ratio b/a (always <= 1.0)
 %  circularity   1 for a circle, less for other shapes
-%  moments       a stru_ture containing moments of order 0 to 2
+%  moments       a structure containing moments of order 0 to 2
+%  bbox          the bounding box, 2x2 matrix [umin umax; vmin vmax]
 %
 % Note::
-%  - properties uc, vc, p, class, label, touch, theta, shape, circularity,
+%  - Properties uc, vc, p, class, label, touch, theta, shape, circularity,
 %    perimeter can be referenced from a vector of RegionFeature objects 
 %    and return a vector of values (not a list).
 %  - RegionFeature is a reference object.
@@ -95,6 +96,10 @@ classdef RegionFeature < handle
         circularity_
 
         moments     % moments, a struct of: m00, m01, m10, m02, m20, m11
+    end
+
+    properties (Dependent=true)
+        bbox
     end
 
     methods
@@ -274,6 +279,10 @@ classdef RegionFeature < handle
                 thi = [0:399]'/400*2*pi - pi;
                 ri = interp1(th, r, thi, 'spline');
             end
+        end
+
+        function bb = get.bbox(f)
+            bb = [f.umin f.umax; f.vmin f.vmax];
         end
 
         % methods to provide convenient access to properties of object vectors
