@@ -1,6 +1,6 @@
 Model {
   Name			  "sl_partitioned"
-  Version		  7.5
+  Version		  7.9
   MdlSubVersion		  0
   GraphicalInterface {
     NumRootInports	    0
@@ -22,7 +22,7 @@ Model {
       Name		      "e"
     }
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.29"
+    ComputedModelVersion    "1.30"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -32,8 +32,10 @@ Model {
   OverrideScopeRefreshTime on
   DisableAllScopes	  off
   DataTypeOverride	  "UseLocalSettings"
+  DataTypeOverrideAppliesTo "AllNumericTypes"
   MinMaxOverflowLogging	  "UseLocalSettings"
   MinMaxOverflowArchiveMode "Overwrite"
+  FPTRunName		  "Run 1"
   MaxMDLFileLineLength	  120
   InitFcn		  "cam = CentralCamera('default')"
   Created		  "Sat Jan 26 02:15:13 2002"
@@ -42,9 +44,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "corkep"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Mon Dec 13 09:21:13 2010"
-  RTWModifiedTimeStamp	  214132819
-  ModelVersionFormat	  "1.%<AutoIncrement:29>"
+  LastModifiedDate	  "Sun Sep 23 11:53:17 2012"
+  RTWModifiedTimeStamp	  270301718
+  ModelVersionFormat	  "1.%<AutoIncrement:30>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -52,6 +54,7 @@ Model {
   WideLines		  on
   ShowLineDimensions	  on
   ShowPortDataTypes	  off
+  ShowDesignRanges	  off
   ShowLoopsOnError	  on
   IgnoreBidirectionalLines off
   ShowStorageClass	  off
@@ -119,13 +122,13 @@ Model {
     Dimension		    1
     Simulink.ConfigSet {
       $ObjectID		      1
-      Version		      "1.10.0"
+      Version		      "1.12.0"
       Array {
 	Type			"Handle"
 	Dimension		8
 	Simulink.SolverCC {
 	  $ObjectID		  2
-	  Version		  "1.10.0"
+	  Version		  "1.12.0"
 	  StartTime		  "0.0"
 	  StopTime		  "20.0"
 	  AbsTol		  "auto"
@@ -143,6 +146,8 @@ Model {
 	  MaxConsecutiveMinStep	  "1"
 	  RelTol		  "1e-3"
 	  SolverMode		  "Auto"
+	  EnableConcurrentExecution off
+	  ConcurrentTasks	  off
 	  Solver		  "ode45"
 	  SolverName		  "ode45"
 	  SolverJacobianMethodControl "auto"
@@ -158,7 +163,7 @@ Model {
 	}
 	Simulink.DataIOCC {
 	  $ObjectID		  3
-	  Version		  "1.10.0"
+	  Version		  "1.12.0"
 	  Decimation		  "1"
 	  ExternalInput		  "[t, u]"
 	  FinalStateName	  "xFinal"
@@ -170,6 +175,7 @@ Model {
 	  SaveFinalState	  off
 	  SaveCompleteFinalSimState off
 	  SaveFormat		  "Structure"
+	  SignalLoggingSaveFormat "ModelDataLogs"
 	  SaveOutput		  on
 	  SaveState		  off
 	  SignalLogging		  on
@@ -189,18 +195,19 @@ Model {
 	}
 	Simulink.OptimizationCC {
 	  $ObjectID		  4
-	  Version		  "1.10.0"
+	  Version		  "1.12.0"
 	  BlockReduction	  off
 	  BooleanDataType	  off
 	  ConditionallyExecuteInputs on
 	  InlineParams		  off
 	  UseIntDivNetSlope	  off
+	  UseFloatMulNetSlope	  off
+	  UseSpecifiedMinMax	  off
 	  InlineInvariantSignals  off
 	  OptimizeBlockIOStorage  on
 	  BufferReuse		  on
 	  EnhancedBackFolding	  off
 	  StrengthReduction	  off
-	  EnforceIntegerDowncast  on
 	  ExpressionFolding	  on
 	  BooleansAsBitfields	  off
 	  BitfieldContainerType	  "uint_T"
@@ -227,10 +234,11 @@ Model {
 	  BufferReusableBoundary  on
 	  SimCompilerOptimization "Off"
 	  AccelVerboseBuild	  off
+	  ParallelExecutionInRapidAccelerator on
 	}
 	Simulink.DebuggingCC {
 	  $ObjectID		  5
-	  Version		  "1.10.0"
+	  Version		  "1.12.0"
 	  RTPrefix		  "error"
 	  ConsistencyChecking	  "none"
 	  ArrayBoundsChecking	  "none"
@@ -253,6 +261,8 @@ Model {
 	  MinStepSizeMsg	  "warning"
 	  TimeAdjustmentMsg	  "none"
 	  MaxConsecutiveZCsMsg	  "error"
+	  MaskedZcDiagnostic	  "warning"
+	  IgnoredZcDiagnostic	  "warning"
 	  SolverPrmCheckMsg	  "none"
 	  InheritedTsInSrcMsg	  "warning"
 	  DiscreteInheritContinuousMsg "warning"
@@ -283,12 +293,14 @@ Model {
 	  UnconnectedOutputMsg	  "warning"
 	  UnconnectedLineMsg	  "warning"
 	  SFcnCompatibilityMsg	  "none"
+	  FrameProcessingCompatibilityMsg "warning"
 	  UniqueDataStoreMsg	  "none"
 	  BusObjectLabelMismatch  "warning"
 	  RootOutportRequireBusObject "warning"
 	  AssertControl		  "UseLocalSettings"
 	  EnableOverflowDetection off
 	  ModelReferenceIOMsg	  "none"
+	  ModelReferenceMultiInstanceNormalModeStructChecksumCheck "error"
 	  ModelReferenceVersionMismatchMessage "none"
 	  ModelReferenceIOMismatchMessage "none"
 	  ModelReferenceCSMismatchMessage "none"
@@ -298,19 +310,32 @@ Model {
 	  ModelReferenceExtraNoncontSigs "error"
 	  StateNameClashWarn	  "warning"
 	  SimStateInterfaceChecksumMismatchMsg "warning"
+	  SimStateOlderReleaseMsg "error"
+	  InitInArrayFormatMsg	  "warning"
 	  StrictBusMsg		  "None"
 	  BusNameAdapt		  "WarnAndRepair"
 	  NonBusSignalsTreatedAsBus "none"
 	  LoggingUnavailableSignals "error"
 	  BlockIODiagnostic	  "none"
+	  SFUnusedDataAndEventsDiag "warning"
+	  SFUnexpectedBacktrackingDiag "warning"
+	  SFInvalidInputDataAccessInChartInitDiag "warning"
+	  SFNoUnconditionalDefaultTransitionDiag "warning"
+	  SFTransitionOutsideNaturalParentDiag "warning"
+	  SFUnconditionalTransitionShadowingDiag "warning"
 	}
 	Simulink.HardwareCC {
 	  $ObjectID		  6
-	  Version		  "1.10.0"
+	  Version		  "1.12.0"
 	  ProdBitPerChar	  8
 	  ProdBitPerShort	  16
 	  ProdBitPerInt		  32
 	  ProdBitPerLong	  32
+	  ProdBitPerFloat	  32
+	  ProdBitPerDouble	  64
+	  ProdBitPerPointer	  32
+	  ProdLargestAtomicInteger "Char"
+	  ProdLargestAtomicFloat  "None"
 	  ProdIntDivRoundTo	  "Undefined"
 	  ProdEndianess		  "Unspecified"
 	  ProdWordSize		  32
@@ -320,6 +345,11 @@ Model {
 	  TargetBitPerShort	  16
 	  TargetBitPerInt	  32
 	  TargetBitPerLong	  32
+	  TargetBitPerFloat	  32
+	  TargetBitPerDouble	  64
+	  TargetBitPerPointer	  32
+	  TargetLargestAtomicInteger "Char"
+	  TargetLargestAtomicFloat "None"
 	  TargetShiftRightIntArith on
 	  TargetIntDivRoundTo	  "Undefined"
 	  TargetEndianess	  "Unspecified"
@@ -333,10 +363,11 @@ Model {
 	}
 	Simulink.ModelReferenceCC {
 	  $ObjectID		  7
-	  Version		  "1.10.0"
+	  Version		  "1.12.0"
 	  UpdateModelReferenceTargets "IfOutOfDateOrStructuralChange"
 	  CheckModelReferenceTargetMessage "error"
 	  EnableParallelModelReferenceBuilds off
+	  ParallelModelReferenceErrorOnInvalidPool on
 	  ParallelModelReferenceMATLABWorkerInit "None"
 	  ModelReferenceNumInstancesAllowed "Multi"
 	  PropagateVarSize	  "Infer from blocks in model"
@@ -347,7 +378,7 @@ Model {
 	}
 	Simulink.SFSimCC {
 	  $ObjectID		  8
-	  Version		  "1.10.0"
+	  Version		  "1.12.0"
 	  SFSimEnableDebug	  on
 	  SFSimOverflowDetection  on
 	  SFSimEcho		  on
@@ -356,12 +387,13 @@ Model {
 	  SimExtrinsic		  on
 	  SimIntegrity		  on
 	  SimUseLocalCustomCode	  off
+	  SimParseCustomCode	  on
 	  SimBuildMode		  "sf_incremental_build"
 	}
 	Simulink.RTWCC {
 	  $BackupClass		  "Simulink.RTWCC"
 	  $ObjectID		  9
-	  Version		  "1.10.0"
+	  Version		  "1.12.0"
 	  SystemTargetFile	  "grt.tlc"
 	  GenCodeOnly		  off
 	  MakeCommand		  "make_rtw"
@@ -391,6 +423,9 @@ Model {
 	  GenerateTraceReportSf	  off
 	  GenerateTraceReportEml  off
 	  GenerateCodeInfo	  off
+	  GenerateWebview	  off
+	  GenerateCodeMetricsReport off
+	  GenerateCodeReplacementReport	off
 	  RTWCompilerOptimization "Off"
 	  CheckMdlBeforeBuild	  "Off"
 	  CustomRebuildMode	  "OnUpdate"
@@ -399,7 +434,7 @@ Model {
 	    Dimension		    2
 	    Simulink.CodeAppCC {
 	      $ObjectID		      10
-	      Version		      "1.10.0"
+	      Version		      "1.12.0"
 	      ForceParamTrailComments off
 	      GenerateComments	      on
 	      IgnoreCustomStorageClasses on
@@ -412,6 +447,7 @@ Model {
 	      IncAutoGenComments      off
 	      SimulinkDataObjDesc     off
 	      SFDataObjDesc	      off
+	      MATLABFcnDesc	      off
 	      IncDataTypeInIds	      off
 	      MangleLength	      1
 	      CustomSymbolStrGlobalVar "$R$N$M"
@@ -426,7 +462,9 @@ Model {
 	      ParamNamingRule	      "None"
 	      SignalNamingRule	      "None"
 	      InsertBlockDesc	      off
+	      InsertPolySpaceComments off
 	      SimulinkBlockComments   on
+	      MATLABSourceComments    off
 	      EnableCustomComments    off
 	      InlinedPrmAccess	      "Literals"
 	      ReqsInCode	      off
@@ -435,14 +473,14 @@ Model {
 	    Simulink.GRTTargetCC {
 	      $BackupClass	      "Simulink.TargetCC"
 	      $ObjectID		      11
-	      Version		      "1.10.0"
+	      Version		      "1.12.0"
 	      TargetFcnLib	      "ansi_tfl_table_tmw.mat"
 	      TargetLibSuffix	      ""
 	      TargetPreCompLibLocation ""
-	      TargetFunctionLibrary   "ANSI_C"
+	      CodeReplacementLibrary  "ANSI_C"
 	      UtilityFuncGeneration   "Auto"
 	      ERTMultiwordTypeDef     "System defined"
-	      ERTCodeCoverageTool     "None"
+	      CodeExecutionProfiling  off
 	      ERTMultiwordLength      256
 	      MultiwordLength	      2048
 	      GenerateFullHeader      on
@@ -452,9 +490,11 @@ Model {
 	      ModelReferenceCompliant off
 	      ParMdlRefBuildCompliant on
 	      CompOptLevelCompliant   off
+	      ConcurrentExecutionCompliant on
 	      IncludeMdlTerminateFcn  on
 	      GeneratePreprocessorConditionals "Disable all"
 	      CombineOutputUpdateFcns off
+	      CombineSignalStateStructs	off
 	      SuppressErrorStatus     off
 	      ERTFirstTimeCompliant   off
 	      IncludeFileDelimiter    "Auto"
@@ -475,6 +515,7 @@ Model {
 	      ModelStepFunctionPrototypeControlCompliant off
 	      CPPClassGenCompliant    off
 	      AutosarCompliant	      off
+	      GRTInterface	      on
 	      UseMalloc		      off
 	      ExtMode		      off
 	      ExtModeStaticAlloc      off
@@ -486,6 +527,7 @@ Model {
 	      RTWCAPISignals	      off
 	      RTWCAPIParams	      off
 	      RTWCAPIStates	      off
+	      RTWCAPIRootIO	      off
 	      GenerateASAP2	      off
 	    }
 	    PropName		    "Components"
@@ -495,7 +537,7 @@ Model {
       }
       Name		      "Configuration"
       CurrentDlgPage	      "Data Import//Export"
-      ConfigPrmDlgPosition    " [ 452, 45, 1332, 675 ] "
+      ConfigPrmDlgPosition     [ 452, 45, 1332, 675 ] 
     }
     PropName		    "ConfigurationSets"
   }
@@ -503,6 +545,7 @@ Model {
     $PropName		    "ActiveConfigurationSet"
     $ObjectID		    1
   }
+  ExplicitPartitioning	  off
   BlockDefaults {
     ForegroundColor	    "black"
     BackgroundColor	    "white"
@@ -538,10 +581,12 @@ Model {
     Block {
       BlockType		      Clock
       DisplayTime	      off
+      Decimation	      "10"
     }
     Block {
       BlockType		      Concatenate
       NumInputs		      "2"
+      Mode		      "Vector"
       ConcatenateDimension    "1"
     }
     Block {
@@ -551,10 +596,6 @@ Model {
       SamplingMode	      "Sample based"
       OutMin		      "[]"
       OutMax		      "[]"
-      OutDataTypeMode	      "Inherit from 'Constant value'"
-      OutDataType	      "fixdt(1,16,0)"
-      ConRadixGroup	      "Use specified scaling"
-      OutScaling	      "[]"
       OutDataTypeStr	      "Inherit: Inherit from 'Constant value'"
       LockScale		      off
       SampleTime	      "inf"
@@ -574,16 +615,9 @@ Model {
       Multiplication	      "Element-wise(K.*u)"
       ParamMin		      "[]"
       ParamMax		      "[]"
-      ParameterDataTypeMode   "Same as input"
-      ParameterDataType	      "fixdt(1,16,0)"
-      ParameterScalingMode    "Best Precision: Matrix-wise"
-      ParameterScaling	      "[]"
       ParamDataTypeStr	      "Inherit: Same as input"
       OutMin		      "[]"
       OutMax		      "[]"
-      OutDataTypeMode	      "Same as input"
-      OutDataType	      "fixdt(1,16,0)"
-      OutScaling	      "[]"
       OutDataTypeStr	      "Inherit: Same as input"
       LockScale		      off
       RndMeth		      "Floor"
@@ -609,19 +643,14 @@ Model {
     Block {
       BlockType		      Outport
       Port		      "1"
-      UseBusObject	      off
-      BusObject		      "BusObject"
+      OutMin		      "[]"
+      OutMax		      "[]"
+      OutDataTypeStr	      "Inherit: auto"
+      LockScale		      off
       BusOutputAsStruct	      off
       PortDimensions	      "-1"
       VarSizeSig	      "Inherit"
       SampleTime	      "-1"
-      OutMin		      "[]"
-      OutMax		      "[]"
-      DataType		      "auto"
-      OutDataType	      "fixdt(1,16,0)"
-      OutScaling	      "[]"
-      OutDataTypeStr	      "Inherit: auto"
-      LockScale		      off
       SignalType	      "auto"
       SamplingMode	      "auto"
       SourceOfInitialOutputValue "Dialog"
@@ -637,9 +666,6 @@ Model {
       InputSameDT	      on
       OutMin		      "[]"
       OutMax		      "[]"
-      OutDataTypeMode	      "Same as first input"
-      OutDataType	      "fixdt(1,16,0)"
-      OutScaling	      "[]"
       OutDataTypeStr	      "Inherit: Same as first input"
       LockScale		      off
       RndMeth		      "Zero"
@@ -657,6 +683,7 @@ Model {
       YMax		      "5"
       SaveToWorkspace	      off
       SaveName		      "ScopeData"
+      DataFormat	      "Array"
       LimitDataPoints	      on
       MaxDataPoints	      "5000"
       Decimation	      "1"
@@ -673,9 +700,6 @@ Model {
       AccumDataTypeStr	      "Inherit: Inherit via internal rule"
       OutMin		      "[]"
       OutMax		      "[]"
-      OutDataTypeMode	      "Same as first input"
-      OutDataType	      "fixdt(1,16,0)"
-      OutScaling	      "[]"
       OutDataTypeStr	      "Inherit: Same as first input"
       LockScale		      off
       RndMeth		      "Floor"
@@ -685,7 +709,7 @@ Model {
   }
   System {
     Name		    "sl_partitioned"
-    Location		    [371, 94, 1357, 785]
+    Location		    [308, 50, 1294, 741]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -699,11 +723,11 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    73
+    SIDHighWatermark	    "75"
     Block {
       BlockType		      Scope
       Name		      "Cartesian\nvelocity"
-      SID		      50
+      SID		      "50"
       Ports		      [1]
       Position		      [235, 504, 265, 536]
       Floating		      off
@@ -715,6 +739,7 @@ Model {
 	ListType		AxesTitles
 	axes1			"%<SignalLabel>"
       }
+      ShowLegends	      off
       TimeRange		      "20"
       YMin		      "0"
       YMax		      "350"
@@ -724,7 +749,7 @@ Model {
     Block {
       BlockType		      Display
       Name		      "Cartesian velocity dmd"
-      SID		      1
+      SID		      "1"
       Ports		      [1]
       Position		      [45, 459, 135, 581]
       BlockMirror	      on
@@ -735,31 +760,24 @@ Model {
     Block {
       BlockType		      Clock
       Name		      "Clock"
-      SID		      39
+      SID		      "39"
       Position		      [590, 15, 670, 35]
       DisplayTime	      on
-      Decimation	      "10"
     }
     Block {
       BlockType		      Gain
       Name		      "Gain"
-      SID		      64
+      SID		      "64"
       Position		      [520, 305, 550, 335]
       Gain		      "[0.05 0.05]"
-      ParameterDataTypeMode   "Inherit via internal rule"
-      ParameterDataType	      "fixdt(1, 16)"
-      ParameterScaling	      "2^0"
       ParamDataTypeStr	      "Inherit: Inherit via internal rule"
-      OutDataTypeMode	      "Inherit via internal rule"
-      OutDataType	      "fixdt(1, 16)"
-      OutScaling	      "2^0"
       OutDataTypeStr	      "Inherit: Inherit via internal rule"
       SaturateOnIntegerOverflow	off
     }
     Block {
       BlockType		      MATLABFcn
       Name		      "Jxy"
-      SID		      58
+      SID		      "58"
       Ports		      [1, 1]
       Position		      [600, 165, 660, 195]
       MATLABFcn		      "u(:,[1 2 4 5])"
@@ -768,7 +786,7 @@ Model {
     Block {
       BlockType		      MATLABFcn
       Name		      "Jz"
-      SID		      60
+      SID		      "60"
       Ports		      [1, 1]
       Position		      [522, 220, 578, 250]
       BlockRotation	      270
@@ -780,7 +798,7 @@ Model {
     Block {
       BlockType		      MATLABFcn
       Name		      "MATLAB Fcn"
-      SID		      3
+      SID		      "3"
       Ports		      [1, 1]
       Position		      [435, 400, 495, 430]
       BackgroundColor	      "lightBlue"
@@ -797,7 +815,7 @@ Model {
     Block {
       BlockType		      MATLABFcn
       Name		      "MATLAB Fcn1"
-      SID		      4
+      SID		      "4"
       Ports		      [1, 1]
       Position		      [665, 450, 725, 480]
       ShowName		      off
@@ -806,7 +824,7 @@ Model {
     Block {
       BlockType		      Mux
       Name		      "Mux"
-      SID		      54
+      SID		      "54"
       Ports		      [2, 1]
       Position		      [475, 268, 480, 372]
       ShowName		      off
@@ -816,22 +834,19 @@ Model {
     Block {
       BlockType		      Product
       Name		      "Product"
-      SID		      57
+      SID		      "57"
       Ports		      [2, 1]
       Position		      [600, 274, 625, 336]
       ShowName		      off
       Multiplication	      "Matrix(*)"
       InputSameDT	      off
-      OutDataTypeMode	      "Inherit via internal rule"
-      OutDataType	      "fixdt(1, 16)"
-      OutScaling	      "2^0"
       OutDataTypeStr	      "Inherit: Inherit via internal rule"
       SaturateOnIntegerOverflow	off
     }
     Block {
       BlockType		      Sum
       Name		      "Sum"
-      SID		      10
+      SID		      "10"
       Ports		      [2, 1]
       Position		      [330, 405, 350, 425]
       BackgroundColor	      "lightBlue"
@@ -842,7 +857,7 @@ Model {
     Block {
       BlockType		      Sum
       Name		      "Sum1"
-      SID		      51
+      SID		      "51"
       Ports		      [2, 1]
       Position		      [655, 295, 675, 315]
       BlockRotation	      270
@@ -850,16 +865,13 @@ Model {
       IconShape		      "round"
       Inputs		      "++|"
       InputSameDT	      off
-      OutDataTypeMode	      "Inherit via internal rule"
-      OutDataType	      "fixdt(1, 16)"
-      OutScaling	      "2^0"
       OutDataTypeStr	      "Inherit: Inherit via internal rule"
       SaturateOnIntegerOverflow	off
     }
     Block {
       BlockType		      Display
       Name		      "T"
-      SID		      40
+      SID		      "40"
       Ports		      [1]
       Position		      [205, 16, 540, 114]
       Decimation	      "1"
@@ -868,16 +880,15 @@ Model {
     Block {
       BlockType		      Concatenate
       Name		      "Vector\nConcatenate"
-      SID		      61
+      SID		      "61"
       Ports		      [2, 1]
       Position		      [800, 329, 815, 371]
-      Mode		      "Vector"
       ConcatenateDimension    "2"
     }
     Block {
       BlockType		      MATLABFcn
       Name		      "area"
-      SID		      55
+      SID		      "55"
       Ports		      [1, 1]
       Position		      [385, 280, 445, 310]
       MATLABFcn		      "1-sqrt( abs(mpq_poly(u, 0,0)) )/200"
@@ -885,7 +896,7 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "camera"
-      SID		      47
+      SID		      "47"
       Ports		      [1, 1]
       Position		      [215, 141, 295, 219]
       BackgroundColor	      "lightBlue"
@@ -893,21 +904,13 @@ Model {
       LibraryVersion	      "1.54"
       SourceBlock	      "roblocks/Vision/camera"
       SourceType	      ""
-      ShowPortLabels	      "FromPortIcon"
-      SystemSampleTime	      "-1"
-      FunctionWithSeparateData off
-      RTWMemSecFuncInitTerm   "Inherit from model"
-      RTWMemSecFuncExecute    "Inherit from model"
-      RTWMemSecDataConstants  "Inherit from model"
-      RTWMemSecDataInternal   "Inherit from model"
-      RTWMemSecDataParameters "Inherit from model"
       cam		      "cam"
       points		      "mkgrid(2, 0.5, 'T', transl(0,0,3))"
     }
     Block {
       BlockType		      Constant
       Name		      "desired\nimage plane\ncoordinates"
-      SID		      16
+      SID		      "16"
       Position		      [170, 389, 285, 441]
       BackgroundColor	      "green"
       Value		      "[412 412 612 612; 412 612 612 412]"
@@ -916,7 +919,7 @@ Model {
     Block {
       BlockType		      Display
       Name		      "feature error"
-      SID		      17
+      SID		      "17"
       Ports		      [1]
       Position		      [420, 455, 510, 625]
       BlockMirror	      on
@@ -927,7 +930,7 @@ Model {
     Block {
       BlockType		      Display
       Name		      "feature error\nnorm"
-      SID		      18
+      SID		      "18"
       Ports		      [1]
       Position		      [810, 450, 900, 480]
       Decimation	      "1"
@@ -936,11 +939,11 @@ Model {
     Block {
       BlockType		      Scope
       Name		      "feature error2"
-      SID		      19
+      SID		      "19"
       Ports		      [1]
       Position		      [705, 524, 735, 556]
       Floating		      off
-      Location		      [53, 576, 839, 1023]
+      Location		      [338, 438, 1124, 885]
       Open		      on
       NumInputPorts	      "1"
       ZoomMode		      "yonly"
@@ -948,6 +951,17 @@ Model {
 	ListType		AxesTitles
 	axes1			"%<SignalLabel>"
       }
+      List {
+	ListType		ScopeGraphics
+	FigureColor		"[0.5 0.5 0.5]"
+	AxesColor		"[0 0 0]"
+	AxesTickColor		"[1 1 1]"
+	LineColors		"[1 1 0;1 0 1;0 1 1;1 0 0;0 1 0;0 0 1]"
+	LineStyles		"-|-|-|-|-|-"
+	LineWidths		"[0.5 0.5 0.5 0.5 0.5 0.5]"
+	MarkerStyles		"none|none|none|none|none|none"
+      }
+      ShowLegends	      off
       TimeRange		      "20"
       YMin		      "-600"
       YMax		      "150"
@@ -958,7 +972,7 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "image\nJacobian"
-      SID		      72
+      SID		      "72"
       Ports		      [1, 1]
       Position		      [410, 154, 480, 206]
       BackgroundColor	      "lightBlue"
@@ -966,21 +980,13 @@ Model {
       LibraryVersion	      "1.54"
       SourceBlock	      "roblocks/Vision/image\nJacobian"
       SourceType	      ""
-      ShowPortLabels	      "FromPortIcon"
-      SystemSampleTime	      "-1"
-      FunctionWithSeparateData off
-      RTWMemSecFuncInitTerm   "Inherit from model"
-      RTWMemSecFuncExecute    "Inherit from model"
-      RTWMemSecDataConstants  "Inherit from model"
-      RTWMemSecDataInternal   "Inherit from model"
-      RTWMemSecDataParameters "Inherit from model"
       cam		      "cam"
       z			      "2"
     }
     Block {
       BlockType		      Gain
       Name		      "lambda"
-      SID		      63
+      SID		      "63"
       Position		      [765, 240, 805, 295]
       BlockRotation	      270
       BlockMirror	      on
@@ -989,49 +995,33 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "pinvJac"
-      SID		      73
+      SID		      "73"
       Ports		      [2, 2]
       Position		      [700, 165, 740, 225]
       BackgroundColor	      "red"
       DropShadow	      on
       LibraryVersion	      "1.54"
       SourceBlock	      "roblocks/Vision/pinvJac"
-      SourceType	      "SubSystem"
-      ShowPortLabels	      "FromPortIcon"
-      SystemSampleTime	      "-1"
-      FunctionWithSeparateData off
-      RTWMemSecFuncInitTerm   "Inherit from model"
-      RTWMemSecFuncExecute    "Inherit from model"
-      RTWMemSecDataConstants  "Inherit from model"
-      RTWMemSecDataInternal   "Inherit from model"
-      RTWMemSecDataParameters "Inherit from model"
+      SourceType	      ""
     }
     Block {
       BlockType		      Reference
-      Name		      "pose "
-      SID		      46
+      Name		      "pose integral"
+      SID		      "75"
       Ports		      [1, 1]
       Position		      [55, 153, 125, 207]
       BackgroundColor	      "red"
       DropShadow	      on
       LibraryVersion	      "1.54"
-      SourceBlock	      "roblocks/Trajectory/pose integral"
+      SourceBlock	      "roblocks/Kinematics/pose integral"
       SourceType	      ""
-      ShowPortLabels	      "FromPortIcon"
-      SystemSampleTime	      "-1"
-      FunctionWithSeparateData off
-      RTWMemSecFuncInitTerm   "Inherit from model"
-      RTWMemSecFuncExecute    "Inherit from model"
-      RTWMemSecDataConstants  "Inherit from model"
-      RTWMemSecDataInternal   "Inherit from model"
-      RTWMemSecDataParameters "Inherit from model"
       T0		      "transl(-1,-1,0)*trotx(0.2)*trotz(0.3)"
       dt		      "0.02"
     }
     Block {
       BlockType		      MATLABFcn
       Name		      "rearrange"
-      SID		      62
+      SID		      "62"
       Ports		      [1, 1]
       Position		      [855, 335, 915, 365]
       MATLABFcn		      "u([1 2 5 3 4 6])"
@@ -1039,7 +1029,7 @@ Model {
     Block {
       BlockType		      MATLABFcn
       Name		      "theta"
-      SID		      56
+      SID		      "56"
       Ports		      [1, 1]
       Position		      [385, 330, 445, 360]
       MATLABFcn		      "angdiff( atan2(u(2,3)-u(2,2),u(1,3)-u(1,2)), 0 )"
@@ -1047,7 +1037,7 @@ Model {
     Block {
       BlockType		      Display
       Name		      "visjac\ncondition"
-      SID		      26
+      SID		      "26"
       Ports		      [1]
       Position		      [825, 195, 915, 225]
       Decimation	      "1"
@@ -1056,31 +1046,25 @@ Model {
     Block {
       BlockType		      Outport
       Name		      "p"
-      SID		      69
+      SID		      "69"
       Position		      [355, 143, 385, 157]
       IconDisplay	      "Port number"
-      OutDataType	      "fixdt(1, 16)"
-      OutScaling	      "2^0"
     }
     Block {
       BlockType		      Outport
       Name		      "v"
-      SID		      70
+      SID		      "70"
       Position		      [235, 588, 265, 602]
       Port		      "2"
       IconDisplay	      "Port number"
-      OutDataType	      "fixdt(1, 16)"
-      OutScaling	      "2^0"
     }
     Block {
       BlockType		      Outport
       Name		      "e"
-      SID		      71
+      SID		      "71"
       Position		      [630, 493, 660, 507]
       Port		      "3"
       IconDisplay	      "Port number"
-      OutDataType	      "fixdt(1, 16)"
-      OutScaling	      "2^0"
     }
     Line {
       SrcBlock		      "camera"
@@ -1169,7 +1153,7 @@ Model {
       DstPort		      1
     }
     Line {
-      SrcBlock		      "pose "
+      SrcBlock		      "pose integral"
       SrcPort		      1
       Points		      [35, 0]
       Branch {
@@ -1247,11 +1231,6 @@ Model {
       SrcPort		      1
       Points		      [20, 0; 0, 305; -740, 0]
       Branch {
-	Points			[-180, 0; 0, -475]
-	DstBlock		"pose "
-	DstPort			1
-      }
-      Branch {
 	Points			[0, -60]
 	Branch {
 	  Points		  [0, -75]
@@ -1268,6 +1247,11 @@ Model {
 	  DstBlock		  "v"
 	  DstPort		  1
 	}
+      }
+      Branch {
+	Points			[-180, 0; 0, -475]
+	DstBlock		"pose integral"
+	DstPort			1
       }
     }
     Line {
@@ -1309,6 +1293,7 @@ Model {
       DstPort		      1
     }
     Annotation {
+      SID		      "74"
       Name		      "desired camera velocity"
       Position		      [567, 669]
     }
