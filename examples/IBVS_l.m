@@ -1,36 +1,40 @@
 %IBVS   Implement classical IBVS for point features
 %
-%  results = ibvs(T)
-%  results = ibvs(T, params)
+% A concrete class for simulation of image-based visual servoing (IBVS), a subclass of
+% VisualServo.  Two windows are shown and animated:
+%   - The camera view, showing the desired view (*) and the 
+%     current view (o)
+%   - The external view, showing the target points and the camera
 %
-%  Simulate IBVS with for a square target comprising 4 points is placed 
-%  in the world XY plane. The camera/robot is initially at pose T and is
-%  driven to the orgin.
+% Methods::
+% run            Run the simulation, complete results kept in the object
+% plot_p         Plot image plane coordinates of points vs time
+% plot_vel       Plot camera velocity vs time
+% plot_camera    Plot camera pose vs time
+% plot_jcond     Plot Jacobian condition vs time 
+% plot_z         Plot point depth vs time
+% plot_error     Plot feature error vs time
+% plot_all       Plot all of the above in separate figures
+% char           Convert object to a concise string
+% display        Display the object as a string
 %
-%  Two windows are shown and animated:
-%   1. The camera view, showing the desired view (*) and the 
-%      current view (o)
-%   2. The external view, showing the target points and the camera
+% Example::
+%         cam = CentralCamera('default');    
+%         ibvs = IBVS_l(cam, 'example'); 
+%         ibvs.run()
 %
-% The results structure contains time-history information about the image
-% plane, camera pose, error, Jacobian condition number, error norm, image
-% plane size and desired feature locations.
+% References::
+% - Robotics, Vision & Control, Chap 15
+%   P. Corke, Springer 2011.
 %
-% The params structure can be used to override simulation defaults by
-% providing elements, defaults in parentheses:
+% Notes::
+% - The history property is a vector of structures each of which is a snapshot at
+%   each simulation step of information about the image plane, camera pose, error, 
+%   Jacobian condition number, error norm, image plane size and desired feature 
+%   locations.
+% - Lines are constructed by joining consecutive point features.
 %
-%   target_size    - the side length of the target in world units (0.5)
-%   target_center  - center of the target in world coords (0,0,3)
-%   niter          - the number of iterations to run the simulation (500)
-%   eterm          - a stopping criteria on feature error norm (0)
-%   lambda         - gain, can be scalar or diagonal 6x6 matrix (0.01)
-%   ci             - camera intrinsic structure (camparam)
-%   depth          - depth of points to use for Jacobian, scalar for
-%                    all points, of 4-vector.  If null take actual value
-%                    from simulation      ([])
-%
-% SEE ALSO: ibvsplot
-
+% See also VisualServo, PBVS, IBVS_l, IBVS_e.
 % IMPLEMENTATION NOTE
 %
 % 1.  As per task function notation (Chaumette papers) the error is
@@ -53,6 +57,27 @@ classdef IBVS_l < VisualServo
     methods
 
         function ibvs = IBVS_l(cam, varargin)
+            %IBVS_l.IBVS_l Create IBVS line visual servo object
+            %
+            % IB = IBVS_l(camera, options)
+            %
+            % Options::
+            % 'example'         Use set of canned parameters
+            % 'niter',N         Maximum number of iterations
+            % 'eterm',E         Terminate when norm of feature error < E
+            % 'lambda',L        Control gain, positive definite scalar or matrix
+            % 'T0',T            The initial pose
+            % 'Tf',T            The final camera pose used only to determine desired
+            %                   image plane coordinates (default 1m in z-direction)
+            % 'P',p             The set of world points (3xN)
+            % 'planes',P        The world planes holding the lines (4xN)
+            % 'fps',F           Number of simulation frames per second (default t)
+            % 'verbose'         Print out extra information during simulation
+            %
+            % Notes::
+            % - If 'P' is specified the lines join points 1-2, 2-3, N-1.
+            %
+            % See also VisualServo.
 
             % invoke superclass constructor
             ibvs = ibvs@VisualServo(cam, varargin{:});
@@ -83,6 +108,12 @@ classdef IBVS_l < VisualServo
         end
 
         function init(vs)
+            %IBVS_l.init Initialize simulation
+            %
+            % IB.init() initializes the simulation.  Implicitly called by
+            % IB.run().
+            %
+            % See also VisualServo, IBVS_l.run.
 
             if isempty(vs.Tf)
                 vs.Tf = transl(0, 0, 1);
@@ -94,7 +125,7 @@ classdef IBVS_l < VisualServo
             vs.tr_star = vs.getlines(vs.Tf, inv(vs.camera.K));
             vs.tr_star_plot = vs.getlines(vs.Tf);
 
-            %% initialize the vservo variables
+            % initialize the vservo variables
             vs.camera.T = vs.T0;    % set camera back to its initial pose
             vs.Tcam = vs.T0;                % initial camera/robot pose
             
@@ -103,7 +134,7 @@ classdef IBVS_l < VisualServo
             % this is the 'external' view of the points and the camera
             %plot_sphere(vs.P, 0.05, 'b')
             %cam2 = showcamera(T0);
-            vs.camera.visualize(vs.P, 'label');
+            vs.camera.plot_camera();
             %camup([0,-1,0]);
 
             vs.history = [];
@@ -112,7 +143,7 @@ classdef IBVS_l < VisualServo
         function lines = getlines(vs, T, scale)
             p = vs.camera.project(vs.P, 'Tcam', T);
             if nargin > 2
-                p = transformp(scale, p);
+                p = homtrans(scale, p);
             end
             for i=1:numcols(p)
                 j = mod(i,numcols(p))+1;
@@ -123,6 +154,13 @@ classdef IBVS_l < VisualServo
         end
 
         function status = step(vs)
+            %IBVS_l.step Simulate one time step
+            %
+            % STAT = IB.step() performs one simulation time step of IBVS.  It is
+            % called implicitly from the superclass run method.  STAT is
+            % one if the termination condition is met, else zero.
+            %
+            % See also VisualServo, IBVS_l.run.
             status = 0;
             Zest = [];
             
@@ -147,7 +185,6 @@ classdef IBVS_l < VisualServo
                 end
             end
         
-            tr
             vs.tr_star
 
             J = vs.camera.visjac_l(tr, vs.planes);
@@ -169,7 +206,7 @@ classdef IBVS_l < VisualServo
 
             % update the history variables
             hist.uv = uv(:);
-            vel = tr2diff(Td);
+            vel = tr2delta(Td);
             hist.vel = vel;
             hist.e = e;
             hist.en = norm(e);

@@ -1,19 +1,28 @@
-%VSPLOT  Plot visual servo results
+%VisualServo  Abstract class for visual servoing
 %
-%  vsplot(results)
-%  vsplot(results, filename)
-%  vsplot(results, npoints)
-%  vsplot(results, npoints, filename)
+% VisualServo(CAMERA, OPTIONS) 
 %
-% Display data from results structure as several graphs.
-% Display all points by default, or first npoints if specified.
+% Methods::
+% run            Run the simulation, complete results kept in the object
+% step           One simulation step (provided by the concrete class)
+% init           Initialized the simulation (provided by the concrete class)
+% plot_p         Plot image plane coordinates of points vs time
+% plot_vel       Plot camera velocity vs time
+% plot_camera    Plot camera pose vs time
+% plot_jcond     Plot Jacobian condition vs time 
+% plot_z         Plot point depth vs time
+% plot_error     Plot feature error vs time
+% plot_all       Plot all of the above in separate figures
+% char           Convert object to a concise string
+% display        Display the object as a string
 %
-% If filename is given those files are saved in the current directory
-% with different suffixes:
-%   filename-uv   for image plane trajectory
-%   filename-v    for Cartesian velocity
-%   filename-cart for Cartesian pose
-%   filename-jc   for Jacobian condition
+% Properties::
+% history     A vector of structs holding simulation results
+%
+% Notes::
+% - Must be subclassed.
+%
+% See also PBVS, IBVS, IBVS_l, IBVS_e.
 
 classdef VisualServo < handle
     properties
@@ -37,10 +46,29 @@ classdef VisualServo < handle
     methods
 
         function vs = VisualServo(cam, varargin)
+            %VisualServo.VisualServo Create IBVS object
+            %
+            % VS = VisualServo(camera, options) creates an image-based visual servo
+            % simulation object.
+            %
+            % Options::
+            % 'niter',N         Maximum number of iterations
+            % 'fps',F           Number of simulation frames per second (default t)
+            % 'Tf',T            The final pose
+            % 'T0',T            The initial pose
+            % 'P',p             The set of world points (3xN)
+            % 'targetsize',S    The target points are the corners of an SxS
+            %                   square in the XY-plane at Z=0 (default S=0.5)
+            % 'pstar',p         The desired image plane coordinates
+            % 'verbose'         Print out extra information during simulation
+            %
+            % Notes::
+            % - If 'P' is specified it overrides the default square target.
+
+            
             vs.camera = cam;
             vs.history = [];
 
-            cam
             z = 3;
             opt.niter = [];
             opt.fps = 5;
@@ -66,6 +94,16 @@ classdef VisualServo < handle
         end
 
         function run(vs, nsteps)
+            %VisualServo.run  Run visual servo simulation
+            %
+            % VS.run(N) run the simulation for N steps
+            %
+            % VS.run() as above but run it for the number of steps
+            % specified in the constructor or Inf.
+            %
+            % Notes::
+            % - Repeatedly calls the subclass step() method which returns
+            %   a flag to indicate if the simulation is complete.
             vs.init();
 
             if nargin == 1
@@ -97,6 +135,16 @@ classdef VisualServo < handle
         end
 
         function plot_p(vs)
+            %VisualServo.plot_p Plot feature trajectory
+            %
+            % VS.plot_p() plots the feature values versus time.
+            %
+            % See also VS.plot_vel, VS.plot_error, VS.plot_camera,
+            % VS.plot_jcond, VS.plot_z, VS.plot_error, VS.plot_all.
+            
+            if isempty(vs.history)
+                return
+            end
             clf
             hold on
             % image plane trajectory
@@ -122,7 +170,15 @@ classdef VisualServo < handle
         end
 
        function plot_vel(vs)
-            % Cartesian velocity vs time
+            %VisualServo.plot_vel Plot camera trajectory
+            %
+            % VS.plot_vel() plots the camera velocity versus time.
+            %
+            % See also VS.plot_p, VS.plot_error, VS.plot_camera,
+            % VS.plot_jcond, VS.plot_z, VS.plot_error, VS.plot_all.
+            if isempty(vs.history)
+                return
+            end
             clf
             vel = [vs.history.vel]';
             plot(vel(:,1:3), '-')
@@ -137,7 +193,16 @@ classdef VisualServo < handle
         end
 
         function plot_camera(vs)
-            
+            %VisualServo.plot_camera Plot camera trajectory
+            %
+            % VS.plot_camera() plots the camera pose versus time.
+            %
+            % See also VS.plot_p, VS.plot_vel, VS.plot_error,
+            % VS.plot_jcond, VS.plot_z, VS.plot_error, VS.plot_all.
+
+            if isempty(vs.history)
+                return
+            end
             clf
             % Cartesian camera position vs time
             T = reshape([vs.history.Tcam], 4, 4, []);
@@ -157,7 +222,18 @@ classdef VisualServo < handle
         end
 
         function plot_jcond(vs)
+            %VisualServo.plot_jcond Plot image Jacobian condition
+            %
+            % VS.plot_jcond() plots image Jacobian condition versus time.
+            % Indicates whether the point configuration is close to
+            % singular.
+            %
+            % See also VS.plot_p, VS.plot_vel, VS.plot_error, VS.plot_camera,
+            % VS.plot_z, VS.plot_error, VS.plot_all.  
             
+            if isempty(vs.history)
+                return
+            end
             clf
 
             Jcond = [vs.history.jcond];
@@ -171,6 +247,15 @@ classdef VisualServo < handle
 
 
         function plot_z(vs)
+            %VisualServo.plot_z Plot feature depth
+            %
+            % VS.plot_p() plots  feature depth versus time.
+            %
+            % See also VS.plot_p, VS.plot_vel, VS.plot_error, VS.plot_camera,
+            % VS.plot_jcond, VS.plot_error, VS.plot_all.
+             if isempty(vs.history)
+                return
+            end
             clf
             Zest = [vs.history.Zest];
             Ztrue = [vs.history.Ztrue];
@@ -184,7 +269,17 @@ classdef VisualServo < handle
         end
 
         function plot_error(vs)
-            % Cartesian velocity vs time
+            %VisualServo.plot_error Plot feature error
+            %
+            % VS.plot_p() plots  feature error versus time.
+            %
+            % See also VS.plot_vel, VS.plot_error, VS.plot_camera,
+            % VS.plot_jcond, VS.plot_z, VS.plot_all.
+            
+            if isempty(vs.history)
+                return
+            end
+            clf
             e = [vs.history.e]';
             plot(e(:,1:2:end), 'r');
             hold on
@@ -197,8 +292,26 @@ classdef VisualServo < handle
             legend('u', 'v');
         end
 
-        function plot_all(vs, prefix)
-
+        function plot_all(vs, name, dev)
+            %VisualServo.plot_all Plot all trajectory
+            %
+            % VS.plot_all() plots in separate figures feature values, velocity, 
+            % error and camera pose versus time.
+            %
+            % VS.plot_all(DEV, NAME) writes each plot to a separate file.
+            % The name is an SPRINTF format specifier with a %s field that
+            % is replaced with a unique per plot suffix.  DEV is the device name
+            % passed to the MATLAB print function
+            %
+            % Example::
+            %         vs.plot_all('-depsc', 'eg1%s.eps');
+            %
+            % See also VS.plot_vel, VS.plot_error, VS.plot_camera,
+            % VS.plot_error.
+            
+            if nargin < 3
+                dev = '-depsc';
+            end
             if nargin < 2
                 prefix = [];
             end
@@ -206,28 +319,57 @@ classdef VisualServo < handle
             figure
             vs.plot_p();
             if ~isempty(prefix)
-                iprint(strcat(prefix, '-p'));
+                print(gcf, dev, sprintf(name, '-p'));
             end
 
             figure
             vs.plot_vel();
             if ~isempty(prefix)
-                iprint(strcat(prefix, '-vel'));
+                print(gcf, dev, strcat(prefix, '-vel'));
             end
 
             figure
             vs.plot_camera();
             if ~isempty(prefix)
-                iprint(strcat(prefix, '-cam'));
+                print(gcf, dev, strcat(prefix, '-camera'));
             end
             figure
             vs.plot_error();
             if ~isempty(prefix)
-                iprint(strcat(prefix, '-fe'));
+                print(gcf, dev, strcat(prefix, '-error'));
             end
+            
+            % optional plots depending on what history was recorded
+            if isfield(vs.history, 'Zest')
+                figure
+                vs.plot_z();
+                if ~isempty(prefix)
+                    print(gcf, dev, strcat(prefix, '-z'));
+                end
+            end
+            
+            if isfield(vs.history, 'jcond')
+                figure
+                vs.plot_jcond();
+                if ~isempty(prefix)
+                    print(gcf, dev, strcat(prefix, '-jcond'));
+                end
+            end
+          
         end
 
         function display(vs)
+            %VisualServo.display Display parameters
+            %
+            % VS.display() displays the VisualServo parameters in compact single line format.
+            %
+            % Notes::
+            % - This method is invoked implicitly at the command line when the result
+            %   of an expression is a VisualServo object and the command has no trailing
+            %   semicolon.
+            %
+            % See also VisualServo.char.
+
             loose = strcmp( get(0, 'FormatSpacing'), 'loose');
             if loose
                 disp(' ');
@@ -237,6 +379,12 @@ classdef VisualServo < handle
         end % display()
 
         function s = char(vs)
+            %VisualServo.char Convert to string
+            %
+            % s = VS.char() is a string showing VisualServo parameters in a compact single line format.
+            %
+            % See also VisualServo.display.
+
             s = sprintf('Visual servo object: camera=%s\n  %d iterations, %d history', ...
                 vs.camera.name, vs.niter, length(vs.history));
             s = strvcat(s, [['  P= '; '     '; '     '] num2str(vs.P)]);
