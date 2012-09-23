@@ -26,7 +26,7 @@ build:
 
 	# copy misc documentation files
 	cp ../README rvctools/vision
-	cp ../CHANGES rvctools/vision
+	-cp ../CHANGES rvctools/vision
 	cp ../RELEASE rvctools/vision
 	cp ../CITATION rvctools/vision
 	cp ../LGPL-LICENCE.txt rvctools/vision
@@ -37,7 +37,7 @@ build:
 
 
 	# remove all SVN files
-    find rvctools -name .svn -exec rm {} \;
+	find rvctools -name .svn -exec rm {} \;
 
 doco:
 	-\rm -rf tmpdoc
