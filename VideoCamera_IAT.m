@@ -1,7 +1,15 @@
-%VIDEO Class to read from local video camera
+%VideoCamera_IAT Class to read from local video camera
 %
 % A concrete subclass of ImageSource that acquires images from a local
-% camera.
+% camera using the MATLAB Image Acquisition Toolbox (imaq).  This Toolbox
+% provides a multiplatform interface to a range of cameras, and this
+% class provides a simple wrapper.
+%
+% This class is not intended to be used directly, instead use the factory
+% method Video which will return an instance of this class if the Image
+% Acquisition Toolbox is installed, for example
+%
+%         vid = VideoCamera();
 %
 % Methods::
 % grab    Aquire and return the next image
@@ -9,7 +17,7 @@
 % close   Close the image source
 % char    Convert the object parameters to human readable string
 %
-% See also ImageSource, AxisWebCamera, Movie.
+% See also VideoCamera, ImageSource, AxisWebCamera, Movie.
 
 
 % Copyright (C) 1993-2011, by Peter I. Corke
@@ -32,7 +40,7 @@
 % mmread brings the whole movie into memory.  Not entirely sure what
 % libavbin uses memory-wise, it takes a long time to "open" the file.
 
-classdef Video < ImageSource
+classdef VideoCamera_IAT < ImageSource
 
     properties
 
@@ -70,10 +78,10 @@ classdef Video < ImageSource
 
     methods
 
-        function m = Video(varargin)
-        %Video.Video Video camera constructor
+        function m = VideoCamera_IAT(varargin)
+        %VideoCamera_IAT.VideoCamera_IAT Video camera constructor
         %   
-        % V = Video(CAMERA, OPTIONS) is a Video object that acquires
+        % V = Video_IAT(CAMERA, OPTIONS) is a Video object that acquires
         % images from the local video camera specified by the string CAMERA.
         %
         % Options::
@@ -159,14 +167,14 @@ classdef Video < ImageSource
         end
 
         function close(m)
-        %Video.close Close the image source
+        %VideoCamera_IAT.close Close the image source
         %
         % V.close() closes the connection to the camera.
 
         end
 
         function [im, time] = grab(m, opt)
-        %Video.grab Acquire image from the camera
+        %VideoCamera_IAT.grab Acquire image from the camera
         %
         % IM = V.grab() acquires an image from the camera.
         %
@@ -181,7 +189,7 @@ classdef Video < ImageSource
         end
 
         function preview(m, control)
-            %Video.preview Control image preview
+            %VideoCamera_IAT.preview Control image preview
             %
             % V.preview(true) enables camera preview in a separate window
             %
@@ -193,7 +201,7 @@ classdef Video < ImageSource
         end
 
         function s = char(m)
-        %Video.char Convert to string
+        %VideoCamera_IAT.char Convert to string
         %
         % V.char() is a string representing the state of the camera object in 
         % human readable form.

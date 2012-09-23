@@ -1,7 +1,13 @@
-%VIDEO Class to read from local video camera
+%VideoCamera_fg Class to read from local video camera
 %
 % A concrete subclass of ImageSource that acquires images from a local
-% camera.
+% camera using a simple open-source frame grabber interface.  
+%
+% This class is not intended to be used directly, instead use the factory
+% method VideoCamera.which will return an instance of this class if the interface
+% is supported on your platform (Mac or Linux), for example
+%
+%         vid = VideoCamera.amera();
 %
 % Methods::
 % grab    Aquire and return the next image
@@ -63,9 +69,9 @@ classdef VideoCamera_fg < ImageSource
     methods
 
         function m = VideoCamera_fg(varargin)
-        %Video.Video Video camera constructor
+        %VideoCamera_fg.VideoCamera_fg Video camera constructor
         %   
-        % V = Video(CAMERA, OPTIONS) is a Video object that acquires
+        % V = VideoCamera_fg.CAMERA, OPTIONS) is a VideoCamera_fg.object that acquires
         % images from the local video camera specified by the string CAMERA.
         %
         % If CAMERA is '?' a list of available cameras, and their
@@ -113,14 +119,14 @@ classdef VideoCamera_fg < ImageSource
         end
 
         function close(m)
-        %Video.close Close the image source
+        %VideoCamera_fg.close Close the image source
         %
         % V.close() closes the connection to the camera.
             framegrabber(VideoCamera_fg.CAMERA_OP_CLOSE);
         end
 
         function out = grab(m, opt)
-        %Video.grab Acquire image from the camera
+        %VideoCamera_fg.grab Acquire image from the camera
         %
         % IM = V.grab() acquires an image from the camera.
         %
@@ -142,13 +148,13 @@ classdef VideoCamera_fg < ImageSource
         end
 
         function s = char(m)
-        %Video.char Convert to string
+        %VideoCamera_fg.char Convert to string
         %
         % V.char() is a string representing the state of the camera object in 
         % human readable form.
             s = '';
 
-            s = strvcat(s, sprintf('Video: %s %d x %d', m.name, m.width, m.height));
+            s = strvcat(s, sprintf('VideoCamera. %s %d x %d', m.name, m.width, m.height));
 
             % show constructor time options
             s2 = char@ImageSource(m);
