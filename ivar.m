@@ -21,6 +21,9 @@
 %
 % Notes::
 % - Is a MEX file.
+% - The structuring element should have an odd side length.
+% - The input can be logical, uint8, uint16, float or double, the output is
+%   always double
 %
 % See also IRANK, IWINDOW.
 

@@ -26,8 +26,11 @@
 % Notes::
 % - Is a MEX file.
 % - Performs greyscale morphology.
+% - The structuring element should have an odd side length.
 % - For binary image 'min' = EROSION, 'max' = DILATION.
 % - The 'plusmin' operation can be used to compute the distance transform.
+% - The input can be logical, uint8, uint16, float or double, the output is
+%   always double
 %
 % See also IRANK, IVAR, HITORMISS, IOPEN, ICLOSE, DTRANSFORM.
 

@@ -26,7 +26,11 @@
 %
 % Notes::
 % - Is a MEX file.
-% - Is slow since the function FUNC must be invoked once for every output pixel.
+% - The structuring element should have an odd side length.
+% - Is slow since the function FUNC must be invoked once for every 
+%   output pixel.
+% - The input can be logical, uint8, uint16, float or double, the output is
+%   always double
 %
 % See also IVAR, IRANK.
 

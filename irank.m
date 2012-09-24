@@ -29,6 +29,8 @@
 % - The structuring element should have an odd side length.
 % - Is a MEX file.
 % - The median is estimated from a histogram with NBINS (default 256).
+% - The input can be logical, uint8, uint16, float or double, the output is
+%   always double
 %
 % See also IMORPH, IVAR, IWINDOW.
 

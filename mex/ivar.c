@@ -29,7 +29,9 @@
  * British Columbia.
  */
 #include <math.h>
+#include <string.h>
 #include "mex.h"
+#include "edge.h"
 
 /* Input Arguments */
 
@@ -42,12 +44,6 @@
 
 #define	IMM_OUT	plhs[0]
 
-enum pad {
-	PadBorder,
-	PadNone,
-	PadWrap,
-	PadTrim
-} pad_method = PadBorder;
 
 enum op_type {
 	OpVar,
@@ -67,6 +63,8 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	mxArray	*im;
     int width, height;
 
+    pad_method = PadBorder;
+
 	/* Check for proper number of arguments */
 
 
@@ -85,6 +83,8 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 			pad_method = PadWrap;
 		else if (strcmp(s, "valid") == 0)
 			pad_method = PadTrim;
+        else
+            mexErrMsgTxt("IVAR bad edge option");
 		/* fall through */
 	case 3:
 		if (!mxIsChar(OP_IN))
@@ -159,7 +159,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
 	/* Do the actual computations in a subroutine */
 
-	r = ivar(IM_IN, SE_IN);
+	r = ivar(im, SE_IN);
 	if (nlhs == 1)
 		plhs[0] = r;
 
@@ -170,34 +170,6 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	return;
 }
 
-
-/*
- *  ClampIndex
- *
- *  This macro implements behavior near the borders of the source image.
- *  Index is the band, row or column of the pixel being convolved.
- *  Limit is the number of bands, rows or columns in the source image.
- *  Label is a label to jump to to break off computation of the current
- *  destination pixel.
- */
-
-#define ClampIndex(index, limit, label)	   \
-{					   \
-    if (index < 0)		    \
-	switch (pad_method) {\
-	case PadBorder:	index = 0; break;\
-	case PadNone:		goto label;    \
-	case PadWrap:		index += limit; break;    \
-	default:			continue;    \
-	}		    \
-    else if (index >= limit)	    \
-	switch (pad_method) {	    \
-	case PadBorder:	index = limit - 1; break; \
-	case PadNone:		goto label;	   \
-	case PadWrap:		index -= limit; break;	    \
-	default:			continue;	    \
-	}	    \
-}
 
 /*
  *  Morph
@@ -266,7 +238,7 @@ ivar(const mxArray *msrc, const mxArray *mmask)
 	for (k = 0; k < mask_ncols; k++)
 	    if (MPixel(j,k) > 0)
 		N++;
-	printf("%d pixels in mask\n", N);
+	//printf("%d pixels in mask\n", N);
 
     /* Perform the convolution over all destination rows, columns: */
     switch (oper) {
