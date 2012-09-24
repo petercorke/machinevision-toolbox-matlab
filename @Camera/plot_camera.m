@@ -6,6 +6,11 @@
 % Options::
 % 'Tcam',T     Camera displayed in pose T (homogeneous transformation 4x4)
 % 'scale',S    Overall scale factor (default 0.2 x maximum axis dimension)
+% 'color',C    Camera body color (default blue)
+% 'frustrum'   Draw the camera as a frustrum (pyramid mesh)
+% 'solid'      Draw a non-frustrum camera as a solid (default)
+% 'mesh'       Draw a non-frustrum camera as a mesh
+% 'label'      Show the camera's name next to the camera
 %
 % Notes::
 % - The graphic handles are stored within the Camera object.
@@ -14,7 +19,8 @@ function h = plot_camera(c, varargin)
 
     opt.Tcam = c.T;
     opt.scale = [];
-    opt.square = false;  %??
+    opt.frustrum = false;
+    opt.label = false;
 
     [opt,arglist] = tb_optparse(opt, varargin);
 
@@ -25,12 +31,8 @@ function h = plot_camera(c, varargin)
         opt.scale = sz / 5;
     end
     
-    if 1
-        c.h_camera3D = c.drawCamera(opt.scale, arglist{:});
+    if opt.frustrum
 
-        set(c.h_camera3D, 'Matrix', opt.Tcam);
-
-    else
         % old representation as a colored pyramid
         % define pyramid dimensions from the size parameter
         w = opt.scale;
@@ -45,7 +47,7 @@ function h = plot_camera(c, varargin)
         ud.vertices = vertices;
 
         % create the camera 
-        vertices = homtrans(T, vertices);
+        vertices = homtrans(opt.Tcam, vertices);
 
         % the first index for each face controls the face color
         faces = [
@@ -75,13 +77,19 @@ function h = plot_camera(c, varargin)
                 'FaceColor','flat', ...
                 'UserData', ud);
             %set(h, 'FaceAlpha', 0.5);
-            P = transl(T);
+            P = transl(opt.Tcam);
             if opt.label
                 text(P(1), P(2), P(3), c.name);
             end
             c.h_visualize = h;  % save handle for later
             xlabel('X'); ylabel('Y'); zlabel('Z');
         end
+    else
+        % draw a somewhat detail camera-looking object
+        c.h_camera3D = c.drawCamera(opt.scale, arglist{:});
+        
+        set(c.h_camera3D, 'Matrix', opt.Tcam);
+        
     end
 
 end
