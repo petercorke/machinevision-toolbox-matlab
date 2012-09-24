@@ -19,7 +19,7 @@
 %
 % Methods::
 %
-% project          project world points
+% project          project world points and lines
 % K                camera intrinsic matrix
 % C                camera matrix
 % H                camera motion to homography
@@ -29,6 +29,7 @@
 % invE             decompose essential matrix
 % fov              field of view
 % ray              Ray3D corresponding to point
+% centre           projective centre
 %
 % plot             plot projection of world point on image plane
 % hold             control hold for image plane
@@ -544,6 +545,15 @@ classdef CentralCamera < Camera
         % UV = C.project(P, OPTIONS) are the image plane coordinates (2xN) corresponding
         % to the world points P (3xN).
         %
+        % - If Tcam (4x4xS) is a transform sequence then UV (2xNxS) represents the sequence 
+        %   of projected points as the camera moves in the world.
+        %
+        % - If Tobj (4x4x) is a transform sequence then UV (2xNxS) represents the sequence 
+        %   of projected points as the object moves in the world.
+        %
+        % L = C.project(L, OPTIONS) are the image plane homogeneous lines (3xN) corresponding
+        % to the world lines represented by a vector of Plucker coordinates (1xN).
+        %
         % Options::
         % 'Tobj',T   Transform all points by the homogeneous transformation T before
         %            projecting them to the camera image plane.
@@ -551,13 +561,11 @@ classdef CentralCamera < Camera
         %            projecting points to the camera image plane.  Temporarily overrides 
         %            the current camera pose C.T.
         %
-        % If Tcam (4x4xS) is a transform sequence then UV (2xNxS) represents the sequence 
-        % of projected points as the camera moves in the world.
+        % Notes::
+        % - Currently a camera or object pose sequence is not supported for
+        %   the case of line projection.
         %
-        % If Tobj (4x4x) is a transform sequence then UV (2xNxS) represents the sequence 
-        % of projected points as the object moves in the world.
-        %
-        % See also Camera.plot.
+        % See also Camera.plot, Plucker.
 
             opt.Tobj = [];
             opt.Tcam = [];
@@ -574,57 +582,67 @@ classdef CentralCamera < Camera
                 error('cannot animate object and camera simultaneously');
             end
 
-            if ndims(opt.Tobj) == 3
-                % animate object motion, static camera
-
+            if isa(P, 'Plucker')
+                % project lines
                 % get camera matrix for this camera pose
                 C = c.C(opt.Tcam);
-
-                % make the world points homogeneous
-                if numrows(P) == 3
-                    P = e2h(P);
-                end
-
-                for frame=1:size(opt.Tobj,3)
-
-                    % transform all the points to camera frame
-                    X = C * opt.Tobj(:,:,frame) * P;     % project them
-
-                    X(3,X(3,:)<0) = NaN;    % points behind the camera are set to NaN
-                    X = h2e(X);            % convert to Euclidean coordinates
-
-                    if c.noise
-                        % add Gaussian noise with specified standard deviation
-                        X = X + diag(c.noise) * randn(size(X)); 
-                    end
-                    uv(:,:,frame) = X;
+                for i=1:length(P)
+                    uv(:,i) = vex( C * P(i).L * C');
                 end
             else
-                % animate camera, static object
-
-                % transform the object
-                if ~isempty(opt.Tobj)
-                    P = homtrans(opt.Tobj, P);
-                end
-
-                % make the world points homogeneous
-                if numrows(P) == 3
-                    P = e2h(P);
-                end
-
-                for frame=1:size(opt.Tcam,3)
-                    C = c.C(opt.Tcam(:,:,frame));
-
-                    % transform all the points to camera frame
-                    X = C * P;              % project them
-                    X(3,X(3,:)<0) = NaN;    % points behind the camera are set to NaN
-                    X = h2e(X);            % convert to Euclidean coordinates
-
-                    if c.noise
-                        % add Gaussian noise with specified standard deviation
-                        X = X + diag(c.noise) * randn(size(X)); 
+                % project points
+                if ndims(opt.Tobj) == 3
+                    % animate object motion, static camera
+                    
+                    % get camera matrix for this camera pose
+                    C = c.C(opt.Tcam);
+                    
+                    % make the world points homogeneous
+                    if numrows(P) == 3
+                        P = e2h(P);
                     end
-                    uv(:,:,frame) = X;
+                    
+                    for frame=1:size(opt.Tobj,3)
+                        
+                        % transform all the points to camera frame
+                        X = C * opt.Tobj(:,:,frame) * P;     % project them
+                        
+                        X(3,X(3,:)<0) = NaN;    % points behind the camera are set to NaN
+                        X = h2e(X);            % convert to Euclidean coordinates
+                        
+                        if c.noise
+                            % add Gaussian noise with specified standard deviation
+                            X = X + diag(c.noise) * randn(size(X));
+                        end
+                        uv(:,:,frame) = X;
+                    end
+                else
+                    % animate camera, static object
+                    
+                    % transform the object
+                    if ~isempty(opt.Tobj)
+                        P = homtrans(opt.Tobj, P);
+                    end
+                    
+                    % make the world points homogeneous
+                    if numrows(P) == 3
+                        P = e2h(P);
+                    end
+                    
+                    for frame=1:size(opt.Tcam,3)
+                        C = c.C(opt.Tcam(:,:,frame));
+                        
+                        % transform all the points to camera frame
+                        X = C * P;              % project them
+                        X(3,X(3,:)<0) = NaN;    % points behind the camera are set to NaN
+                        X = h2e(X);            % convert to Euclidean coordinates
+                        
+                        if c.noise
+                            % add Gaussian noise with specified standard deviation
+                            X = X + diag(c.noise) * randn(size(X));
+                        end
+                        uv(:,:,frame) = X;
+                    end
                 end
             end
         end
@@ -649,6 +667,22 @@ classdef CentralCamera < Camera
             for i=1:numcols(p)
                 r(i) = Ray3D(-Mi*p4, Mi*e2h(p(:,i)));
             end
+        end
+        
+        function p = centre(cam)
+        %CentralCamera.ray Projective centre
+        %
+        % P = C.centre() returns the 3D world coordinate of the projective
+        % centre of the camera.
+        %
+        % Reference::
+        %
+        % Hartley & Zisserman, 
+        % "Multiview Geometry",
+        %
+        % See also Ray3D.
+
+          p = -Mi*p4;
         end
 
         function hg = drawCamera(cam, s, varargin)

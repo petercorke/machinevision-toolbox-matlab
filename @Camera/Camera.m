@@ -440,8 +440,14 @@ classdef Camera < handle
         %
         % UV = C.plot(P) as above but returns the image plane coordinates UV (2xN).
         %
-        % If P has 3 dimensions (3xNxS) then it is considered a sequence of point sets and is
-        % displayed as an animation.
+        % - If P has 3 dimensions (3xNxS) then it is considered a sequence of point sets and is
+        %   displayed as an animation.
+        %
+        % C.plot(L, OPTIONS) projects the world lines represented by the
+        % array of Plucker objects (1xN) to the image plane and plots them.
+        %
+        % LI = C.plot(L, OPTIONS) as above but returns an array (3xN) of
+        % image plane lines in homogeneous form.
         %
         % Options::
         % 'Tobj',T         Transform all points by the homogeneous transformation T before
@@ -458,7 +464,7 @@ classdef Camera < handle
         % Additional options are considered MATLAB linestyle parameters and are passed 
         % directly to plot.
         %
-        % See also Camera.mesh, Camera.hold, Camera.clf.
+        % See also Camera.mesh, Camera.hold, Camera.clf, Plucker.
 
             opt.Tobj = [];
             opt.Tcam = [];
@@ -473,38 +479,49 @@ classdef Camera < handle
             % get handle for this camera image plane
             h = c.plot_create();
 
-            nr = numrows(points);
-
-            if nr == 3
-                % plot 3D world points, project using the class project() method
+            if isa(points, 'Plucker')
+                % plot lines
+                
+                % project 3D world lines using the class project() method
                 uv = c.project(points, varargin{:});
-            else
-                uv = points;
-            end
-
-            if isempty(arglist)
-                % set default style if none given
-                %disp('set default plot args');
-                arglist = {'Marker', 'o', 'MarkerFaceColor', 'k', 'LineStyle', 'none'};
-            end
-
-            for i=1:size(uv,3)
-                % for every frame in the animation sequence
-                plot(uv(1,:,i), uv(2,:,i), arglist{:}, 'Parent', h);
-                if opt.sequence
-                    for j=1:size(uv,2)
-                        text(uv(1,j,i), uv(2,j,i), sprintf('  %d', j), ...
-                            'HorizontalAlignment', 'left', ...
-                            'VerticalAlignment', 'middle', ...
-                            'FontUnits', 'pixels', ...
-                            'FontSize', opt.textsize, ...
-                            'Color', opt.textcolor, ...
-                            'Parent', h);
-                    end
+                for line=uv
+                    c.homline(line);
                 end
-
-                if size(uv,3) > 1
-                    pause(1/opt.fps);
+            else
+                % plot points
+                nr = numrows(points);
+                
+                if nr == 3
+                    % project 3D world points using the class project() method
+                    uv = c.project(points, varargin{:});
+                else
+                    uv = points;
+                end
+                
+                if isempty(arglist)
+                    % set default style if none given
+                    %disp('set default plot args');
+                    arglist = {'Marker', 'o', 'MarkerFaceColor', 'k', 'LineStyle', 'none'};
+                end
+                
+                for i=1:size(uv,3)
+                    % for every frame in the animation sequence
+                    plot(uv(1,:,i), uv(2,:,i), arglist{:}, 'Parent', h);
+                    if opt.sequence
+                        for j=1:size(uv,2)
+                            text(uv(1,j,i), uv(2,j,i), sprintf('  %d', j), ...
+                                'HorizontalAlignment', 'left', ...
+                                'VerticalAlignment', 'middle', ...
+                                'FontUnits', 'pixels', ...
+                                'FontSize', opt.textsize, ...
+                                'Color', opt.textcolor, ...
+                                'Parent', h);
+                        end
+                    end
+                    
+                    if size(uv,3) > 1
+                        pause(1/opt.fps);
+                    end
                 end
             end
 
