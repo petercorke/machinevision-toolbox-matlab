@@ -90,7 +90,7 @@ function features = isift(im, varargin)
     end
 
     % convert color image to greyscale
-    if ndims(im) ==3 && size(im, 3) == 3
+    if iscolor(im)
        im = imono(im);
     end
 

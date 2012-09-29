@@ -47,7 +47,7 @@
 function [o1,o2] = isobel(im, varargin)
 
     % convert color image to greyscale
-    if size(im) > 1
+    if iscolor(im)
         im = imono(im);
     end
     

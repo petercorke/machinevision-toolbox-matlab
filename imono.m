@@ -35,10 +35,11 @@
 % along with MVTB.  If not, see <http://www.gnu.org/licenses/>.
 function out = imono(im, opt)
 
+    % WxH is mono
     % WxHx3 is color
     % WxHxN is mono sequence
     % WxHx3xN is color sequence
-    if ndims(im) == 3 && size(im,3) ~= 3
+    if ~iscolor(im)
         % image is already monochrome
         out = im;
         return;

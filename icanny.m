@@ -29,7 +29,7 @@
 function E = icanny(I, varargin)
 
     % convert color image to greyscale
-    if size(I) > 1
+    if iscolor(I)
         I = imono(I);
     end
 
