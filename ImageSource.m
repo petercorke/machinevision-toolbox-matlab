@@ -59,12 +59,14 @@ classdef ImageSource < handle
         % related to acquisition from some particular image source.
         %
         % Options::
-        % 'uint8'     Return image with uint8 pixels (default)
-        % 'float'     Return image with float pixels
-        % 'double'    Return image with double precision pixels
-        % 'grey'      Return image is greyscale
-        % 'gamma',G   Apply gamma correction with gamma=G
-        % 'scale',S   Subsample the image by S in both directions.
+        % 'width',W    Set image width to W
+        % 'height',H   Set image height to H
+        % 'uint8'      Return image with uint8 pixels (default)
+        % 'float'      Return image with float pixels
+        % 'double'     Return image with double precision pixels
+        % 'grey'       Return image is greyscale
+        % 'gamma',G    Apply gamma correction with gamma=G
+        % 'scale',S    Subsample the image by S in both directions.
 
             % set default options
             opt.imageType = {'uint8', 'float', 'double'};
