@@ -57,7 +57,7 @@ classdef AxisWebCamera < ImageSource
         %   otherwise the result is not predictable.
 
             % invoke the superclass constructor and process common arguments
-            wc = wc@ImageSource(varargin);
+            wc = wc@ImageSource(varargin{:});
 
             % set default size params if not set
             if isempty(wc.width)
