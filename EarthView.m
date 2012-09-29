@@ -1,24 +1,31 @@
-%EarthView
+%EarthView Image from Google maps
 %
-% Maximum size is 640x640 for free access, business users can get more.
+% A concrete subclass of ImageSource that acquires images from Google
+% maps.
+%
+% Methods::
+% grab    Grab a frame from Google maps
+% size    Size of image
+% close   Close the image source
+% char    Convert the object parameters to human readable string
 %
 % Examples::
-%
-%  Show aerial view of Brisbane, Australia at zoom scale 11.
-%
+% Create an EarthView camera
 %          ev = EarthView();
-%          ev.grab(-27,153, 11);
+% Zoom into QUT campus in Brisbane
+%          ev.grab(-27.475722,153.0285, 17);
+% Show aerial view of Brisbane in satellite and map view
 %          ev.grab('brisbane', 14)
 %          ev.grab('brisbane', 14, 'map')
 %
 % Notes::
-% - A key is required before you can use the Google Static Maps API.  The key is a long string that can
-%   be passed to the constructor or saved as an environment variable GOOGLE_KEY.  You need a Google account
-%   before you can register for a key.
-% - Google limit the number of map queries limit to 1000 unique (different) image requests per viewer per day.
-%   A 403 error is returned if the daily quota is exceeded.
-% - There are lots of conditions on what you can do with the images, particularly with respect to publication.
-%   See the Google web site for details.
+% - Google limit the number of map queries limit to 1000 unique (different) 
+%   image requests per viewer per day.  A 403 error is returned if the daily 
+%   quota is exceeded.
+% - Maximum size is 640x640 for free access, business users can get more.
+% - There are lots of conditions on what you can do with the images, 
+%   particularly with respect to publication.  See the Google web site for 
+%   details.
 %
 % Author::
 %  Peter Corke, with some lines of code from from get_google_map by Val
@@ -42,18 +49,43 @@ classdef EarthView < ImageSource
     end
 
     methods
-        function ev = EarthView(key, varargin)
-        %EarthView.EarthView
+        function ev = EarthView(varargin)
+        %EarthView.EarthView Create EarthView object
         %
+        % EV = EarthView(OPTIONS)
+        %
+        % Options::
+        % 'satellite'    Retrieve satellite image
+        % 'map'          Retrieve map image
+        % 'hybrid'       Retrieve satellite image with map overlay
+        % 'scale'        Google map scale (default 18)
+        % 'width',W      Set image width to W (default 640)
+        % 'height',H     Set image height to H (default 640)
+        % 'key',S        The Google maps key string
+        %
+        % see also options for ImageSource.
+        %
+        % Notes::
+        % - A key is required before you can use the Google Static Maps API.  
+        %   The key is a long string that can be passed to the constructor or 
+        %   saved as an environment variable GOOGLE_KEY.  You need a Google 
+        %   account before you can register for a key.
+        %
+        % Notes::
+        % - Scale is 1 for the whole world, ~20 is about as high a resolution
+        %   as you can get.
+        %
+        % See also ImageSource, EarthView.grab.
         
         %TODO
         %  clone this for new StreetView API
         %  method to return lat/long or NE matrices corresp to pixels
         
-            ev = ev@ImageSource(varargin);
+            ev = ev@ImageSource(varargin{:});
             
             opt.type = {'satellite', 'map', 'hybrid'};
             opt.scale = 18;
+            opt.key = '';
             
             [opt,args] = tb_optparse(opt, varargin);
             
@@ -67,32 +99,51 @@ classdef EarthView < ImageSource
                 ev.height = 640;
             end
 
-            if nargin == 0
-                ev.key = getenv('GOOGLE_KEY');
-            else
-                ev.key = key;
+            if isempty(opt.key)
+                opt.key = getenv('GOOGLE_KEY');
             end
+            ev.key = opt.key;
             
         end
 
         function [im,E,N] = grab(ev, varargin)
-        % EarthView.grab Grab an aerial image
-        %
-        % im = EarthView.grab(lat, long, OPTIONS) is an image of the Earth
-        % centred at the geographic coordinate (lat, long).
-        %
-        % im = EarthView.grab(lat, long, zoom, OPTIONS) as above with the specified
-        % zoom.
-        %
-        % [im,E,N] = EarthView.grab(lat, long, OPTIONS) as above but also
-        % returns the estimated easting E and northing N for the corresponding pixels 
-        % in im. 
-        %
-        % Notes::
-        % - If northing/easting outputs are requested the function
-        %   deg2utm is required (from MATLAB Central)
-        % - The easting/northing is somewhat approximate, see
-        %   get_google_map on MATLAB Central.
+            % EarthView.grab Grab an aerial image
+            %
+            % IM = EV.grab(LAT, LONG, OPTIONS) is an image of the Earth
+            % centred at the geographic coordinate (lat, long).
+            %
+            % IM = EarthView.grab(LAT, LONG, ZOOM, OPTIONS) as above with the 
+            % specified zoom.  ZOOM is an integer between 1 (zoom right out)
+            % to a maximum of 18-20 depending on where in the world you
+            % are looking.
+            %
+            % [IM,E,N] = EarthView.grab(LAT, LONG, OPTIONS) as above but also
+            % returns the estimated easting E and northing N.  E and N are both 
+            % matrices, the same size as IM, whose corresponding elements are 
+            % the easting and northing are the coordinates of the pixel.
+            %
+            % [IM,E,N] = EarthView.grab(NAME, OPTIONS) as above but uses a
+            % geocoding web site to resolve the name to a location.
+            % 
+            % Options::
+            % 'satellite'    Retrieve satellite image
+            % 'map'          Retrieve map image
+            % 'hybrid'       Retrieve satellite image with map overlay
+            % 'scale'        Google map scale (default 18)
+            %
+            % Examples::
+            % Zoom into QUT campus in Brisbane
+            %          ev.grab(-27.475722,153.0285, 17);
+            % Show aerial view of Brisbane in satellite and map view
+            %          ev.grab('brisbane', 14)
+            %          ev.grab('brisbane', 14, 'map')
+            %
+            % Notes::
+            % - If northing/easting outputs are requested the function
+            %   deg2utm is required (from MATLAB Central)
+            % - The easting/northing is somewhat approximate, see
+            %   get_google_map on MATLAB Central.
+            % - If no output argument is given the image is displayed using idisp.
 
             opt.type = {'satellite', 'map', 'hybrid'};
             opt.scale = ev.scale;
@@ -183,6 +234,22 @@ classdef EarthView < ImageSource
         end
 
         function close()
+        end
+
+        function s = char(m)
+        %EarthView.char Convert to string
+        %
+        % EV.char() is a string representing the state of the EarthView object in 
+        % human readable form.
+        %
+        % See also EarthView.display.
+
+            s = sprintf('EarthView: %d x %d', ...
+                m.width, m.height);
+            s2 = char@ImageSource(m);
+            if ~isempty(s2)
+                s = strvcat(s, strcat(' - ', s2));
+            end
         end
 
         function paramSet(varargin)
