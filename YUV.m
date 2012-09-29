@@ -11,7 +11,6 @@
 %
 % Properties::
 % curFrame        The index of the frame just read
-% totalDuration   The running time of the movie (seconds)
 %
 % See also ImageSource, Video.
 %
@@ -36,34 +35,31 @@
 % along with MVTB.  If not, see <http://www.gnu.org/licenses/>.
 
 
-classdef Movie < ImageSource
+classdef YUV < ImageSource
 
     properties
 
         rate            % frame rate at which movie was capture
 
-        nframes;
-        
-        totalDuration   % in seconds
         skippedFrames
 
         curFrame
         skip
         
         fp
+        hdr
 
     end
 
     methods
 
-        function yuv = Movie(filename, varargin)
+        function yuv = YUV(filename, varargin)
         %YUV.YUV YUV4MPEG sequence constructor
         %   
         % Y = YUV(FILE, OPTIONS) is a YUV4MPEG object that returns frames
-        % from the file FILE.
-%	Open a yuv4mpeg format file.  This contains uncompressed color
-%	images in 4:2:0 format, with a full resolution luminance plane
-%	followed by U and V planes at half resolution both directions.
+        % from the yuv4mpeg format file FILE.  This file contains uncompressed 
+        % color images in 4:2:0 format, with a full resolution luminance plane
+        % followed by U and V planes at half resolution both directions.
         %   
         % Options::
         % 'uint8'     Return image with uint8 pixels (default)
@@ -76,7 +72,7 @@ classdef Movie < ImageSource
 
 
             % invoke the superclass constructor and process common arguments
-            yuv = yuvm@ImageSource(varargin{:});
+            yuv = yuv@ImageSource(varargin{:});
 
             yuvm.curFrame = 1;
             yuv.skip = 1;
@@ -101,18 +97,10 @@ classdef Movie < ImageSource
                     fprintf('found <%s>\n', s);
                 end
             end
+            yuv.curFrame = 0;
         end
         
 
-        function paramSet(m, varargin)
-            opt.skip = 1;
-            
-            disp(varargin)
-            opt = tb_optparse(opt, varargin);
-            opt
-            m.skip = opt.skip;
-        end
-        
         % destructor
         function delete(m)
             close(yuv.fp);
@@ -130,14 +118,15 @@ classdef Movie < ImageSource
             sz = [yuv.width yuv.height];
         end
 
-        function [o1,o2,o3] = grab(m, varargin)
+        function [o1,o2,o3] = grab(yuv, varargin)
         %Movie.grab Acquire next frame from movie
         %
         % IM = Y.grab(OPTIONS) is the next frame from the file.
         %
+        % [Y,U,V] = Y.grab(OPTIONS) is the next frame from the file
+        %
         % Options::
-        % 'skip',S    Skip frames, and return current+S frame
-        % 'frame',F   Return frame F within the movie
+        % 'skip',S    Skip frames, and return current+S frame (default 1)
         % 'rgb'       Return as an RGB image, Y image is downsized by two (default).
         % 'rgb2'      Return as an RGB image, U and V images are upsized by two.
         % 'yuv'       Return Y, U and V images.
@@ -146,25 +135,21 @@ classdef Movie < ImageSource
         % - If no output argument given the image is displayed using IDISP.
         % - For the 'yuv' option three output arguments must be given.
 
-            opt.skip = m.skip;
-            opt.frame = [];
+            opt.skip = yuv.skip;
             opt.mode = {'rgb', 'rgb2', 'yuv'};
             
             opt = tb_optparse(opt, varargin);
             
-            if isempty(opt.frame)
-                m.curFrame = m.curFrame + opt.skip;
-            else
-                m.curFrame = opt.frame;
-            end
+
             
             % read next frame from the file
-            if m.curFrame <= m.nframes
-                data = yuv.yuvread(m.movie, m.curFrame);
-            else
+            [Y,U,V] = yuv.yuvread(opt.skip);
+            if isempty(Y)
                 out = [];
                 return;
             end
+
+            yuv.curFrame = yuv.curFrame + opt.skip;
 
             % apply options specified at construction time
             Y = yuv.convert(Y);
@@ -187,17 +172,25 @@ classdef Movie < ImageSource
             
         end
 
-        function s = char(m)
+        function s = char(yuv)
         %Movie.char Convert to string
         %
         % M.char() is a string representing the state of the movie object in 
         % human readable form.
 
             s = '';
-            s = strvcat(s, sprintf('%d x %d', m.width, m.height);
-            s = strvcat(s, sprintf('cur frame %d/%d (skip=%d)', m.curFrame, m.nframes, m.skip));
+            s = strvcat(s, sprintf('YUV file: %d x %d', yuv.width, yuv.height));
+            s = strvcat(s, sprintf('cur frame %d (skip=%d)', yuv.curFrame, yuv.skip));
         end
 
+        function paramSet(m, varargin)
+            opt.skip = 1;
+            
+            disp(varargin)
+            opt = tb_optparse(opt, varargin);
+            m.skip = opt.skip;
+        end
+        
     end % methods
 
     methods(Access=protected)
@@ -214,29 +207,29 @@ classdef Movie < ImageSource
         function [Y,U,V, h] = yuvread(yuv, skip)
 
 
-            if nargin == 1,
-                skip = 0;
-            end
-
-            while skip >= 0,
+            while skip > 0
                 % read and display the header
                 hdr = fgets(yuv.fp);
+                if isempty(hdr)
+                    Y = [];
+                    return;
+                end
                 fprintf('header: %s', hdr);
 
 
                 % read the YUV data
-                [Y,count] = fread(yuv.fp, yuv.w*yuv.h, 'uchar');
-                if count ~= yuv.w*yuv.h,
+                [Y,count] = fread(yuv.fp, yuv.width*yuv.height, 'uchar');
+                if count ~= yuv.width*yuv.height
                     Y = [];
                     return;
                 end
-                [V,count] = fread(yuv.fp, yuv.w*yuv.h/4, 'uchar');
-                if count ~= yuv.w*yuv.h/4,
+                [V,count] = fread(yuv.fp, yuv.width*yuv.height/4, 'uchar');
+                if count ~= yuv.width*yuv.height/4
                     Y = [];
                     return;
                 end
-                [U,count] = fread(yuv.fp, yuv.w*yuv.h/4, 'uchar');
-                if count ~= yuv.w*yuv.h/4,
+                [U,count] = fread(yuv.fp, yuv.width*yuv.height/4, 'uchar');
+                if count ~= yuv.width*yuv.height/4
                     Y = [];
                     return;
                 end
@@ -244,11 +237,11 @@ classdef Movie < ImageSource
                 skip = skip - 1;
             end
 
-            Y = reshape(Y, yuv.w, yuv.h)';
-            U = reshape(U, yuv.w/2, yuv.h/2)';
-            V = reshape(V, yuv.w/2, yuv.h/2)';
+            Y = reshape(Y, yuv.width, yuv.height)';
+            U = reshape(U, yuv.width/2, yuv.height/2)';
+            V = reshape(V, yuv.width/2, yuv.height/2)';
 
-            if nargin == 4,
+            if nargout == 4
                 h = hdr;
             end
         end
