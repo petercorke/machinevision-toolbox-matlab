@@ -1,4 +1,4 @@
-function FeatureTest
+function utilityTest
   initTestSuite;
 end
 
@@ -74,6 +74,18 @@ function im2col_test
 
     assertEqual( col2im(c, a), a);
     assertEqual( col2im(c, size(a)), a);
+
+    mask = zeros(5,5);
+    mask(2,3) = 1;
+    c = im2col(a, mask);
+    assertEqual( c, a(2,3,:) );
+    c = im2col(a, mask(:));
+    assertEqual( c, a(2,3,:) );
+
+    i = find(mask > 1);
+    c = im2col(a, i);
+    assertEqual( c, a(2,3,:) );
+
 end
 
 function iisum_test
@@ -158,14 +170,30 @@ function mono_test
     assertTrue( max(m(:)) <= 255);
 end
 
-function colorize_test
+function icolor_test
     im = rand(3,3);
 
     out = cat(3, im, im, im);
-    assertEqual(colorize(im), out); 
+    assertEqual(icolor(im), out); 
 
     out = cat(3, im, 0*im, im);
-    assertEqual(colorize(im, [1 0 1]), out); 
+    assertEqual(icolor(im, [1 0 1]), out); 
+end
+
+function colorize_test
+    im = [
+        1 2 3
+        1 2 3
+        1 3 3
+        ]/10;
+
+    out = colorize(im, im>0.2, [0 0 1]);
+    assertEqual(out(1,1,:), [1 1 1]/10);
+    assertEqual(out(1,3,:), [0 0 1]);
+
+    out = colorize(im, @(x) x>0.2, [0 0 1]);
+    assertEqual(out(1,1,:), [1 1 1]/10);
+    assertEqual(out(1,3,:), [0 0 1]);
 end
 
 function pad_test
@@ -399,4 +427,198 @@ z = [
     assertEqual(x, xx);
     assertEqual(y, yy);
     assertEqual(z, zz);
+end
+
+function moment_test
+    im = [
+        0 0 0 0
+        0 0 0 0
+        0 1 1 0
+        0 1 1 0
+        0 1 1 0
+        0 0 0 0
+    ];
+    assertEqual(mpq(im, 0, 0), 6);
+    assertEqual(mpq(im, 1, 0), 15);
+    assertEqual(mpq(im, 0, 1), 24);
+    assertEqual(mpq(im, 1, 1), 60);
+    assertEqual(mpq(im, 2, 0), 39);
+    assertEqual(mpq(im, 0, 2), 100);
+
+    assertEqual(upq(im, 0, 0), 6);
+    assertEqual(upq(im, 1, 0), 0);
+    assertEqual(upq(im, 0, 1), 0);
+    assertEqual(upq(im, 1, 1), 0);
+    assertEqual(upq(im, 2, 0), 1.5);
+    assertEqual(upq(im, 0, 2), 4);
+
+    assertEqual(npq(im, 2, 0), 1/24);
+    assertEqual(npq(im, 0, 2), 1/9);
+
+    p = [
+        2 4 4 2
+        3 3 6 6
+        ];
+    assertEqual(mpq_poly(p, 0, 0), 6);
+    assertEqual(mpq_poly(p, 1, 0), 18);
+    assertEqual(mpq_poly(p, 0, 1), 27);
+    assertEqual(mpq_poly(p, 1, 1), 81);
+    assertEqual(mpq_poly(p, 2, 0), 56);
+    assertEqual(mpq_poly(p, 0, 2), 126);
+
+    assertEqual(upq_poly(p, 0, 0), 6);
+    assertEqual(upq_poly(p, 1, 0), 0);
+    assertEqual(upq_poly(p, 0, 1), 0);
+    assertEqual(upq_poly(p, 1, 1), 0);
+    assertEqual(upq_poly(p, 2, 0), 2);
+    assertEqual(upq_poly(p, 0, 2), 4.5);
+
+    assertEqual(npq_poly(p, 2, 0), 1/18);
+    assertEqual(npq_poly(p, 0, 2), 1/8);
+end
+
+function testpattern_test
+    im = testpattern('rampx', 10, 2);
+    assertEqual(size(im), [10 10]);
+    im = testpattern('rampx', [20 10], 2);
+    assertEqual(size(im), [10 20]);
+
+    assertEqual(im(6,:), [linspace(0, 1, 6) linspace(0, 1, 6)]);
+    assertEqual(im(:,2), ones(12,1)*0.2 );
+
+    im = testpattern('rampy', 10, 2)';
+    assertEqual(im(6,:), [linspace(0, 1, 6) linspace(0, 1, 6)]);
+    assertEqual(im(:,2), ones(12,1)*0.2 );
+
+    im = testpattern('sinx', 12, 1);
+    assertAlmostEqual(sum(im), 0, 'absolute', 1e-6);
+    assertAlmostEqual(diff(im(:,3)), zeros(12,1), 'absolute', 1e-6);
+    im = testpattern('siny', 12, 1)';
+    assertAlmostEqual(sum(im), 0, 'absolute', 1e-6);
+    assertAlmostEqual(diff(im(:,3)), zeros(12,1), 'absolute', 1e-6);
+
+    im = testpattern('dots', 100, 20, 10);
+    [l,ml,p,c] = ilabel(im);
+    assertEqual(sum(c), 25);
+
+    im = testpattern('squares', 100, 20, 10);
+    [l,ml,p,c] = ilabel(im);
+    assertEqual(sum(c), 25);
+
+    im = testpattern('line', 20, pi/6, 10);
+    assertEqual(im(11,2), 1);
+    assertEqual(im(29,17), 1);
+    assertEqual(sum(im(:)), 18);
+end
+
+function similarity_test
+    a = rand(3,3);
+
+    assertTrue( abs( sad(a,a) ) < eps);
+    assertFalse( abs( sad(a,a+0.1) ) < eps);
+
+    assertTrue( abs( zsad(a,a) ) < eps);
+    assertTrue( abs( zsad(a,a+0.1) ) < eps);
+
+    assertTrue( abs( ssd(a,a) ) < eps);
+    assertFalse( abs( ssd(a,a+0.1) ) < eps);
+
+    assertTrue( abs( zssd(a,a) ) < eps);
+    assertTrue( abs( zssd(a,a+0.1) ) < eps);
+
+    assertTrue( abs( 1-ncc(a,a) ) < eps);
+    assertTrue( abs( 1-ncc(a,a*2) ) < eps);
+
+    assertTrue( abs( 1-zncc(a,a) ) < eps);
+    assertTrue( abs( 1-zncc(a,a+0.1) ) < eps);
+    assertTrue( abs( 1-zncc(a,a*2) ) < eps);
+
+    im = [
+          5    10     7     7     7    12    12    11   7
+           5     4     7    12     2     7     5    11  7
+         3     1     8    10     3     7     8    10   3
+         2    11     3     7     4     2     7     9   1
+        10     9    12     3     2     1    12     8  2
+         1     9     7     4     5     6     7     9  12
+         4    10    10     8     9     7    11     4  1
+        11     4     3    12    10     7     1     6  6
+         6     3     4     5     2     9     1    11   3
+         11     8     1     2     7     1    11     4  12
+          6     4     6     4    10     7     5     8  4
+    ];
+    % true match is at x=5, y=6
+    template = [
+        3 2 1
+        4 5 6
+        8 9 7
+    ];
+    xm = imatch(im, im, 4, 4, 1, 2);
+    assertEqual(xm, [0 0 1]);
+    [xm,s] = imatch(im, im, 5, 4, 1, 2);
+    assertEqual(size(s), [5 5]);
+    %% BUG ?? assertEqual(s(
+
+    s = isimilarity(template, im);
+    assertEqual(size(s), size(im));
+    assertEqual(s(4,5), 1);
+end
+
+
+function zcross_test
+    a = [
+        3  2  1 -1 -2
+        3  2  1 -1 -2
+        2  1  1 -2 -3
+        1  1 -1 -3 -4
+       -1 -1 -2 -3 -4
+       ];
+    out = [
+        0     0     0     0     0
+        0     0     1     0     0
+        0     0     1     0     0
+        0     1     1     0     0
+        0     0     0     0     0
+    ];
+    assertEqual(zcross(a), out);
+end
+
+function hu_test
+    im = [
+        0 0 0 0 0 0 0
+        0 1 1 1 0 0 0
+        0 0 1 1 0 0 0
+        0 1 1 1 1 1 0
+        0 1 1 1 1 1 0
+        0 0 0 1 1 0 0
+        0 0 0 0 0 0 0
+        ];
+
+    out = [
+        0.184815794830043
+        0.004035534812971
+        0.000533013844814
+        0.000035606641461
+        0.000000003474073
+        0.000000189873096
+        -0.000000003463063
+        ];
+    assertAlmostEqual(im, out, 'absolute', 1e-8);
+    
+end
+
+function ilut_test
+    im = cast([1 3; 2 4], 'uint8');
+    lut = [10 11 12 13 14]';
+
+    assertEqual(ilut(im, lut), [11 13; 12 14]);
+
+    lut = [
+        10 11
+        12 13
+        14 15
+        16 17
+        18 19];
+    out = cat(3, [12 16;14 18], [13 17; 15 19]);
+
+    assertEqual(ilut(im, lut), out);
 end
