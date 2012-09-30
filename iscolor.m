@@ -22,4 +22,8 @@
 % along with MVTB.  If not, see <http://www.gnu.org/licenses/>.
 
 function s = iscolor(im)
+    % WxH is mono
+    % WxHx3 is color
+    % WxHxN is mono sequence
+    % WxHx3xN is color sequence
     s = isnumeric(im) && size(im,1) > 1 && size(im,2) > 1 && size(im,3) == 3;

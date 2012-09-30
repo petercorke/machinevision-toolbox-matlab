@@ -547,8 +547,7 @@ classdef CentralCamera < Camera
         %
         % - If Tcam (4x4xS) is a transform sequence then UV (2xNxS) represents the sequence 
         %   of projected points as the camera moves in the world.
-        %
-        % - If Tobj (4x4x) is a transform sequence then UV (2xNxS) represents the sequence 
+        % - If Tobj (4x4xS) is a transform sequence then UV (2xNxS) represents the sequence 
         %   of projected points as the object moves in the world.
         %
         % L = C.project(L, OPTIONS) are the image plane homogeneous lines (3xN) corresponding
