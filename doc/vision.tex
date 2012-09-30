@@ -138,32 +138,13 @@ The manual is now auto-generated from the comments in the \Mlab\ code itself whi
 in maintaining code and a separate manual as I used to --- the downside is that there are no worked examples and figures in the manual.
 However the book ``\textit{Robotics, Vision \& Control}''  provides a detailed discussion (over 600 pages, nearly 400 figures and 1000 code examples)
 of how to use the Toolbox functions to
-solve many types of problems in robotics, and I commend it to you.
+solve many types of problems in robotics and machine vision, and I commend it to you.
 
 
 \newpage
 \tableofcontents
 \newpage
 \chapter{Introduction}
-\section{What's new}
-
-Changes:
-\begin{itemize}
-\item x
-
-\end{itemize}
-
-New features:
-\begin{itemize}
-\item x
-\end{itemize}
-
-Bugfixes:
-\begin{itemize}
-\item Improved error messages in many functions
-\item Removed trailing commas from if and for statements
-\end{itemize}
-
 
 \section{Support}
 There is no support!  This software is made freely available in the hope that you find it useful in solving whatever problems
@@ -174,7 +155,7 @@ I am very happy to accept contributions for inclusion in future versions of the
 toolbox, and you will be suitably acknowledged.
 
 \textbf{I can guarantee that I will not respond to any requests for help with assignments or homework, no matter
-how urgent or important they might be to you.  That's what you your teachers, tutors, lecturers and professors are paid to do.}
+how urgent or important they might be to you.  That's what your teachers, tutors, lecturers and professors are paid to do.}
 
 You might instead like to communicate with other users via 
 the Google Group called ``Robotics Toolbox'' 
@@ -193,21 +174,69 @@ page at
 \url{http://www.petercorke.com}
 \end{quote}
 
-The files are available in either gzipped tar format (.gz) or zip
-format (.zip).  The web page requests some information from you
+The web page requests some information from you
 regarding such as your country, type of organization and application.
-This is just a means for me to gauge interest and to help convince my
-bosses (and myself) that this is a worthwhile activity.
+This is just a means for me to gauge interest and to remind myself
+that this is a worthwhile activity.
 
-The file {\tt robot.pdf} is a manual that describes all functions in the Toolbox.
+The files are available in zip format (.zip).  Download them all to
+the same directory and then unzip them.  They
+all unpack to the correct parts of a hiearchy of directories (folders)
+headed by \texttt{rvctools}.
+
+You may require one or more files, please read the descriptions carefully
+before downloading.
+\begin{itemize}
+\item \texttt{vision-3.X.zip} This file is essential, it is the core Toolbox and contains
+all the functions, classes, mex-files and Simulink models required 
+for most of the RVC book.
+\item \texttt{images.zip} These are the images that are used for
+many examples in the RVC book.  These images are all found automatically
+by the \texttt{iread()} function.
+\item \texttt{contrib.zip} A small number of Toolbox functions depend on third party code which is included in this file. Please note and respect the licence conditions associated with these packages.
+Those functions are: 
+\texttt{igraphseg},
+\texttt{imser}, and
+\texttt{CentralCamera.estpose}.
+\item \texttt{contrib2.zip} Additional third party code for
+the functions: \texttt{isift}, and \texttt{isurf}.
+Note that the code here is slightly modified version of the open-source
+packages.
+\item \texttt{images2.zip} This is a large file (150MB) containing the mosaic, campus, bridge-l and campus sequences which support the examples in Sections 14.6, 14.7 and 14.8 respectively.
+\end{itemize}
+
+If you already have the Robotics Toolbox installed then download
+the zip file(s) to the directory above the existing \texttt{rvctools} directory
+and then unzip them.
+The files from these zip archives will properly interleave with the Robotics
+Toolbox files.
+
+Ensure that the folder \texttt{rvctools} is on your \Mlab\ search
+path.  You can do this by issuing the \texttt{addpath} command at 
+the \Mlab\ prompt.
+Then issue the command \texttt{startup\_rvc} and it will add a number
+of paths to your \Mlab\ search path.
+You need to setup the path every time you start \Mlab\ but you can 
+automate this by setting up environment variables, editing your 
+\texttt{startup.m} script by pressing the ``Update Toolbox Path
+Cache" button under \Mlab\ General preferences.
+
+\subsection{Documentation}
+
+This document {\tt vision.pdf} is a manual that describes all functions in the Toolbox.
 It is auto-generated from the comments in the \Mlab\ code and is fully hyperlinked:
 to external web sites, the table of content to functions, and the ``See also'' functions
 to each other.
 
-A menu-driven demonstration can be invoked by the function {\tt rtdemo}.
+The same documentation is available online in
+alphabetical order at \url{http://www.petercorke.com/MVTB/r3/html/index_alpha.html}
+or by category at \url{http://www.petercorke.com/MVTB/r3/html/index.html}.
+
+Documentation is also available via the \Mlab\ help browser, ``Machine
+Vision Toolbox" appears under the Contents.
 
 \section{MATLAB version issues}
-The Toolbox has been tested under R2011a.
+The Toolbox has been tested under R2012a.
 
 \section{Use in teaching}
 This is definitely encouraged!

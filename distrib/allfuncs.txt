@@ -4,6 +4,7 @@ ccdresponse
 cie_primaries
 cmfrgb
 cmfxyz
+ccxyz
 colordistance
 colorname
 colorspace
@@ -29,11 +30,13 @@ invcamcal
 h1. Image sources
 h2. Devices
 AxisWebCamera : acquire from internet webcam
+EarthView: acquire image from Google Earth
 ImageSource : abstract superclass
 Movie : acquire from a local movie file
 VideoCamera : acquire from attached video camera or webcam
 VideoCamera_IAT
 VideoCamera_fg
+YUV
 
 h2. Test patterns
 mkcube
@@ -91,6 +94,7 @@ hitormiss
 ithin
 iendpoint
 itriplepoint
+morphdemo
 
 h2. Similarity
 imatch
@@ -207,10 +211,12 @@ plot_sphere    : draw a sphere
 h2. Homogeneous coordinates
 e2h       : Euclidean coordinates to homogeneous 
 h2e       : homogeneous coordinates to Euclidean
+homline:  : homogeneous line from two points
 homtrans  : apply homogeneous transform to points
 
 h2. 3D
 icp
+Plucker
 Ray3D
 
 h2. Integral image
@@ -222,8 +228,10 @@ edgelist
 boundmatch
 
 h2. General
+about
 bresenham
 closest
+colnorm
 col2im
 distance
 im2col
@@ -232,5 +240,9 @@ iscolor
 isize
 kmeans
 medfilt1
+polydiff
 ransac
 zcross
+xaxis
+yaxis
+xyzlabel
