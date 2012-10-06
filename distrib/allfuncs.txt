@@ -234,12 +234,12 @@ closest
 colnorm
 col2im
 distance
+filt1d
 im2col
 imeshgrid
 iscolor
 isize
 kmeans
-medfilt1
 polydiff
 ransac
 zcross
