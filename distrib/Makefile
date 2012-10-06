@@ -90,9 +90,13 @@ dropbox:
 
 install: zipit
 	scp -C vision-*.zip geek:www/MVTB
-	scp -Cr html geek:www/MVTB
+	#scp -Cr html geek:www/MVTB
+	rsync -az html geek:www/MVTB
 	scp -C rvctools/vision/vision.pdf geek:www/MVTB
 	ssh geek chmod -R a+rX www/MVTB
+
+stage:
+	ssh geek mv www/MVTB/vision-*.zip www/MVTB/r3
 
 clean:
 	@-\rm -rf vision.zip vision.tgz
