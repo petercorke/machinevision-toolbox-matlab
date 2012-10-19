@@ -28,7 +28,7 @@ function h = plot_camera(c, varargin)
         % get the overall scale factor from the existing graph
         sz = [get(gca, 'Xlim'); get(gca, 'Ylim'); get(gca, 'Zlim')];
         sz = max(sz(:,2)-sz(:,1));
-        opt.scale = sz / 5;
+        opt.scale = sz / 15;
     end
     
     if opt.frustrum
@@ -82,14 +82,18 @@ function h = plot_camera(c, varargin)
                 text(P(1), P(2), P(3), c.name);
             end
             c.h_visualize = h;  % save handle for later
-            xlabel('X'); ylabel('Y'); zlabel('Z');
         end
     else
         % draw a somewhat detail camera-looking object
-        c.h_camera3D = c.drawCamera(opt.scale, arglist{:});
+        args = {'scale', opt.scale};
+        if opt.label
+            args = [args 'label'];
+        end
+        args = [args arglist{:}];
+        c.h_camera3D = c.drawCamera(args{:});
         
         set(c.h_camera3D, 'Matrix', opt.Tcam);
-        
     end
+    xlabel('X'); ylabel('Y'); zlabel('Z');
 
 end

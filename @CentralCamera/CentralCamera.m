@@ -684,19 +684,17 @@ classdef CentralCamera < Camera
           p = -Mi*p4;
         end
 
-        function hg = drawCamera(cam, s, varargin)
+        function hg = drawCamera(cam, varargin)
 
             hold on
-            if nargin == 0
-                s = 1;
-            end
-
-            s = s/3;
 
             opt.color = 'b';
             opt.mode = {'solid', 'mesh'};
             opt.label = false;
+            opt.scale = 1/3;
             opt = tb_optparse(opt, varargin);
+            
+            s = opt.scale;
 
             % create a new transform group
             hg = hgtransform;
@@ -710,7 +708,6 @@ classdef CentralCamera < Camera
             cn = 16;        % number of facets of cylinder
             a = 3;          % length of axis line segments
 
-            opt.scale = s;
             opt.parent = hg;
 
             % draw the box part of the camera
@@ -736,16 +733,15 @@ classdef CentralCamera < Camera
             set(h, 'BackFaceLighting', 'unlit');
 
             % draw the x-, y- and z-axes
-            h = plot3([0,a*s], [0,0], [0,0], 'k');
-            set(h, 'Parent', hg);
-            h = plot3([0,0], [0,a*s], [0,0], 'k');
-            set(h, 'Parent', hg);
-            h = plot3([0,0], [0,0], [0,a*s], 'k');
-            set(h, 'Parent', hg);
+            plot3([0,a*s], [0,0], [0,0], 'k', 'Parent', hg);
+            text(a*s, 0, 0, sprintf(' X'), 'Parent', hg);
+            plot3([0,0], [0,a*s], [0,0], 'k', 'Parent', hg);
+            text(0, a*s, 0, sprintf(' Y'), 'Parent', hg);
+            plot3([0,0], [0,0], [0,a*s], 'k', 'Parent', hg);
+            text(0, 0, a*s, sprintf(' Z'), 'Parent', hg);
 
             if opt.label
-                h = text( a*s,0,0, cam.name);
-                set(h, 'Parent', hg);
+                text( 0.3*a*s, 0.1*a*s, 0, cam.name, 'Parent', hg);
             end
             hold off
 
