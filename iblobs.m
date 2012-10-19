@@ -41,10 +41,18 @@
 % References::
 %  - Robotics, Vision & Control, Section 13.1,
 %    P. Corke, Springer 2011.
-
+% - METHODS TO ESTIMATE AREAS AND PERIMETERS OF BLOB-LIKE OBJECTS: A COMPARISON
+%   Luren Yang, Fritz Albregtsen, Tor Lgnnestad and Per Grgttum
+%   IAPR Workshop on Machine Vision Applications Dec. 13-15, 1994, Kawasaki
+% - Area and perimeter measurement of blobs in discrete binary pictures. 
+%   Z.Kulpa.
+%   Comput. Graph. Image Process., 6:434-451, 1977.
+%
 % Notes::
 % - The RegionFeature objects are ordered by the raster order of the top most
 %   point (smallest v coordinate) in each blob.
+% - Circularity is computed using the raw perimeter length scaled down by Kulpa's
+%   correction factor.
 %
 % See also RegionFeature, ILABEL, IDISPLABEL, IMOMENTS.
 
@@ -136,8 +144,17 @@ function [features,labimg] = iblobs(im, varargin)
                 F.edge = e';
 
                 e = diff([e; e(1,:)])';
+                
+                % compute length:
+                %   - 1 for horizontal/vertical segment
+                %   - sqrt(2) for diagnonal
+                %
+                % Apply Kulpa's correction factor when computing
+                % circularity
+                kulpa = pi/8*(1+sqrt(2));
                 F.perimeter_ = sum( colnorm(e) );
-                F.circularity_ = 4*pi*F.area_/F.perimeter_^2;
+                
+                F.circularity_ = 4*pi*F.area_/ (F.perimeter_*kulpa)^2;
             end
 
             % set object properties
