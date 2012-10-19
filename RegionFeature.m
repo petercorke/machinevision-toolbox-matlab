@@ -313,7 +313,11 @@ classdef RegionFeature < handle
         function val = shape(f)
             val = [f.shape_];
         end
-
+        
+        function val = area(f)
+            val = [f.area_];
+        end
+        
         function val = circularity(f)
             val = [f.circularity_];
         end
