@@ -53,9 +53,9 @@ function s = kcircle(r, w)
     if ~isscalar(r) 
         s = kcircle(rmax,w) - kcircle(rmin, w);
     else
-        [x,y] = find(s == 0);
+        [x,y] = imeshgrid(s);
         x = x - c;
         y = y - c;
-        l = find(x.^2+y.^2-r^2 < 0.5);
+        l = find(x.^2 + y.^2 - r^2 < 0);
         s(l) = 1;
     end
