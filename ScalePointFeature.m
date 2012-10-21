@@ -22,7 +22,7 @@
 % If F is a vector (Nx1) of ScalePointFeature objects then F.u is a 2xN matrix
 % with each column the corresponding point coordinate.
 %
-% See also PointFeature, SurfPointFeature, SiftPointFeature.
+% See also PointFeature, OrientedScalePointFeature, SurfPointFeature, SiftPointFeature.
 
 
 % Copyright (C) 1993-2011, by Peter I. Corke
@@ -73,10 +73,16 @@ classdef ScalePointFeature < PointFeature
         end
 
 
+        % for book compatibility
+
         function plot_scale(features, varargin)
-        %ScalePointFeature.plot_scale Plot feature scale
+            feature.plot(varargin{:});
+        end
+
+        function plot(features, varargin)
+        %ScalePointFeature.plot Plot feature 
         %
-        % F.plot_scale(OPTIONS) overlay a marker at the feature position.
+        % F.plot(OPTIONS) overlay a marker at the feature position.
         %
         % F.plot_scale(OPTIONS, LS) as above but the optional line style arguments LS are
         % passed to plot.
@@ -88,10 +94,23 @@ classdef ScalePointFeature < PointFeature
         % 'disk'      Indicate scale by a translucent disk
         % 'color',C   Color of circle or disk (default green)
         % 'alpha',A   Transparency of disk, 1=opaque, 0=transparent (default 0.2)
+        % 'scale',S   Scale factor for drawing circles and arrows.
+        %
+        % Examples::
+        %
+        % Mark the feature coordinates with a white asterisk
+        %          f.plot('w*')
+        % Mark each feature with a blue translucent disk
+        %          f.plot('disk', 'color', 'b', 'alpha', 0.3);
+        % Mark each feature with a green circle and with exagerated scale
+        %          f.plot('circle', 'color', 'g', 'scale', 2)
+        %
+        % See also PointFeature.plot, plot.
 
-            opt.display = {'circle', 'disk'};
+            opt.display = {'', 'circle', 'disk'};
             opt.color = 'g';
             opt.alpha = 0.2;
+            opt.scale = 1;
             [opt,args] = tb_optparse(opt, varargin);
             
             if length(args) == 1 && isstr(args{1})
@@ -105,12 +124,14 @@ classdef ScalePointFeature < PointFeature
             s = 1;
 
             switch (opt.display)
-            case 'circle'
-                plot_circle([ [features.u_]; [features.v_] ], s*[features.scale_]', ...
-                'color', opt.color, args{:});
-            case 'disk'
-                plot_circle([ [features.u_]; [features.v_] ], s*[features.scale_]', ...
-                    'fillcolor', opt.color, 'alpha', opt.alpha);
+                case 'circle'
+                    plot_circle([ [features.u_]; [features.v_] ], opt.scale*[features.scale_]', ...
+                        'color', opt.color, args{:});
+                case 'disk'
+                    plot_circle([ [features.u_]; [features.v_] ], opt.scale*[features.scale_]', ...
+                        'fillcolor', opt.color, 'edgecolor', 'none', 'alpha', opt.alpha);
+                otherwise
+                    plot@PointFeature(features, varargin{:});
             end
             if ~holdon
                 hold off

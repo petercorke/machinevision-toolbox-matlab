@@ -79,7 +79,7 @@ classdef PointFeature < handle
         function plot(features, varargin)
         %PointFeature.plot Plot feature
         %
-        % F.plot() overlay a marker at the feature position.
+        % F.plot() overlay a white square marker at the feature position.
         %
         % F.plot(LS) as above but the optional line style arguments LS are
         % passed to plot.
