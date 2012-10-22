@@ -54,7 +54,11 @@ function [out,u0] = iconcat(images, dir, bgval)
 % TODO: add a gap option
 
     opt.dir = 'h';
-    opt.bg = NaN;
+    if isinteger(images{1})
+        opt.bg = 0;
+    else
+        opt.bg = NaN;
+    end
 
    % image is a cell array
     width = 0;
@@ -86,7 +90,7 @@ function [out,u0] = iconcat(images, dir, bgval)
             u0(i) = u0(i-1) + nc;
         end
     end
-    composite = bgval*ones(height, width, np);
+    composite = bgval*ones(height, width, np, class(images{1}));
 
     u = 1;
     for i=1:length(images)
@@ -97,7 +101,8 @@ function [out,u0] = iconcat(images, dir, bgval)
     if dir == 'v'
         composite = permute(composite, [2 1 3]);
     end
-        
+    
+    
     
     if nargout == 0
         idisp(composite)
