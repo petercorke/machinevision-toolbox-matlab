@@ -30,7 +30,7 @@
 % 'ncolors',N      number of colors in the color map (default 256)
 % 'bar'            add a color bar to the image
 % 'print',F        write the image to file F in EPS format
-% 'square'         display aspect ratio so that pixels are squate
+% 'square'         display aspect ratio so that pixels are square
 % 'wide'           make figure full screen width, useful for displaying stereo pair
 % 'flatten'        display image planes (colors or sequence) as horizontally 
 %                  adjacent images
