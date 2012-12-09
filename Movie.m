@@ -79,7 +79,7 @@ classdef Movie < ImageSource
             
             % open the movie file and copy some of its parameters to object
             % properties
-            m.movie = mmreader(filename);
+            m.movie = VideoReader(filename);
             m.width = m.movie.Width;
             m.height = m.movie.Height;
             m.rate = m.movie.FrameRate;
@@ -94,7 +94,6 @@ classdef Movie < ImageSource
             
             disp(varargin)
             opt = tb_optparse(opt, varargin);
-            opt
             m.skip = opt.skip;
         end
         
