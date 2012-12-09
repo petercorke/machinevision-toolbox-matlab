@@ -193,6 +193,9 @@ classdef RegionFeature < handle
             holdon = ishold;
             hold on
             for b=bb
+                if isempty(b.edge)
+                    error('edge has not been computed for this blob');
+                end
                 plot(b.edge(1,:), b.edge(2,:), varargin{:});
             end
             if ~holdon
