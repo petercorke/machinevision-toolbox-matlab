@@ -141,11 +141,15 @@ function idisp(im, varargin)
     opt.histeq = false;
     opt.here = false;
     opt.new = false;
+    opt.figure = [];
     
     [opt,arglist] = tb_optparse(opt, varargin);
     
     if opt.new
         figure
+    end
+    if ~isempty(opt.figure)
+        figure(opt.figure);
     end
 
     if opt.plain
@@ -210,10 +214,15 @@ function idisp(im, varargin)
             i_min = 0;
             i_max = 1;
         end
-    else
+    elseif isinteger(im)
         if i_min == i_max
             i_min = 0;
             i_max = intmax(class(im));
+        end
+    elseif islogical(im)
+        if i_min == i_max
+            i_min = 0;
+            i_max = 1;
         end
     end
     set(gca, 'CLim', [i_min, i_max]);
@@ -438,8 +447,8 @@ function idisp_callback(cmd, src)
             clf
             set(gcf, 'MenuBar', 'figure');
             set(gcf, 'ToolBar', 'figure');
-            set(gcf, 'WindowButtonUpFcn', '');
-            set(gcf, 'WindowButtonDownFcn', '');
+            %set(gcf, 'WindowButtonUpFcn', '');
+            %set(gcf, 'WindowButtonDownFcn', '');
         case 'cleanup'
             %fprintf('cleaning up handlers\n');
             set(gcf, 'WindowButtonDownFcn', '');
