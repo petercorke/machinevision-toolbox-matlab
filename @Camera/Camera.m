@@ -11,7 +11,8 @@
 % figure         figure holding the image plane
 % mesh           draw shape represented as a mesh
 % point          draw homogeneous points on image plane
-% line           draw homogeneous lines on image plane
+% homline        draw homogeneous lines on image plane
+% lineseg        draw line segment defined by points
 % plot_camera    draw camera in world view
 %
 % rpy            set camera attitude
@@ -634,9 +635,9 @@ classdef Camera < handle
         end % point
 
         function h =  homline(c, lines, varargin)
-        %Camera.line Plot homogeneous lines on image plane
+        %Camera.homline Plot homogeneous lines on image plane
         %
-        % C.line(L) plots lines on the camera image plane which are defined by columns 
+        % C.homline(L) plots lines on the camera image plane which are defined by columns 
         % of L (3xN) considered as lines in homogeneous form: a.u + b.v + c = 0.
 
             % get handle for this camera image plane

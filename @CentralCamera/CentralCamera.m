@@ -526,7 +526,7 @@ classdef CentralCamera < Camera
             % for all input points
             l = F * e2h(p);
 
-            c.line(l, varargin{:});
+            c.homline(l, varargin{:});
         end
 
         function th = fov(c)
