@@ -58,11 +58,11 @@ function [L_,M_] = igraphseg(im, K, mn, sigma)
     % labels are not sequential but sparsely distributed over a large
     % numeric range
     
-%     uniqLabels = count_unique(L(:));
-%     
-%     % create a map
-%     map=containers.Map(uniqLabels, 1:M);
-%     L = cell2mat( values(map, num2cell(L) ) );  % map the values
+    uniqLabels = count_unique(L(:));
+    
+    % create a map
+    map=containers.Map(uniqLabels, 1:M);
+    L = cell2mat( values(map, num2cell(L) ) );  % map the values
     
     if nargout >= 1
         L_ = L;
