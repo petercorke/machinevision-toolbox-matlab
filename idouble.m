@@ -29,12 +29,26 @@
 % You should have received a copy of the GNU Leser General Public License
 % along with MVTB.  If not, see <http://www.gnu.org/licenses/>.
 
-function dim = idouble(im)
+function dim = idouble(im, opt)
 
-    if isinteger(im)
-        dim = double(im) / double(intmax(class(im)));
-    elseif islogical(im)
-        dim = double(im);
+    if nargin == 2 && strcmp(opt, 'float')
+        % convert to float pixel values
+        if isinteger(im)
+            dim = single(im) / single(intmax(class(im)));
+        elseif islogical(im)
+            dim = single(im);
+        else
+            dim = im;
+        end
     else
-        dim = im;
+        % convert to double pixel values (default)
+        if isinteger(im)
+            dim = double(im) / double(intmax(class(im)));
+        elseif islogical(im)
+            dim = double(im);
+        else
+            dim = im;
+        end
     end
+    
+
