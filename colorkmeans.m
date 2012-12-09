@@ -55,7 +55,7 @@
 % 
 % You should have received a copy of the GNU Leser General Public License
 % along with MVTB.  If not, see <http://www.gnu.org/licenses/>.
-function [labels,C,resid] = colorseg(im, k, varargin)
+function [labels,C,resid] = colorkmeans(im, k, varargin)
 
     % convert RGB to xy space
     rgbcol = im2col(im);
@@ -82,9 +82,7 @@ function [labels,C,resid] = colorseg(im, k, varargin)
     
     % convert labels back to an image
     L = col2im(L', im);
-    
-    idisp(L);
-    
+        
     for k=1:numrows(C)
         fprintf('%2d: ', k);
         fprintf('%11.4g ', C(k,:));
