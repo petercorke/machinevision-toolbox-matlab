@@ -28,7 +28,7 @@ function vid = VideoCamera(varargin)
         if nargin == 1 && strcmp(varargin{1}, '?')
             VideoCamera_IAT.list();
         else
-            vid = VideoCamera_IAT(varargin);
+            vid = VideoCamera_IAT(varargin{:});
         end
     elseif exist('framegrabber') == 3
         % we have the MVTB framegrabber MEX interface, for either
@@ -36,7 +36,7 @@ function vid = VideoCamera(varargin)
         if nargin == 1 && strcmp(varargin{1}, '?')
             VideoCamera_fg.list();
         else
-            vid = VideoCamera_fg(varargin);
+            vid = VideoCamera_fg(varargin{:});
         end
     else
         error('no video capture capability on this computer');
