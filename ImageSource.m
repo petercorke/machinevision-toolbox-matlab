@@ -62,6 +62,8 @@ classdef ImageSource < handle
         % 'width',W    Set image width to W
         % 'height',H   Set image height to H
         % 'uint8'      Return image with uint8 pixels (default)
+        % 'int16'      Return image with int16 pixels
+        % 'int32'      Return image with int32 pixels
         % 'float'      Return image with float pixels
         % 'double'     Return image with double precision pixels
         % 'grey'       Return image is greyscale
@@ -77,6 +79,7 @@ classdef ImageSource < handle
             opt.height = [];
 
             [opt,args] = tb_optparse(opt, varargin);
+            opt
             
             imsource.imageType = opt.imageType;
             imsource.makeGrey = opt.grey;
@@ -106,7 +109,14 @@ classdef ImageSource < handle
                 im = imono(im);
             end
             if ~isempty(imsource.imageType)
-                im = cast(im, imsource.imageType);
+                switch imsource.imageType
+                case 'double'
+                    im = idouble(im);
+                case 'float'
+                    im = idouble(im, 'float');
+                otherwise
+                    im = cast(im, imsource.imageType);
+                end
             end
 
             if ~isempty(imsource.gamma)
