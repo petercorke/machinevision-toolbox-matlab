@@ -38,6 +38,12 @@
 #define  NAN    mxGetNaN()
 #endif
 
+#ifdef _W64
+#include <float.h>
+#define  isnan  _isnan
+#define  NAN    mxGetNaN()
+#endif 
+
 /* Input Arguments */
 
 #define	IM_IN		prhs[0]

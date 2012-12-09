@@ -17,6 +17,10 @@
 #undef TIMING
 #endif
 
+#ifdef _W64
+#undef TIMING
+#endif
+
 #ifdef TIMING
 #include <sys/time.h>
 #endif
@@ -34,6 +38,11 @@ static void compute_means( float *image_l, float *image_r, int wx, int wy, int w
 #endif
 
 #ifdef __LCC__
+#define INFINITY    mxGetInf()
+#define NAN         mxGetNaN()
+#endif
+
+#ifdef _W64
 #define INFINITY    mxGetInf()
 #define NAN         mxGetNaN()
 #endif
