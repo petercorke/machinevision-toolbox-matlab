@@ -16,7 +16,8 @@
 # along with MVTB.  If not, see <http://www.gnu.org/licenses/>.
 
 DEBUG = -g
-CFLAGS="-std=gnu99"
+#CFLAGS="-std=gnu99"
+CFLAGS=-std=c99
 
 mex:
 	mex CFLAGS=$(CFLAGS) $(DEBUG) closest.c
