@@ -46,6 +46,20 @@ function out = ipad(in, sides, n, val)
         val = NaN;
     end
     
+    if ndims(in) > 2
+        % multiplane case
+        d = size(in);
+        nimages = prod(d(3:end));
+        out = [];
+        for i=1:nimages
+            out(:,:,i) = ipad(in(:,:,i), sides, n, val);
+        end
+
+        d2 = size(out);
+        out = reshape(out, [d2(1) d2(2) d(3:end)]);
+        return
+    end
+    
     out = in;
     for side=sides
         [w,h] = isize(out);
