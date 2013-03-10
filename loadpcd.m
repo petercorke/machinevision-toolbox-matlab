@@ -14,6 +14,9 @@
 
 % TODO
 % - add color
+% - handle binary_compressed
+% - handle organized point clouds
+% - allow fields to be of different types, particularly useful for RGB
 
 function points = loadpcd(fname)
 
@@ -84,7 +87,6 @@ function points = loadpcd(fname)
             for j=1:length(c)
                 points = [points; c{j}'];
             end
-            % probably should convert RGBA from float to rgba
             
         case 'binary'
             format = '';
@@ -116,6 +118,16 @@ function points = loadpcd(fname)
         otherwise
             % I have no idea how binary_compressed works...
             error('unknown DATA mode: %s', mode);
+    end
+    
+    % convert RGB from float to rgb
+    if strcmp(fields, 'x y z rgb')
+        rgb = typecast(points(4,:), 'uint32');
+        R = double(bitand(255, bitshift(rgb, 16))) /255;
+        G = double(bitand(255, bitshift(rgb, 8))) /255;
+        B = double(bitand(255, rgb)) /255;
+        
+        points = [points(1:3,:); R; G; B];
     end
                
     fclose(fp);
