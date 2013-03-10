@@ -1,7 +1,7 @@
-%ICONV Image convolution
+%ICONV Image cross-correlation
 %
-% C = ICONV(IM1, IM2, OPTIONS) is the convolution of images IM1 and IM2.  The 
-% smaller image is taken as the kernel and convolved with the larger image. 
+% C = ICONV(IM1, IM2, OPTIONS) is the cross-correlation of images IM1 and IM2.  The 
+% smaller image is taken as the kernel and correlated with the larger image. 
 %
 % Options::
 %  'same'    output image is same size as largest input image (default)
@@ -16,6 +16,8 @@
 % - This function is a convenience wrapper for the MATLAB function CONV2.
 % - Works for double, uint8 or uint16 images.  Image and kernel must be of
 %   the same type and the result is of the same type.
+% - This function is badly named, it peforms cross-correlation not
+%   convolution.
 %
 % See also CONV2.
 
