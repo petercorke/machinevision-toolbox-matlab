@@ -38,7 +38,7 @@
 %   OUT.s          sample size (1x1)
 %   OUT.X          conditioned data (2DxN)
 %   OUT.misc       private data (cell array)
-%   OUT.inlier     list of inliers (1xM)
+%   OUT.inliers    list of inliers (1xM)
 %   OUT.valid      if data is valid for estimation (logical)
 %   OUT.theta      estimated quantity (3x3)
 %   OUT.resid      model fit residual (1x1)
@@ -46,7 +46,7 @@
 % The values of R.cmd are:
 %  'size'          OUT.s is the minimum number of points required to compute
 %                  an estimate to OUT.s
-%  'condition'     OUT.x = CONDITION(R.X) condition the point data 
+%  'condition'     OUT.X = CONDITION(R.X) condition the point data 
 %  'decondition'   OUT.theta = DECONDITION(R.theta) decondition the estimated 
 %                  model data
 %  'valid'         OUT.valid is true if a set of points is not degenerate,
@@ -56,7 +56,7 @@
 %                  and residual for the subset of points R.X.  If this function 
 %                  cannot fit a model then OUT.theta = [].  If multiple models
 %                  are found OUT.theta is a cell array.
-%  'error'         [OUT.inlier,OUT.theta] = ERR(R.theta,R.X,T) evaluates the 
+%  'error'         [OUT.inliers,OUT.theta] = ERR(R.theta,R.X,T) evaluates the 
 %                  distance from the model(s) R.theta to the points R.X and
 %                  returns the best model OUT.theta and the subset of R.X that 
 %                  best supports (most inliers) that model.
