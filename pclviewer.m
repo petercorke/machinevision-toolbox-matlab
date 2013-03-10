@@ -1,15 +1,22 @@
 %PCLVIEWER View a point cloud using PCL
 %
-% PCLVIEWER(P) writes the point cloud P (3xN) to a temporary file and invokes
+% PCLVIEWER(P) writes the point cloud P (MxN) to a temporary file and invokes
 % the PCL point cloud viewer for fast display and visualization.  The columns of P
 % represent the 3D points.
 %
+% If M=3 then the rows are x, y, z.
+% If M=6 then the rows are x, y, z, R, G, B where R,G,B are in the range 0
+% to 1.
+%
 % PCLVIEWER(P, ARGS) as above but the optional arguments ARGS are passed to the
-% PCL viewer.
+% PCL viewer.  For example:
+%
+%         pclviewer( rand(3,1000), '-ps 2 -ax 1' )
 %
 % Notes::
-% - Only the x y z field format are currently supported
-% - The file is written in ascii format
+% - Only the "x y z" and "x y z rgb" field formats are currently supported.
+% - The file is written in ascii format.
+% - When viewing colored point clouds in pcl_viewer remember to toggle to 
 %
 % See also savepcd, readpcd.
 %
@@ -32,6 +39,8 @@ function pclviewer(points, args)
     end
     
     savepcd(pointfile, points);
+    
+    system(sprintf('head -20 %s', pointfile));
     
     system(sprintf('%s %s %s &', ...
         viewer, pointfile, args));
