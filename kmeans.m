@@ -16,7 +16,7 @@
 %
 % Options::
 % 'random'   initial cluster centres are chosen randomly from the set of
-%            data points X
+%            data points X (default)
 % 'spread'   initial cluster centres are chosen randomly from within the 
 %            hypercube spanned by X.
 %
@@ -58,7 +58,6 @@ function [label,centroid,resid] = kmeans(x, K, varargin)
 % TODO update doco for assignment mode
 %      option to loop N times and take lowest residual
 %      return residual from assignment mode
-    deb = 0;
 
     n = numcols(x);
     
@@ -79,16 +78,17 @@ function [label,centroid,resid] = kmeans(x, K, varargin)
     opt.init = {'random', 'spread'};
     [opt,z0] = tb_optparse(opt, varargin);
 
-    if opt.plot && numrow(x) > 3
+    if opt.plot && numrows(x) > 3
         warning('cant plot for more than 3D data');
         opt.plot = false;
     end
     if ~isempty(z0)
+        z0 = z0{1};
         % an initial condition was supplied
-        if numcols(z0) ~= K,
+        if numcols(z0) ~= K
             error('initial cluster length should be k');
         end
-        if numrows(z0) ~= numrows(x),
+        if numrows(z0) ~= numrows(x)
             error('number of dimensions of z0 must match dimensions of x');
         end
     else
@@ -110,7 +110,7 @@ function [label,centroid,resid] = kmeans(x, K, varargin)
     % s is the vector of cluster labels corresponding to rows in x
     
     z = z0;
-    
+    z
 
     %
     % step 1
@@ -119,11 +119,11 @@ function [label,centroid,resid] = kmeans(x, K, varargin)
     s = zeros(1,n);
     sp = s;
     
-    iterating = 1;
+    iterating = true;
     k = 1;
     iter = 0;
     
-    while iterating,
+    while iterating
         iter = iter + 1;
         
         tic
@@ -168,9 +168,9 @@ function [label,centroid,resid] = kmeans(x, K, varargin)
             fprintf('%d: norm=%g, delta=%g, took %.1f seconds\n', iter, mean(maxerr), delta, t);
         end
 
-        if delta == 0,
+        if delta == 0
             fprintf('delta to zero\n');
-            iterating = 0;
+            iterating = false;
         end
         z = zp;
         if opt.plot
