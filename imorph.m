@@ -54,6 +54,6 @@
 % along with MVTB.  If not, see <http://www.gnu.org/licenses/>.
 % along with MVTB.  If not, see <http://www.gnu.org/licenses/>.
 
-if ~exist('imorph', 3)
+if ~exist('imorph', 'file')
     error('you need to build the MEX version of imorph, see vision/mex/README');
 end

@@ -34,6 +34,6 @@
 % along with MVTB.  If not, see <http://www.gnu.org/licenses/>.
 % - is a MEX file.
 
-if ~exist('closest', 3)
+if ~exist('closest', 'file')
     error('you need to build the MEX version of closest, see vision/mex/README');
 end

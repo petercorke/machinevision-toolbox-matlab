@@ -56,6 +56,6 @@
 %
 % http://www.petercorke.com
 
-if ~exist('ilabel', 3)
+if ~exist('ilabel', 'file')
     error('you need to build the MEX version of ilabel, see vision/mex/README');
 end
