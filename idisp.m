@@ -65,6 +65,8 @@
 %   the first and last element of the color map, which by default ('greyscale')
 %   is the range black to white. To set your own scaling between displayed 
 %   grey level and pixel value use the 'cscale' option.
+% - The title of the figure window by default is the name of the variable
+%   passed in as the image, this can't work if the first argument is an expression.
 %
 % Examples::
 %   Display 2 images side by side
@@ -133,7 +135,7 @@ function idisp(im, varargin)
     opt.xydata = [];
     opt.plain = false;
     opt.flatten = false;
-    opt.toolbar = false;
+    opt.toolbar = true;
     opt.title = [];
     opt.clickfunc = [];
     opt.colormap_std = {[], 'grey', 'signed', 'invsigned', 'random', 'invert', 'dark'};
@@ -168,7 +170,10 @@ function idisp(im, varargin)
     if ~isempty(opt.axis)
         opt.gui = false;
     end
-
+    if strcmp( get(gcf,'WindowStyle'), 'docked')
+        opt.gui = false;
+    end
+    
     if length(arglist) ~= 0
         warning(['Unknown options: ', arglist]);
     end
@@ -186,7 +191,6 @@ function idisp(im, varargin)
         clf
     else
         axes(opt.axis)
-        opt.nogui = true;
     end
 
     ud = [];
@@ -356,20 +360,6 @@ function idisp(im, varargin)
         set(gca, 'UserData', ud);
         set(hi, 'UserData', ud);
 
-        % label the figure
-        if isempty(opt.title)
-            % show the variable name in the figure's title bar
-            varname = inputname(1);
-            if isempty(varname)
-                set(gcf, 'name', 'idisp');
-            else
-                set(gcf, 'name', sprintf('idisp: %s', varname));
-            end
-        else
-            set(gcf, 'name', opt.title);
-            
-        end
-
         % create pushbuttons
         uicontrol(gcf,'Style','Push', ...
             'String','line', ...
@@ -411,11 +401,26 @@ function idisp(im, varargin)
 
         set(hi, 'UserData', ud);
     end
-    set(hi, 'DeleteFcn', @(src,event) idisp_callback('idelete', src) );
-    set(gca, ...
-        'DeleteFcn', @(src,event) idisp_callback('destroy', src), ...
-        'NextPlot', 'replace', ...
-        'UserData', ud);
+    
+    % label the figure
+    if isempty(opt.title)
+        % show the variable name in the figure's title bar
+        varname = inputname(1);
+        if isempty(varname)
+            set(gcf, 'name', 'idisp');
+        else
+            set(gcf, 'name', sprintf('idisp: %s', varname));
+        end
+    else
+        set(gcf, 'name', opt.title);
+        
+    end
+        
+%     set(hi, 'DeleteFcn', @(src,event) idisp_callback('idelete', src) );
+%     set(gca, ...
+%         'DeleteFcn', @(src,event) idisp_callback('destroy', src), ...
+%         'NextPlot', 'replace', ...
+%         'UserData', ud);
 
 end
 
@@ -551,9 +556,6 @@ function idisp_callback(cmd, src)
             rect = rbbox;	    % return on up click
 
             cp1 = floor( get(gca, 'CurrentPoint') );
-            
-            cp0
-            cp1
 
             % determine the bounds of the ROI
             top = cp0(1,2);
