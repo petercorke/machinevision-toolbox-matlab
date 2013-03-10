@@ -64,17 +64,19 @@ function [labels,C,resid] = colorkmeans(im, k, varargin)
     x = XYZcol(:,1) ./ sXYZ;
     y = XYZcol(:,2) ./ sXYZ;
     
+    if any(isnan(x)) || any(isnan(y))
+        error('undefined xy chromaticity for some pixels: input image has pixels with value (0,0,0)');
+    end
+    
     % do the k-means clustering
     
     if numcols(k) > 1 && numrows(k) == 2
         % k is cluster centres
-        [L,C,resid] = kmeans([x y]', k);
+        [L,C,resid] = kmeans([x y]', k, varargin{:});
     else
-        if length(varargin) > 0
-            if varargin{1} == 'pick'
+        if length(varargin) > 0 && strcmp(varargin{1}, 'pick')
                 z0 = pickpoints(k, im, x, y);
-                [L,C,resid] = kmeans([x y]', k, z0);
-            end
+                [L,C,resid] = kmeans([x y]', k, z0', varargin{:});
         else
             [L,C,resid] = kmeans([x y]', k, varargin{:});
         end
@@ -102,7 +104,7 @@ function z0 = pickpoints(k, im, x, y)
     image(im)
     uv = round( ginput(k) );
     sz = size(im);
-    i = sub2ind( sz(1:2), uv(:,2), uv(:,1) )
+    i = sub2ind( sz(1:2), uv(:,2), uv(:,1) );
     
     z0 =[x(i) y(i)];
 end
