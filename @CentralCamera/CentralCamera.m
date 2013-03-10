@@ -539,7 +539,7 @@ classdef CentralCamera < Camera
 
 
 
-        function uv = project(c, P, varargin)
+        function [uv,visible] = project(c, P, varargin)
         %CentralCamera.project Project world points to image plane
         %
         % UV = C.project(P, OPTIONS) are the image plane coordinates (2xN) corresponding
@@ -549,6 +549,10 @@ classdef CentralCamera < Camera
         %   of projected points as the camera moves in the world.
         % - If Tobj (4x4xS) is a transform sequence then UV (2xNxS) represents the sequence 
         %   of projected points as the object moves in the world.
+        %
+        % [UV,VIS] = C.project(P, OPTIONS) as above but VIS (SxN) is a logical matrix with
+        % elements true (1) if the point is visible, that is, it lies within the bounds of
+        % the image plane and is in front of the camera.
         %
         % L = C.project(L, OPTIONS) are the image plane homogeneous lines (3xN) corresponding
         % to the world lines represented by a vector of Plucker coordinates (1xN).
@@ -563,6 +567,7 @@ classdef CentralCamera < Camera
         % Notes::
         % - Currently a camera or object pose sequence is not supported for
         %   the case of line projection.
+        % - (u,v) values are set to NaN if the corresponding point is behind the camera.
         %
         % See also Camera.plot, Plucker.
 
@@ -607,14 +612,46 @@ classdef CentralCamera < Camera
                         X = C * opt.Tobj(:,:,frame) * P;     % project them
                         
                         X(3,X(3,:)<0) = NaN;    % points behind the camera are set to NaN
+
+                        
+                        if ~isempty(c.distortion)
+                            % add lens distortion
+                            
+                            X = inv(c.K) * X;   % convert to normalized image coordinates
+                            u = X(1,:); v = X(2,:); % unpack coordinates
+                            k = c.distortion(1:3); p = c.distortion(4:5); % unpack distortion vector
+                            r = sqrt( u.^2 + v.^2 ); % distance from princ point
+                            
+                            % compute the shift due to distortion
+                            delta_u = u .* (k(1)*r.^2 + k(2)*r.^4 + k(3)*r.^6) + ...
+                                2*p(1)*u.*v + p(2)*(r.^2 + 2*u.^2);
+                            delta_v = v .* (k(1)*r.^2 + k(2)*r.^4 + k(3)*r.^6) + ...
+                                p(1)*(r.^2 + 2*v.^2) + 2*p(1)*u.*v;
+                            
+                            ud = u + delta_u;  vd = v + delta_v; % distorted coordinates
+                            X = c.K * e2h( [ud; vd] ); % convert to pixel coords
+                        end
+                        
+
                         X = h2e(X);            % convert to Euclidean coordinates
                         
                         if c.noise
                             % add Gaussian noise with specified standard deviation
                             X = X + diag(c.noise) * randn(size(X));
-                        end
+                        end                            
+                        
                         uv(:,:,frame) = X;
                     end
+                    
+                    if nargout > 1
+                        % do visibility check if required
+                        
+                        visible = ~isnan(uv(1,:,:)) & ...
+                            uv(1,:,:) >= 0 & uv(2,:,:) >= 0 & ...
+                            uv(1,:,:) <= c.npix(1) & uv(2,:,:) <= c.npix(2);
+                        visible = squeeze(visible)';
+                    end
+                    
                 else
                     % animate camera, static object
                     
@@ -634,15 +671,51 @@ classdef CentralCamera < Camera
                         % transform all the points to camera frame
                         X = C * P;              % project them
                         X(3,X(3,:)<0) = NaN;    % points behind the camera are set to NaN
+
+                        
+                        if ~isempty(c.distortion)
+                            % add lens distortion
+                            
+                           X = inv(c.K) * X;   % convert to normalized image coordinates
+                            u = X(1,:); v = X(2,:); % unpack coordinates
+                            k = c.distortion(1:3); p = c.distortion(4:5); % unpack distortion vector
+                            r = sqrt( u.^2 + v.^2 ); % distance from princ point
+                            
+                            % compute the shift due to distortion
+                            delta_u = u .* (k(1)*r.^2 + k(2)*r.^4 + k(3)*r.^6) + ...
+                                2*p(1)*u.*v + p(2)*(r.^2 + 2*u.^2);
+                            delta_v = v .* (k(1)*r.^2 + k(2)*r.^4 + k(3)*r.^6) + ...
+                                p(1)*(r.^2 + 2*v.^2) + 2*p(1)*u.*v;
+                            
+                            ud = u + delta_u;  vd = v + delta_v; % distorted coordinates
+                            X = c.K * e2h( [ud; vd] ); % convert to pixel coords
+                            
+
+                        
+                        end
                         X = h2e(X);            % convert to Euclidean coordinates
                         
                         if c.noise
                             % add Gaussian noise with specified standard deviation
                             X = X + diag(c.noise) * randn(size(X));
-                        end
+                        end                        
+                        
                         uv(:,:,frame) = X;
+                        
+                        if nargout > 1
+                            % do visibility check if required
+                            
+                            visible = ~isnan(uv(1,:,:)) & ...
+                                uv(1,:,:) >= 0 & uv(2,:,:) >= 0 & ...
+                                uv(1,:,:) <= c.npix(1) & uv(2,:,:) <= c.npix(2);
+                            visible = squeeze(visible)';
+                        end
+                        
+                        
                     end
                 end
+                
+
             end
         end
 
