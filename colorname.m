@@ -1,16 +1,25 @@
 %COLORNAME Map between color names and RGB values
 %
-% RGB = COLORNAME(NAME) is the RGB-tristimulus value corresponding to the
-% color specified by the string NAME.
+% RGB = COLORNAME(NAME) is the RGB-tristimulus value (1x3) corresponding to
+% the color specified by the string NAME.  If RGB is a cell-array (1xN) of
+% names then RGB is a matrix (Nx3) with each row being the corresponding
+% tristimulus.
+%
+% XYZ = COLORNAME(NAME, 'xyz') as above but the XYZ-tristimulus value 
+% corresponding to the color specified by the string NAME.
+%
+% XY = COLORNAME(NAME, 'xy') as above but the xy-chromaticity coordinates 
+% corresponding to the color specified by the string NAME.
 %
 % NAME = COLORNAME(RGB) is a string giving the name of the color that is 
-% closest (Euclidean) to the given RGB-tristimulus value.
+% closest (Euclidean) to the given RGB-tristimulus value (1x3).  If RGB is
+% a matrix (Nx3) then return a cell-array (1xN) of color names.
 %
-% XYZ = COLORNAME(NAME, 'xy') is the XYZ-tristimulus value corresponding to 
-% the color specified by the string NAME.
+% NAME = COLORNAME(XYZ, 'xyz') as above but the color is the closest (Euclidean)
+% to the given XYZ-tristimulus value.
 %
-% NAME = COLORNAME(XYZ, 'xy') is a string giving the name of the color that is 
-% closest (Euclidean) to the given XYZ-tristimulus value.
+% NAME = COLORNAME(XYZ, 'xy') as above but the color is the closest (Euclidean)
+% to the given xy-chromaticity value with assumed Y=1.
 %
 % Notes::
 % - Color name may contain a wildcard, eg. "?burnt"
@@ -37,7 +46,7 @@
 
 function r = colorname(a, varargin)
 
-    opt.xy = false;
+    opt.color = {'rgb', 'xyz', 'xy'};
     opt = tb_optparse(opt, varargin);
 
     persistent  rgbtable;
@@ -73,12 +82,12 @@ function r = colorname(a, varargin)
     end
     
     if isstr(a)
-        % map name to rgb
+        % map name to rgb/xy
         if a(1)  == '?' 
             % just do a wildcard lookup
-            r = namelookup(rgbtable, a(2:end));
+            r = namelookup(rgbtable, a(2:end), opt);
         else
-            r = name2rgb(rgbtable, a, opt.xy);
+            r = name2rgb(rgbtable, a, opt);
         end
     elseif iscell(a)
         % map multiple names to rgb
@@ -91,21 +100,58 @@ function r = colorname(a, varargin)
             r = [r; rgb];
         end
     else
-        if numel(a) == 3
-            r = rgb2name(rgbtable, a(:)');
-        elseif numcols(a) == 2 && opt.xy
-            % convert xy to a name
-            r = {};
-            for k=1:numrows(a),
-                r{k} = xy2name(rgbtable, a(k,:));
-            end
-        elseif numcols(a) == 3 && ~opt.xy
-            % convert RGB data to a name
-            r = {};
-            for k=1:numrows(a),
-                r{k} = rgb2name(rgbtable, a(k,:));
-            end
+        % map values to strings
+        switch opt.color
+            case 'rgb'
+                if numel(a) == 3
+                    r = rgb2name(rgbtable, a(:)');
+                elseif numcols(a) ~= 3
+                    error('RGB data must have 3 columns');
+                else
+                    r = {};
+                    for i=1:numrows(a)
+                        r{i} = rgb2name(rgbtable, a(i,:));
+                    end
+                end
+                
+            case 'xyz'
+                if numel(a) == 3
+                    rgb = colorspace('XYZ->RGB', a(:)');
+                    r = rgb2name(rgbtable, rgb);
+                elseif numcols(a) ~= 3
+                    error('XYZ data must have 3 columns');
+                else
+                    rgb = colorspace('XYZ->RGB', a);
+                    
+                    r = {};
+                    for i=1:numrows(a)
+                        r{i} = rgb2name(rgbtable, rgb(i,:));
+                    end
+                end
+                
+            case 'xy'
+                if numel(a) == 2
+                    Y = 1;  XYZ = 1/a(2);
+                    X = a(1) * XYZ;
+                    Z = (1-a(1)-a(2)) * XYZ;
+                    rgb = colorspace('XYZ->RGB', [X Y Z]);
+                    r = rgb2name(rgbtable, rgb);
+                elseif numcols(a) ~= 2
+                    error('xy data must have 2 columns');
+                else
+                    Y = ones(numrows(a),1);  XYZ = 1./a(:,2);
+                    X = a(:,1) .* XYZ;
+                    Z = (1-a(:,1)-a(:,2)) .* XYZ;
+                    rgb = colorspace('XYZ->RGB', [X Y Z]);
+                    
+                    r = {};
+                    for i=1:numrows(a)
+                        r{i} = rgb2name(rgbtable, rgb(i,:));
+                    end
+                end
         end
+         
+
     end
 end
     
@@ -122,26 +168,26 @@ function r = namelookup(table, s)
     end
 end
 
-function r = name2rgb(table, s, isxy)
+function out = name2rgb(table, s, opt)
 
-    if nargin < 3
-        isxy = false;
-    end
     s = lower(s);   % all matching done in lower case
     
     for k=1:length(table.names),
         if strcmp(s, table.names(k)),
-            r = table.rgb(k,:);
-            if isxy
-                r
-                XYZ = colorspace('RGB->XYZ', r);
-                XYZ
-                r = tristim2cc(XYZ);
+            rgb = table.rgb(k,:);
+            switch opt.color
+                case 'rgb'
+                    out = rgb;
+                case 'xy'
+                    XYZ = colorspace('RGB->XYZ', r);
+                    out = tristim2cc(XYZ);
+                case 'xyz'
+                    out = colorspace('RGB->XYZ', rgb);
             end
             return;
         end
     end
-    r = [];
+    out = [];
 end
 
 function r = rgb2name(table, v)
