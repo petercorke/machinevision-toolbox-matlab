@@ -1,22 +1,27 @@
 %LOADPCD Load a point cloud from a PCD format file
 %
-% P = LOADPCD(FNAME) is a set of points (3xN) loaded from the PCD format
-% file FNAME.  The columns of P represent the 3D points.
+% P = LOADPCD(FNAME) is a set of points loaded from the PCD format
+% file FNAME.  
+%
+% For an unorganized point cloud the columns of P represent the 3D points,
+% and the rows are: x, y, z, r, g, b, a depending on the FIELDS in the file.
+%
+% For an organized point cloud P is a 3-dimensional matrix (HxWxN) where the
+% N planes are: x, y, z, r, g, b, a depending on the FIELDS in the file.  This
+% format is useful since the planes z, r, g, b, a can be considered as images.
 %
 % Notes::
 % - Only the x y z field format are currently supported
 % - The file can be in ascii or binary format, binary_compressed is not
 %   supported
 %
-% See also pclviewer, loadpcd.
+% See also pclviewer, lspcd, loadpcd.
 %
 % Copyright (C) 2013, by Peter I. Corke
 
 % TODO
-% - add color
 % - handle binary_compressed
-% - handle organized point clouds
-% - allow fields to be of different types, particularly useful for RGB
+
 
 function points = loadpcd(fname)
 
@@ -49,14 +54,14 @@ function points = loadpcd(fname)
             case 'POINTS'
                 npoints = str2num(remain);
             case 'SIZE'
-                size = str2num(remain);
+                siz = str2num(remain);
             case 'COUNT'
                 count = str2num(remain);
             case 'DATA'
                 mode = remain;
                 break;
             otherwise
-                fprintf('unknown field %s\n', field);
+                warning('unknown field %s\n', field);
         end
     end
     
@@ -68,7 +73,7 @@ function points = loadpcd(fname)
         end
         fprintf('%s: %s, %s, <%s> %dx%d\n', ...
             fname, mode, org, fields, width, height);
-        fprintf('  %s; %s\n', type, num2str(size));
+        fprintf('  %s; %s\n', type, num2str(siz));
     end
     
     if any(count > 1)
@@ -78,56 +83,124 @@ function points = loadpcd(fname)
     switch mode
         case 'ascii'
             format = '';
-            for j=1:numcols(size)
+            for j=1:size(siz,2)
                 [tok,type] = strtok(type);
-                format = [format '%' lower(tok) num2str(size(j)*8)];
-                    end
+                switch tok
+                    case 'I', typ = 'd';
+                    case 'U', typ = 'u';
+                    case 'F', typ = 'f';
+                end
+                format = [format '%' typ num2str(siz(j)*8)];
+            end
             c = textscan(fp, format, npoints);
             points = [];
             for j=1:length(c)
                 points = [points; c{j}'];
             end
+            if size(points,2) ~= npoints
+                error('incorrect number of points in file: was %d, should be %d', ...
+                    size(points,2), npoints);
+            end
             
         case 'binary'
             format = '';
-            for j=1:numcols(size)
+            for j=1:size(siz,2)
                 [tok,type] = strtok(type);
                 typ(j) = tok;
             end
-            if any(typ ~= typ(1))
-                error('for binary reading all fields must be of same TYPE');
-            end
-            if any(size ~= size(1))
-                error('for binary reading all fields must be of same SIZE');
+            if true || all(typ == typ(1)) && all(siz == siz(1))
+                % simple case where all fields have the same length and type
+                
+                % map IUF -> int, uint, float
+                switch typ(1)
+                    case 'I'
+                        fmt = 'int';
+                    case 'U'
+                        fmt = 'uint';
+                    case 'F'
+                        fmt = 'float';
+                end
+                
+                format = [format '*' fmt num2str(siz(j)*8)];
+                points = fread(fp, [numel(siz) npoints], format);
+                
+            else
+                
+                % more complex case where fields have different length and type
+                % code contributed by Will
+                
+                startPos_fp = ftell(fp);
+                numFields = numel(siz);
+                typeTokens = regexp(type,'\s+','split');
+                fieldTokens = regexp(fields,'\s+','split');
+                
+                % Just initialize the xyz portion for now
+                points = zeros(3, npoints);
+                
+                for i=1:numFields
+                    % map each field sequentially, using fread() skip functionality,
+                    % essentially interleaved reading of the file
+                    
+                    % map IUF -> int, uint, float
+                    typeToken = typeTokens{i};
+                    switch typeToken
+                        case 'I'
+                            fmt = 'int';
+                        case 'U'
+                            fmt = 'uint';
+                        case 'F'
+                            fmt = 'float';
+                    end
+                    
+                    format = ['*' fmt num2str(siz(i)*8)];
+                    fseek(fp, startPos_fp + sum(siz(1:i-1)), 'bof');
+                    data = fread(fp, [1 npoints], format, sum(siz)-siz(i));
+                    
+                    fieldToken = fieldTokens{i};
+                    switch fieldToken
+                        case 'x'
+                            points(1,:) = data;
+                        case 'y'
+                            points(2,:) = data;
+                        case 'z'
+                            points(3,:) = data;
+                        case {'rgb', 'rgba'}
+                            points(4,:) = data;
+
+                    end
+                end
+                
             end
             
-            % map IUF -> int, uint, float
-            switch typ(1)
-                case 'I'
-                    fmt = 'int';
-                case 'U'
-                    fmt = 'uint';
-                case 'F'
-                    fmt = 'float';
-            end
-                
-            format = [format '*' fmt num2str(size(j)*8)];
-            points = fread(fp, [numel(size) npoints], format);
-
             
         otherwise
             % I have no idea how binary_compressed works...
             error('unknown DATA mode: %s', mode);
     end
     
+    
     % convert RGB from float to rgb
-    if strcmp(fields, 'x y z rgb')
-        rgb = typecast(points(4,:), 'uint32');
-        R = double(bitand(255, bitshift(rgb, 16))) /255;
-        G = double(bitand(255, bitshift(rgb, 8))) /255;
-        B = double(bitand(255, rgb)) /255;
+    rgb = typecast(points(4,:), 'uint32');
+    switch fields
+        case 'x y z rgb'
+            R = double(bitand(255, bitshift(rgb, 16))) /255;
+            G = double(bitand(255, bitshift(rgb, 8))) /255;
+            B = double(bitand(255, rgb)) /255;
+            points = [points(1:3,:); R; G; B];
+            
+        case 'x y z rgba'
+            R = double(bitand(255, bitshift(rgb, 24))) /255;
+            G = double(bitand(255, bitshift(rgb, 16))) /255;
+            B = double(bitand(255, bitshift(rgb, 8))) /255;
+            A = double(bitand(255, rgb)) /255;
+            points = [points(1:3,:); R; G; B; A];
+    end
+    
+    
+    if height > 1
+        % data is an organized point cloud, rearrange it into planes
         
-        points = [points(1:3,:); R; G; B];
+        points = permute( reshape( shiftdim(points, 1), height, width, []), [2 1 3]);
     end
                
     fclose(fp);
