@@ -18,7 +18,7 @@
 % - The file is written in ascii format.
 % - When viewing colored point clouds in pcl_viewer remember to toggle to 
 %
-% See also savepcd, readpcd.
+% See also savepcd, lspcd, readpcd.
 %
 % Copyright (C) 2013, by Peter I. Corke
 
