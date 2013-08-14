@@ -1,7 +1,10 @@
 %SAVEPCD Write a point cloud to file in PCD format
 %
 % SAVEPCD(FNAME, P) writes the point cloud P to the file FNAME as an
-% as a PCD format file.  
+% as a PCD format file.
+%
+% SAVEPCD(FNAME, P, 'binary') as above but save in binary format.  Default
+% is ascii format.
 %
 % If P is a 2-dimensional matrix (MxN) then the columns of P represent the
 % 3D points and an unorganized point cloud is generated.
@@ -24,8 +27,7 @@
 % Notes::
 % - Only the "x y z", "x y z rgb" and "x y z rgba" field formats are currently 
 %   supported.
-% - The file is written in ascii format.
-%
+% - Cannot write binary_compressed format files
 % See also pclviewer, lspcd, loaddpcd.
 %
 % Copyright (C) 2013, by Peter I. Corke
@@ -33,12 +35,25 @@
 % TODO
 % - option for binary write
 
-function savepcd(fname, points)
+function savepcd(fname, points, binmode)
     % save points in xyz format
     % TODO
     %  binary format, RGB
     
     ascii = true;
+    if nargin < 3
+        ascii = true;
+    else
+        switch binmode
+            case 'binary'
+                ascii = false;
+            case 'ascii'
+                ascii = true;
+            otherwise
+                error('specify ascii or binary');
+        end
+    end
+    
     
     fp = fopen(fname, 'w');
     
@@ -118,10 +133,9 @@ function savepcd(fname, points)
         case 7
             % RGBA data
             RGBA = uint32(points(4:7,:)*255);
-            rgba = ((RGBA(1,:)*256+RGB(2,:))*256+RGB(3,:))*256+RGB(4,:);
+            rgba = ((RGBA(1,:)*256+RGBA(2,:))*256+RGBA(3,:))*256+RGBA(4,:);
             
             points = [ points(1:3,:); double(rgba)];
-            fprintf(fp, '%f %f %f %d\n', points);
     end
     
     if ascii
