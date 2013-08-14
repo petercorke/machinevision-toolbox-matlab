@@ -44,17 +44,17 @@ function points = loadpcd(fname)
             case 'VERSION'
                 continue;
             case 'FIELDS'
-                fields = remain;
+                FIELDS = remain;
             case 'TYPE'
-                type = remain;
+                TYPE = remain;
+            case 'SIZE'
+                sizes = str2num(remain);
             case 'WIDTH'
                 width = str2num(remain);
             case 'HEIGHT'
                 height = str2num(remain);
             case 'POINTS'
                 npoints = str2num(remain);
-            case 'SIZE'
-                siz = str2num(remain);
             case 'COUNT'
                 count = str2num(remain);
             case 'DATA'
@@ -65,15 +65,28 @@ function points = loadpcd(fname)
         end
     end
     
+    % parse out details of the fields
+    %  numFields    the number of fields
+    %  sizes        vector of field sizes (in bytes)
+    %  types        vector of type identifiers (I U F)
+    %  fields       vector of field names (x y z rgb rgba etc)
+    numFields = numel(sizes);
+    types = cell2mat(regexp(TYPE,'\s+','split'));
+    fields = regexp(FIELDS,'\s+','split');
+    
     if verbose
-        if height == 1
-            org = 'unorganized';
-        else
+        % the doco says height > 1 means organized, but some old files have
+        % height = 1 and width > 1
+        if height > 1 && width > 1
+            organized = true;
             org = 'organized';
+        else
+            organized = false;
+            org = 'unorganized';
         end
         fprintf('%s: %s, %s, <%s> %dx%d\n', ...
-            fname, mode, org, fields, width, height);
-        fprintf('  %s; %s\n', type, num2str(siz));
+            fname, mode, org, FIELDS, width, height);
+        fprintf('  %s; %s\n', TYPE, num2str(sizes));
     end
     
     if any(count > 1)
@@ -83,14 +96,13 @@ function points = loadpcd(fname)
     switch mode
         case 'ascii'
             format = '';
-            for j=1:size(siz,2)
-                [tok,type] = strtok(type);
-                switch tok
+            for j=1:numFields
+                switch types(j)
                     case 'I', typ = 'd';
                     case 'U', typ = 'u';
                     case 'F', typ = 'f';
                 end
-                format = [format '%' typ num2str(siz(j)*8)];
+                format = [format '%' typ num2str(sizes(j)*8)];
             end
             c = textscan(fp, format, npoints);
             points = [];
@@ -104,15 +116,12 @@ function points = loadpcd(fname)
             
         case 'binary'
             format = '';
-            for j=1:size(siz,2)
-                [tok,type] = strtok(type);
-                typ(j) = tok;
-            end
-            if true || all(typ == typ(1)) && all(siz == siz(1))
+
+            if true || all(types == types(1)) && all(sizes == sizes(1))
                 % simple case where all fields have the same length and type
                 
                 % map IUF -> int, uint, float
-                switch typ(1)
+                switch types(1)
                     case 'I'
                         fmt = 'int';
                     case 'U'
@@ -121,8 +130,8 @@ function points = loadpcd(fname)
                         fmt = 'float';
                 end
                 
-                format = [format '*' fmt num2str(siz(j)*8)];
-                points = fread(fp, [numel(siz) npoints], format);
+                format = [format '*' fmt num2str(sizes(1)*8)];
+                points = fread(fp, [numFields npoints], format);
                 
             else
                 
@@ -130,9 +139,6 @@ function points = loadpcd(fname)
                 % code contributed by Will
                 
                 startPos_fp = ftell(fp);
-                numFields = numel(siz);
-                typeTokens = regexp(type,'\s+','split');
-                fieldTokens = regexp(fields,'\s+','split');
                 
                 % Just initialize the xyz portion for now
                 points = zeros(3, npoints);
@@ -142,8 +148,7 @@ function points = loadpcd(fname)
                     % essentially interleaved reading of the file
                     
                     % map IUF -> int, uint, float
-                    typeToken = typeTokens{i};
-                    switch typeToken
+                    switch types(i)
                         case 'I'
                             fmt = 'int';
                         case 'U'
@@ -152,12 +157,11 @@ function points = loadpcd(fname)
                             fmt = 'float';
                     end
                     
-                    format = ['*' fmt num2str(siz(i)*8)];
-                    fseek(fp, startPos_fp + sum(siz(1:i-1)), 'bof');
-                    data = fread(fp, [1 npoints], format, sum(siz)-siz(i));
+                    format = ['*' fmt num2str(sizes(i)*8)];
+                    fseek(fp, startPos_fp + sum(sizes(1:i-1)), 'bof');
+                    data = fread(fp, [1 npoints], format, sum(sizes)-sizes(i));
                     
-                    fieldToken = fieldTokens{i};
-                    switch fieldToken
+                    switch fields{i}
                         case 'x'
                             points(1,:) = data;
                         case 'y'
@@ -166,41 +170,82 @@ function points = loadpcd(fname)
                             points(3,:) = data;
                         case {'rgb', 'rgba'}
                             points(4,:) = data;
-
                     end
                 end
                 
             end
             
+        case 'binary_compressed'
+            % binary part of the file contains:
+            %  compressed size of data (uint32)
+            %  uncompressed size of data (uint32)
+            %  compressed data
+            %  junk
+            compressed_size = fread(fp, 1, 'uint32');
+            uncompressed_size = fread(fp, 1, 'uint32');
+            compressed_data = fread(fp, compressed_size, 'uint8')';
+
+            uncompressed_data = lzfd(compressed_data);
+            if length(uncompressed_data) ~= uncompressed_size
+                error('decompression error');
+            end
+            
+            % the data is stored unpacked, that is one field for all points,
+            % then the next field for all points, etc.
+            
+            start = 1;
+            for i=1:numFields
+                len = sizes(i)*npoints;
+                switch types(1)
+                    case 'I'
+                        fmt = 'int32';
+                    case 'U'
+                        fmt = 'uint32';
+                    case 'F'
+                        fmt = 'single';
+                end
+                field = typecast(uncompressed_data(start:start+len-1), fmt);
+                start = start + len;
+                
+                switch fields{i}
+                    case 'x'
+                        points(1,:) = field;
+                    case 'y'
+                        points(2,:) = field;
+                    case 'z'
+                        points(3,:) = field;
+                    case {'rgb', 'rgba'}
+                        points(4,:) = field;
+                end
+            end           
             
         otherwise
-            % I have no idea how binary_compressed works...
             error('unknown DATA mode: %s', mode);
     end
     
-    
-    % convert RGB from float to rgb
-    rgb = typecast(points(4,:), 'uint32');
-    switch fields
-        case 'x y z rgb'
-            R = double(bitand(255, bitshift(rgb, 16))) /255;
-            G = double(bitand(255, bitshift(rgb, 8))) /255;
-            B = double(bitand(255, rgb)) /255;
-            points = [points(1:3,:); R; G; B];
-            
-        case 'x y z rgba'
-            R = double(bitand(255, bitshift(rgb, 24))) /255;
-            G = double(bitand(255, bitshift(rgb, 16))) /255;
-            B = double(bitand(255, bitshift(rgb, 8))) /255;
-            A = double(bitand(255, rgb)) /255;
-            points = [points(1:3,:); R; G; B; A];
+    if size(points,1) > 3
+        % convert RGB from float to rgb
+        rgb = typecast(points(4,:), 'uint32');
+        switch FIELDS
+            case 'x y z rgb'
+                R = double(bitand(255, bitshift(rgb, 16))) /255;
+                G = double(bitand(255, bitshift(rgb, 8))) /255;
+                B = double(bitand(255, rgb)) /255;
+                points = [points(1:3,:); R; G; B];
+                
+            case 'x y z rgba'
+                R = double(bitand(255, bitshift(rgb, 24))) /255;
+                G = double(bitand(255, bitshift(rgb, 16))) /255;
+                B = double(bitand(255, bitshift(rgb, 8))) /255;
+                A = double(bitand(255, rgb)) /255;
+                points = [points(1:3,:); R; G; B; A];
+        end
     end
     
-    
-    if height > 1
+    if organized
         % data is an organized point cloud, rearrange it into planes
         
-        points = permute( reshape( shiftdim(points, 1), height, width, []), [2 1 3]);
+        points = permute( reshape( shiftdim(points, 1), width, height, []), [2 1 3]);
     end
                
     fclose(fp);
