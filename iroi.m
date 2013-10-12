@@ -6,11 +6,15 @@
 % OUT = IROI(IM,C,S) as above but the region is centered at C=(U,V) and
 % has a size S.  If S is scalar then W=H=S otherwise S=(W,H).
 %
-% OUT = IROI(IM) as above but the image is displayed and the user is prompted
-% to adjust a rubber band box to select the region of interest.
+% OUT = IROI(IM) as above but the image is displayed and the user is 
+% prompted to adjust a rubber band box to select the region of interest.
 %
 % [OUT,RECT] = IROI(IM) as above but returns the selected region of 
 % interest RECT=[umin umax;vmin vmax].
+%
+% Notes::
+% - If no output argument is specified then the result is displayed in
+%   a new window.
 %
 % See also IDISP.
 
@@ -57,14 +61,9 @@ function [im, region] = iroi(image, reg, wh)
         set(gcf, 'pointer', 'fullcrosshair');
 
         % get the rubber band box
-        waitforbuttonpress
-        disp('pressed');
-        cp0 = floor( get(gca, 'CurrentPoint') );
-
-        rect = rbbox;       % return on up click
-        disp('rrbox returns');
-        
-        cp1 = floor( get(gca, 'CurrentPoint') );
+            [p1, p2] = pickregion();
+            cp0 = floor( p1 );
+            cp1 = floor( p2 );
         
         ax = get(gca, 'Children');
         img = get(ax, 'CData');         % get the current image
@@ -89,13 +88,19 @@ function [im, region] = iroi(image, reg, wh)
         set(gcf, 'pointer', oldpointer);
         
         % extract the ROI
-        im = img(top:bot,left:right,:);
+        roi = img(top:bot,left:right,:);
         
-        figure
-        idisp(im);
-        title(sprintf('ROI (%d,%d) %dx%d', left, top, right-left, bot-top));
-        
-        if nargout == 2
+        if nargout == 0
+            figure
+            idisp(roi);
+            title(sprintf('ROI (%d,%d) %dx%d', left, top, right-left, bot-top));
+        end
+
+        if nargout > 0
+            im = roi;
+        end
+
+        if nargout > 1
             region = [left right; top bot];
         end
     end
