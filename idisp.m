@@ -124,7 +124,7 @@ function idisp(im, varargin)
     opt.ncolors = 256;
     opt.gui = true;
     opt.axes = true;
-    opt.square = false;
+    opt.square = true;
     opt.wide = false;
     opt.colormap = [];
     opt.print = [];
@@ -146,6 +146,7 @@ function idisp(im, varargin)
     opt.figure = [];
     
     [opt,arglist] = tb_optparse(opt, varargin);
+    
     
     if opt.new
         figure
@@ -171,7 +172,7 @@ function idisp(im, varargin)
         opt.gui = false;
     end
     if strcmp( get(gcf,'WindowStyle'), 'docked')
-        opt.gui = false;
+        %opt.gui = false;
     end
     
     if length(arglist) ~= 0
@@ -464,7 +465,7 @@ function idisp_callback(cmd, src)
 			set(gcf, 'WindowButtonMotionFcn', @(src,event) idisp_callback([], src) );
 			idisp_callback([], src);
             
-            if ~isempty(ud.clickfunc)
+            if ~isempty(ud)
                 
                 if ~isempty(ud.clickfunc)
                     cp = get(ud.axis, 'CurrentPoint');
@@ -549,13 +550,9 @@ function idisp_callback(cmd, src)
             ihist(imdata);
 
 		case 'zoom',
-            % get the rubber band box
-            waitforbuttonpress
-            cp0 = floor( get(gca, 'CurrentPoint') );
-
-            rect = rbbox;	    % return on up click
-
-            cp1 = floor( get(gca, 'CurrentPoint') );
+            [p1, p2] = pickregion();
+            cp0 = floor( p1 );
+            cp1 = floor( p2 );
 
             % determine the bounds of the ROI
             top = cp0(1,2);
