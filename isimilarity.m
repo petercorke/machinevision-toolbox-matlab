@@ -73,6 +73,10 @@ function S = isimilarity(T, im, metric)
         metric = @zncc;
     end
     [nr,nc] = size(im);
+    
+    if rem(numcols(T), 2) == 0 || rem(numrows(T), 2) == 0
+        error('MVTB:isimilarity:badarg', 'template must have odd dimensions');
+    end
     hc = floor( (numcols(T)-1)/2 );
     hr = floor( (numrows(T)-1)/2 );
     hr1 = hr+1;
