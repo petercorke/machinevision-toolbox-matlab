@@ -119,7 +119,7 @@ classdef Ray3D
             disp([inputname(1), ' = '])
             disp(' ');
             if length(rays) > 20
-                fprintf('%d corresponding points (listing suppressed)\n', length(m));
+                fprintf('%d corresponding points (listing suppressed)\n', length(rays));
             else
                 disp( char(rays) );
             end
