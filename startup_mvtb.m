@@ -37,3 +37,4 @@ if exist(p)
     addpath( p );
     disp([' - graphseg contributed code (' p ')']);
 end
+clear p release tbpath
