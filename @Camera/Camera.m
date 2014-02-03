@@ -86,7 +86,6 @@ classdef Camera < handle
         perspective
         h_image     % handle for image plane
         h_visualize % handle for camera 3D view
-        h_camera3D  % handle for camera animation transform
         P           % world points (last plotted)
         holdon
         color
