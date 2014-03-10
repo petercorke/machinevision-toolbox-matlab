@@ -754,6 +754,10 @@ classdef CentralCamera < Camera
         %
         % See also Ray3D.
 
+          C = cam.C(); 
+          Mi = inv(C(1:3,1:3)); 
+          p4 = C(:,4);
+          
           p = -Mi*p4;
         end
 
