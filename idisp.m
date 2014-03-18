@@ -15,6 +15,8 @@
 %   those pixels in view.
 % - The "zoom" button requires a left-click and drag to specify a box 
 %   which defines the zoomed view.
+% - The "colormap" button is displayed only for greyscale images, and is
+%   a popup button that allows different color maps to be selected.
 %
 % Options::
 % 'nogui'          don't display the GUI
@@ -121,6 +123,7 @@ function idisp(im, varargin)
         error('expecting an image (2D or 3D matrix)');
     end
 
+    %---- process the options
     opt.ncolors = 256;
     opt.gui = true;
     opt.axes = true;
@@ -147,7 +150,9 @@ function idisp(im, varargin)
     
     [opt,arglist] = tb_optparse(opt, varargin);
     
-    
+    ud.ncolors = opt.ncolors;
+    ud.clickfunc = opt.clickfunc;
+
     if opt.new
         figure
     end
@@ -183,18 +188,13 @@ function idisp(im, varargin)
         opt.axis = gca;
         opt.gui = false;
     end
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % command line invocation, display the image
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    % display the image
+    %---- display the image
     if isempty(opt.axis)
         clf
     else
         axes(opt.axis)
     end
-
-    ud = [];
     
     if iscell(im)
         % image is a cell array
@@ -202,7 +202,6 @@ function idisp(im, varargin)
     end
 
     ud.size = size(im);
-    ud.clickfunc = opt.clickfunc;
     
     if opt.histeq
         im = inormhist(im);
@@ -233,9 +232,9 @@ function idisp(im, varargin)
     set(gca, 'CLim', [i_min, i_max]);
     
     if ~isempty(opt.xydata)
-        hi = image(opt.xydata{1}, opt.xydata{2}, im);
+        ud.image = image(opt.xydata{1}, opt.xydata{2}, im, 'CDataMapping', 'scaled');
     else
-        hi = image(im, 'CDataMapping', 'scaled');
+        ud.image = image(im, 'CDataMapping', 'scaled');
     end
 
     if opt.wide
@@ -244,7 +243,7 @@ function idisp(im, varargin)
         set(gcf, 'pos', [0.0 pos(2) 1.0 pos(4)]);
     end
 
-
+    %---- choose and set a color map
     if isempty(opt.colormap_std)
         if isempty(opt.colormap)
             % default colormap
@@ -257,59 +256,23 @@ function idisp(im, varargin)
     else
         % a builtin shorthand color map was specified
         %disp(['builtin color map: ', opt.colormap_std]);
-        switch opt.colormap_std
-        case 'random'
-            cmap = rand(opt.ncolors,3);
-        case 'dark'
-            cmap = gray(opt.ncolors)*0.5;
-        case 'grey'
-            cmap = gray(opt.ncolors);
-        case 'invert'
-                % invert the monochrome color map: black <-> white
-            cmap = gray(opt.ncolors);
-            cmap = cmap(end:-1:1,:);
-        case {'signed', 'invsigned'}
-                % signed color map, red is negative, blue is positive, zero is black
-                % inverse signed color map, red is negative, blue is positive, zero is white
-            cmap = zeros(opt.ncolors, 3);
-            opt.ncolors = bitor(opt.ncolors, 1);    % ensure it's odd
-            ncm2 = ceil(opt.ncolors/2);
-            if strcmp(opt.colormap, 'signed')
-                % signed color map, red is negative, blue is positive, zero is black
-                for i=1:opt.ncolors
-                    if i > ncm2
-                        cmap(i,:) = [0 0 1] * (i-ncm2) / ncm2;
-                    else
-                        cmap(i,:) = [1 0 0] * (ncm2-i) / ncm2;
-                    end
-                end
-            else
-                % inverse signed color map, red is negative, blue is positive, zero is white
-                for i=1:opt.ncolors
-                    if i > ncm2
-                        s = (i-ncm2)/ncm2;
-                        cmap(i,:) = [1-s 1-s 1];
-                    else
-                        s = (ncm2-i)/ncm2;
-                        cmap(i,:) = [1 1-s 1-s];
-                    end
-                end
-            end
-            mn = min(im(:));
-            mx = max(im(:));
-            set(gca, 'CLimMode', 'Manual');
-            if mn < 0 && mx > 0
-                a = max(-mn, mx);
-                set(gca, 'CLim', [-a a]);
-            elseif mn > 0
-                set(gca, 'CLim', [-mx mx]);
-            elseif mx < 0
-                set(gca, 'CLim', [-mn mn]);
-            end
+        cmap = custom_colormap(opt.colormap_std, opt.ncolors);
+        
+        mn = min(im(:));
+        mx = max(im(:));
+        set(gca, 'CLimMode', 'Manual');
+        if mn < 0 && mx > 0
+            a = max(-mn, mx);
+            set(gca, 'CLim', [-a a]);
+        elseif mn > 0
+            set(gca, 'CLim', [-mx mx]);
+        elseif mx < 0
+            set(gca, 'CLim', [-mn mn]);
         end
     end
     colormap(cmap);
 
+    %---- handle various display options
     if opt.bar
         colorbar
     end
@@ -329,7 +292,7 @@ function idisp(im, varargin)
     if opt.ynormal
         set(gca, 'YDir', 'normal');
     end
-    set(hi, 'CDataMapping', 'scaled');
+    set(ud.image, 'CDataMapping', 'scaled');
     if ~isempty(opt.cscale)
         set(gca, 'Clim', opt.cscale);
     end
@@ -341,66 +304,6 @@ function idisp(im, varargin)
     if opt.print
         print(opt.print, '-depsc');
         return
-    end
-    if opt.gui
-        if ~opt.toolbar
-            set(gcf, 'MenuBar', 'none');
-            set(gcf, 'ToolBar', 'none');
-        end
-        htf = uicontrol(gcf, ...
-                'style', 'text', ...
-                'units',  'norm', ...
-                'pos', [.5 .935 .48 .05], ...
-                'background', [1 1 1], ...
-                'HorizontalAlignment', 'left', ...
-                'string', ' Machine Vision Toolbox for MATLAB  ' ...
-            );
-        ud.axis = gca;
-        ud.panel = htf;
-        ud.image = hi;
-        set(gca, 'UserData', ud);
-        set(hi, 'UserData', ud);
-
-        % create pushbuttons
-        uicontrol(gcf,'Style','Push', ...
-            'String','line', ...
-            'Foregroundcolor', [0 0 1], ...
-            'Units','norm','pos',[0 .93 .1 .07], ...
-            'UserData', ud, ...
-            'Callback', @(src,event) idisp_callback('line', src) );
-        uicontrol(gcf,'Style','Push', ...
-            'String','histo', ...
-            'Foregroundcolor', [0 0 1], ...
-            'Units','norm','pos',[0.1 .93 .1 .07], ...
-            'UserData', ud, ...
-            'Callback', @(src,event) idisp_callback('histo', src) );
-        uicontrol(gcf,'Style','Push', ...
-            'String','zoom', ...
-            'Foregroundcolor', [0 0 1], ...
-            'Units','norm','pos',[.2 .93 .1 .07], ...
-            'Userdata', ud, ...
-            'Callback', @(src,event) idisp_callback('zoom', src) );
-        uicontrol(gcf,'Style','Push', ...
-            'String','unzoom', ...
-            'Foregroundcolor', [0 0 1], ...
-            'Units','norm','pos',[.3 .93 .15 .07], ...
-            'Userdata', ud, ...
-            'Callback', @(src,event) idisp_callback('unzoom', src) );
-            %'DeleteFcn', 'idisp(''cleanup'')', ...
-        set(gcf, 'Color', [0.8 0.8 0.9], ...
-            'WindowButtonDownFcn', @(src,event) idisp_callback('down', src), ...
-            'WindowButtonUpFcn', @(src,event) idisp_callback('up', src) );
-%            htf = uicontrol(gcf, ...
-%                    'style', 'text', ...
-%                    'units',  'norm', ...
-%                    'pos', [.6 0 .4 .04], ...
-%                    'ForegroundColor', [0 0 1], ...
-%                    'BackgroundColor', get(gcf, 'Color'), ...
-%                    'HorizontalAlignment', 'right', ...
-%                    'string', 'Machine Vision Toolbox for Matlab  ' ...
-%                );
-
-        set(hi, 'UserData', ud);
     end
     
     % label the figure
@@ -414,173 +317,288 @@ function idisp(im, varargin)
         end
     else
         set(gcf, 'name', opt.title);
-        
     end
+    ud.fig = gcf;
+    
+    %--- display the idisp tool bar
+    if opt.gui
+        if ~opt.toolbar
+            set(gcf, 'MenuBar', 'none');
+            set(gcf, 'ToolBar', 'none');
+        end
         
-%     set(hi, 'DeleteFcn', @(src,event) idisp_callback('idelete', src) );
-%     set(gca, ...
-%         'DeleteFcn', @(src,event) idisp_callback('destroy', src), ...
-%         'NextPlot', 'replace', ...
-%         'UserData', ud);
-
+        % create the panel itself
+        bgcol = [135 206 250]/255;  % background color
+        
+        panel = uipanel(gcf, ...
+            'BackGroundColor', bgcol,...
+            'Units', 'Normalized', ...
+            'Position', [0 0.92 1 0.08]);
+        set(panel, 'Units', 'pixels'); % stop automatic resizing
+        
+        
+        ud.axis = gca;
+        ud.panel = panel;
+        set(gca, 'UserData', ud);
+        set(gca, 'Units', 'Normalized', ...
+            'OuterPosition', [0 0 1 0.92]);
+        set(ud.image, 'UserData', ud);
+        
+        % create pushbuttons
+        bw = 0.08;
+        bs = 0.09;
+        
+        ud.text = uicontrol(panel, 'Style', 'text', ...
+            'Units','Normalized', ...
+            'Position', [0.60 0.2 0.38 0.6], ...
+            'background', [1 1 1], ...
+            'HorizontalAlignment', 'left', ...
+            'string', ' Machine Vision Toolbox for MATLAB  ' ...
+            );
+        uicontrol(panel,'Style','Push', ...
+            'String','line', ...
+            'Foregroundcolor', [0 0 1], ...
+            'Units','Normalized', ...
+            'Position',[0 0.1 bw 0.8], ...
+            'UserData', ud, ...
+            'Callback', @(src,event) line_callback(ud, src) );
+        uicontrol(panel,'Style','Push', ...
+            'String','histo', ...
+            'Foregroundcolor', [0 0 1], ...
+            'Units','Normalized', ...
+            'Position',[bs 0.1 bw 0.8], ...
+            'UserData', ud, ...
+            'Callback', @(src,event) histo_callback(ud, src) );
+        uicontrol(panel,'Style','Push', ...
+            'String','zoom', ...
+            'Foregroundcolor', [0 0 1], ...
+            'Units','Normalized', ...
+            'Position', [2*bs 0.1 bw 0.8], ...
+            'Userdata', ud, ...
+            'Callback', @(src,event) zoom_callback(ud, src) );
+        uicontrol(panel,'Style','Push', ...
+            'String','unzoom', ...
+            'Foregroundcolor', [0 0 1], ...
+            'Units','Normalized', ...
+            'Position', [3*bs 0.1 1.5*bw 0.8], ...
+            'Userdata', ud, ...
+            'Callback', @(src,event) unzoom_callback(ud, src) );
+        
+        if ndims(im) == 2
+            % NOTE: the height of the popup is a function of font and cannot be set
+            uicontrol(panel,'Style','Popup', ...
+                'String','grey|signed|invsigned|random|invert|dark', ...
+                'Foregroundcolor', [0 0 1], ...
+                'Units','Normalized', ...
+                'Position', [4.5*bs 0 2*bw 0.8], ...
+                'Userdata', ud, ...
+                'Callback', @(src,event) colormap_callback(ud, src) );
+        end
+        
+        %set(gcf, 'Color', [0.2 0.2 0.2]*2, ...
+        set(gcf, ...
+            'WindowButtonDownFcn', @(src,event) button_down_callback(ud, src), ...
+            'WindowButtonUpFcn', @(src,event) button_up_callback(ud, src), ...
+            'ResizeFcn', @(src,event) resize_callback(panel));
+        
+        %set(hi, 'UserData', ud);
+    end
 end
 
-% invoked on a GUI event
-function idisp_callback(cmd, src)
-
-		h = get(gcf, 'CurrentObject'); % image
-		ud = get(h, 'UserData');		% axis
+function button_down_callback(ud, src)
+    if ~isempty(ud)
+        % install pixel value inspector
+        set(ud.fig, 'WindowButtonMotionFcn', @(src,event) display_update(ud) );
+        display_update(ud);
         
-%disp(['in callback: ', cmd]);
-	if isempty(cmd)
-		% mouse push or motion request
-
-        
-        if ~isempty(ud)
+        if ~isempty(ud.clickfunc)
             cp = get(ud.axis, 'CurrentPoint');
             x = round(cp(1,1));
             y = round(cp(1,2));
-            try
-                imdata = get(ud.image, 'CData');
-                set(ud.panel, 'String', sprintf(' (%d, %d) = %s', x, y, num2str(imdata(y,x,:), 4)));
-                drawnow
-            end
+            ud.clickfunc(x, y);
         end
-	else
-		switch cmd
-        case {'destroy', 'idelete'}
-            %fprintf('cleaning up figure\n');
-            clf
-            set(gcf, 'MenuBar', 'figure');
-            set(gcf, 'ToolBar', 'figure');
-            %set(gcf, 'WindowButtonUpFcn', '');
-            %set(gcf, 'WindowButtonDownFcn', '');
-        case 'cleanup'
-            %fprintf('cleaning up handlers\n');
-            set(gcf, 'WindowButtonDownFcn', '');
-            set(gcf, 'WindowButtonUpFcn', '');
+    end
+end
 
-		case 'down',
-			% install pixel value inspector
-			set(gcf, 'WindowButtonMotionFcn', @(src,event) idisp_callback([], src) );
-			idisp_callback([], src);
-            
-            if ~isempty(ud)
-                
-                if ~isempty(ud.clickfunc)
-                    cp = get(ud.axis, 'CurrentPoint');
-                    x = round(cp(1,1));
-                    y = round(cp(1,2));
-                    ud.clickfunc(x, y);
-                end
+function display_update(ud)
+    if ~isempty(ud)
+        cp = get(ud.axis, 'CurrentPoint');
+        x = round(cp(1,1));
+        y = round(cp(1,2));
+        try
+            imdata = get(ud.image, 'CData');
+            set(ud.text, 'String', sprintf(' (%d, %d) = %s', x, y, num2str(imdata(y,x,:), 4)));
+            drawnow
+        end
+    end
+end
+
+function button_up_callback(ud, src)
+    set(ud.fig, 'WindowButtonMotionFcn', '');
+end
+
+function zoom_callback(ud, src)
+    [p1, p2] = pickregion();
+    cp0 = floor( p1 );
+    cp1 = floor( p2 );
+    
+    % determine the bounds of the ROI
+    top = cp0(1,2);
+    left = cp0(1,1);
+    bot = cp1(1,2);
+    right = cp1(1,1);
+    if bot<top,
+        t = top;
+        top = bot;
+        bot = t;
+    end
+    if right<left,
+        t = left;
+        left = right;
+        right = t;
+    end
+    
+    % extract the view region
+    axes(gca);
+    axis([left right top bot]);
+end
+
+function unzoom_callback(ud, src)
+    axes(ud.axis);
+    axis([1 ud.size(2) 1 ud.size(1)]);
+end
+
+function line_callback(ud, src)
+    
+    set(ud.text, 'String', 'Click first point');
+    axes(ud.axis);
+    [x1,y1] = ginput(1);
+    x1 = round(x1); y1 = round(y1);
+    set(ud.text, 'String', 'Click last point');
+    [x2,y2] = ginput(1);
+    x2 = round(x2); y2 = round(y2);
+    set(ud.text, 'String', '');
+    imdata = get(ud.image, 'CData');
+    
+    % draw a green line to show where the profile was taken
+    hold on
+    plot([x1 x2], [y1 y2], 'g');
+    hold off
+    dx = x2-x1; dy = y2-y1;
+    if abs(dx) > abs(dy),
+        x = x1:x2;
+        y = round(dy/dx * (x-x1) + y1);
+        figure
+        
+        if size(imdata,3) > 1
+            set(gca, 'ColorOrder', eye(3,3), 'Nextplot', 'replacechildren');
+            n = size(imdata,1)*size(imdata,2);
+            z = [];
+            for i=1:size(imdata,3)
+                z = [z imdata(y+x*numrows(imdata)+(i-1)*n)'];
             end
-			
-		case 'up',
-			set(gcf, 'WindowButtonMotionFcn', '');
+            plot(z);
+        else
+            plot(imdata(y+x*numrows(imdata)))
+        end
+    else
+        y = y1:y2;
+        x = round(dx/dy * (y-y1) + x1);
+        figure
+        if size(imdata,3) > 1
+            set(gca, 'ColorOrder', eye(3,3), 'Nextplot', 'replacechildren');
+            n = size(imdata,1)*size(imdata,2);
+            z = [];
+            for i=1:size(imdata,3)
+                z = [z imdata(y+x*numrows(imdata)+(i-1)*n)'];
+            end
+            plot(y');
+        else
+            plot(imdata(y+x*numrows(imdata)))
+        end
+        
+    end
+    title(sprintf('Pixel profile (%d,%d) to (%d,%d)', x1, y1, x2, y2));
+    xlabel('distance (pixels)')
+    ylabel('greyscale');
+    grid on
+end
 
-		case 'line',
-			h = get(gcf, 'CurrentObject'); % push button
-                        
-			ud = get(h, 'UserData');
-            
-			set(ud.panel, 'String', 'Click first point');
-			[x1,y1] = ginput(1);
-			x1 = round(x1); y1 = round(y1);
-			set(ud.panel, 'String', 'Click last point');
-			[x2,y2] = ginput(1);
-			x2 = round(x2); y2 = round(y2);
-			set(ud.panel, 'String', '');
-			imdata = get(ud.image, 'CData');
-            
-            % draw a green line to show where the profile was taken
-            hold on
-            plot([x1 x2], [y1 y2], 'g');
-            hold off
-			dx = x2-x1; dy = y2-y1;
-			if abs(dx) > abs(dy),
-				x = x1:x2;
-				y = round(dy/dx * (x-x1) + y1);
-				figure
+function histo_callback(ud, src)   
+    imdata = get(ud.image, 'CData');
+    b = floor(axis);   % bounds of displayed image
+    if b(1) == 0,
+        b = [1 b(2) 1 b(4)];
+    end
+    
+    figure
+    imdata = double(imdata(b(3):b(4), b(1):b(2),:));
+    ihist(imdata);
+end
 
-                if size(imdata,3) > 1
-                    set(gca, 'ColorOrder', eye(3,3), 'Nextplot', 'replacechildren');
-                    n = size(imdata,1)*size(imdata,2);
-                    z = [];
-                    for i=1:size(imdata,3)
-                        z = [z imdata(y+x*numrows(imdata)+(i-1)*n)'];
+function colormap_callback(ud, src)
+    i = get(src, 'Value');
+    names = {'grey', 'signed', 'invsigned', 'random', 'invert', 'dark'};
+    cmap = custom_colormap(names{i}, ud.ncolors);
+    colormap(ud.axis, cmap);
+end
+
+function cmap = custom_colormap(name, n)
+    if nargin < 2
+        n = 256;
+    end
+    
+    switch name
+        case 'random'
+            cmap = rand(n,3);
+        case 'dark'
+            cmap = gray(n)*0.5;
+        case 'grey'
+            cmap = gray(n);
+        case 'invert'
+            % invert the monochrome color map: black <-> white
+            cmap = gray(n);
+            cmap = cmap(end:-1:1,:);
+        case {'signed', 'invsigned'}
+            % signed color map, red is negative, blue is positive, zero is black
+            % inverse signed color map, red is negative, blue is positive, zero is white
+            cmap = zeros(n, 3);
+            opt.ncolors = bitor(n, 1);    % ensure it's odd
+            ncm2 = ceil(n/2);
+            if strcmp(name, 'signed')
+                % signed color map, red is negative, blue is positive, zero is black
+                for i=1:n
+                    if i > ncm2
+                        cmap(i,:) = [0 0 1] * (i-ncm2) / ncm2;
+                    else
+                        cmap(i,:) = [1 0 0] * (ncm2-i) / ncm2;
                     end
-                    plot(x', z);
-                else
-                    plot(imdata(y+x*numrows(imdata)))
                 end
-			else
-				y = y1:y2;
-                x = round(dx/dy * (y-y1) + x1);
-				figure
-                if size(imdata,3) > 1
-                    set(gca, 'ColorOrder', eye(3,3), 'Nextplot', 'replacechildren');
-                    n = size(imdata,1)*size(imdata,2);
-                    z = [];
-                    for i=1:size(imdata,3)
-                        z = [z imdata(y+x*numrows(imdata)+(i-1)*n)'];
+            else
+                % inverse signed color map, red is negative, blue is positive, zero is white
+                for i=1:n
+                    if i > ncm2
+                        s = (i-ncm2)/ncm2;
+                        cmap(i,:) = [1-s 1-s 1];
+                    else
+                        s = (ncm2-i)/ncm2;
+                        cmap(i,:) = [1 1-s 1-s];
                     end
-                    plot(z, y');
-                else
-                    plot(imdata(y+x*numrows(imdata)))
                 end
-
             end
-            title(sprintf('(%d,%d) to (%d,%d)', x1, y1, x2, y2));
-            xlabel('distance (pixels)')
-            ylabel('greyscale');
-            grid on
-            
-        case 'histo',
-            h = get(gcf, 'CurrentObject'); % push button
-			ud = get(h, 'UserData');
-
-			imdata = get(ud.image, 'CData');
-            b = floor(axis);   % bounds of displayed image
-            if b(1) == 0,
-                b = [1 b(2) 1 b(4)];
-            end
-
-            figure
-            imdata = double(imdata(b(3):b(4), b(1):b(2),:));
-            ihist(imdata);
-
-		case 'zoom',
-            [p1, p2] = pickregion();
-            cp0 = floor( p1 );
-            cp1 = floor( p2 );
-
-            % determine the bounds of the ROI
-            top = cp0(1,2);
-            left = cp0(1,1);
-            bot = cp1(1,2);
-            right = cp1(1,1);
-            if bot<top,
-                t = top;
-                top = bot;
-                bot = t;
-            end
-            if right<left,
-                t = left;
-                left = right;
-                right = t;
-            end
-
-            % extract the view region
-			axes(gca);
-			axis([left right top bot]);
-		case 'unzoom',
-			h = get(gcf, 'CurrentObject'); % push button
-			ud = get(h, 'UserData');
-			axes(ud.axis);
-			axis([1 ud.size(2) 1 ud.size(1)]);
-
         otherwise
-            idisp( imread(z) );
-		end
-	end
+            warning('MVTB:idisp:badval', 'illegal color map name %s', name);
+    end
+end
+
+function resize_callback(panel)
+    % come here on figure resize events
+    fig = gcbo;   % this figure (whose callback is executing)
+    fs = get(fig, 'Position');  % get size of figure
+    ps = get(panel, 'Position');  % get position of the panel
+    % update dimensions of the axis area
+    set(gca, 'Units', 'pixels', ...
+        'OuterPosition', [0 0 fs(3) fs(4)-ps(4)]);
+    % keep the panel anchored to the top left corner
+    set(panel, 'Position', [0 fs(4)-ps(4) fs(3) ps(4)]);
 end
