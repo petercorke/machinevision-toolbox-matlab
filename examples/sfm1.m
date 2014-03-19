@@ -67,7 +67,7 @@ for i=2:nsteps
 
     % relpose is the transform from camera 1 to camera 2
     %  we want (R,t) components of the inverses
-    [R,t] = t2rt(inv(relpose));
+    [R,t] = tr2rt(inv(relpose));
     
     % the camera matrix is (M,p4)
     C = camera.C;
