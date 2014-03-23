@@ -9,8 +9,11 @@
 % OUT = IROI(IM) as above but the image is displayed and the user is 
 % prompted to adjust a rubber band box to select the region of interest.
 %
-% [OUT,RECT] = IROI(IM) as above but returns the selected region of 
-% interest RECT=[umin umax;vmin vmax].
+% [OUT,RECT] = IROI(IM) as above but returns the coordinates of the
+% selected region of interest RECT=[umin umax;vmin vmax].
+%
+% [OUT,U,V] = IROI(IM) as above but returns the range of U and V coordinates
+% in the selected region of interest, as vectors.
 %
 % Notes::
 % - If no output argument is specified then the result is displayed in
@@ -22,7 +25,6 @@
 %   IROI(image, centre, width)
 %   IROI(image, [], width)     prompts to pick the centre point
 %
-
 
 
 % Copyright (C) 1993-2011, by Peter I. Corke
@@ -41,7 +43,7 @@
 % 
 % You should have received a copy of the GNU Leser General Public License
 % along with MVTB.  If not, see <http://www.gnu.org/licenses/>.
-function [im, region] = iroi(image, reg, wh)
+function [out, out2, out3] = iroi(image, reg, wh)
 
     if nargin == 3
         xc = reg(1); yc = reg(2);
@@ -51,9 +53,11 @@ function [im, region] = iroi(image, reg, wh)
         else
             w = round(wh(1)/2); h = round(h(2)/2);
         end
-        im = image(yc-h:yc+h,xc-w:xc+w,:);
+        left = xc-w; right = xc+w;
+        top = yc-h; bot = yc+h;
     elseif nargin == 2
-        im = image(reg(2,1):reg(2,2),reg(1,1):reg(1,2),:);
+        left = reg(1,1); right = reg(1,2);
+        top = reg(2,1); bot = reg(2,2);
     else
         clf
         idisp(image, 'nogui');
@@ -64,9 +68,6 @@ function [im, region] = iroi(image, reg, wh)
             [p1, p2] = pickregion();
             cp0 = floor( p1 );
             cp1 = floor( p2 );
-        
-        ax = get(gca, 'Children');
-        img = get(ax, 'CData');         % get the current image
 
         % determine the bounds of the ROI
         top = cp0(1,2);
@@ -87,21 +88,23 @@ function [im, region] = iroi(image, reg, wh)
         % restore the pointer
         set(gcf, 'pointer', oldpointer);
         
-        % extract the ROI
-        roi = img(top:bot,left:right,:);
-        
-        if nargout == 0
-            figure
-            idisp(roi);
-            title(sprintf('ROI (%d,%d) %dx%d', left, top, right-left, bot-top));
-        end
 
-        if nargout > 0
-            im = roi;
-        end
-
-        if nargout > 1
-            region = [left right; top bot];
-        end
+    end
+    
+    % extract the ROI
+    roi = image(top:bot,left:right,:);
+    if nargout == 0
+        figure
+        idisp(roi);
+        title(sprintf('ROI (%d,%d) %dx%d', left, top, right-left, bot-top));
+    else
+        out = roi;
+    end
+    
+    if nargout == 2
+        out2 = [left right; top bot];
+    elseif nargout == 3
+        out2 = [left:right];
+        out3 = [top:bot];
     end
 
