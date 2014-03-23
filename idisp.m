@@ -459,8 +459,7 @@ function zoom_callback(ud, src)
     end
     
     % extract the view region
-    axes(gca);
-    axis([left right top bot]);
+    axis(ud.axis, [left right top bot]);
 end
 
 function unzoom_callback(ud, src)
