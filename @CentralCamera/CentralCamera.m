@@ -534,7 +534,11 @@ classdef CentralCamera < Camera
         %
         % A = C.fov() are the field of view angles (2x1) in radians for the camera x and y
         % (horizontal and vertical) directions.
-            th = 2*atan(c.npix/2.*c.rho / c.f);
+            try
+                th = 2*atan(c.npix/2.*c.rho / c.f);
+            catch
+                error('MVTB:CentralCamera.fov:badarg', 'npix or rho properties not set');
+            end
         end
 
 
