@@ -30,7 +30,7 @@
 % fov              field of view
 % ray              Ray3D corresponding to point
 % centre           projective centre
-%
+%-
 % plot             plot projection of world point on image plane
 % hold             control hold for image plane
 % ishold           test figure hold for image plane
@@ -42,22 +42,22 @@
 % plot_camera      draw camera in world view
 % plot_line_tr     draw line in theta/rho format
 % plot_epiline     draw epipolar line
-%
+%-
 % flowfield        compute optical flow
 % visjac_p         image Jacobian for point features
 % visjac_p_polar   image Jacobian for point features in polar coordinates
 % visjac_l         image Jacobian for line features
 % visjac_e         image Jacobian for ellipse features
-%
+%-
 % rpy              set camera attitude
 % move             clone Camera after motion
 % centre           get world coordinate of camera centre
 % estpose          estimate pose
-%
+%-
 % delete           object destructor
 % char             convert camera parameters to string
 % display          display camera parameters
-%
+%-
 % Properties (read/write)::
 % npix         image dimensions in pixels (2x1)
 % pp           intrinsic: principal point (2x1)

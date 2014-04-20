@@ -14,15 +14,15 @@
 % homline        draw homogeneous lines on image plane
 % lineseg        draw line segment defined by points
 % plot_camera    draw camera in world view
-%
+%-
 % rpy            set camera attitude
 % move           clone Camera after motion
 % centre         get world coordinate of camera centre
-%
+%-
 % delete         object destructor
 % char           convert camera parameters to string
 % display        display camera parameters
-%
+%-
 % Properties (read/write)::
 % npix    image dimensions (2x1)
 % pp      principal point (2x1)
@@ -137,7 +137,6 @@ classdef Camera < handle
             c.limits = [-1 1 -1 1];
             c.perspective = false;
             c.h_image = [];
-            c.h_camera3D = [];
             c.h_visualize = [];
             c.holdon = false;
             c.color = [1 1 0.8];
@@ -719,7 +718,7 @@ classdef Camera < handle
             else
                 c.T = Tc;
             end
-            if ~isempty(c.h_camera3D) && ishandle(c.h_camera3D)
+            if ~isempty(c.h_visualize) && ishandle(c.h_visualize)
                 set(c.h_camera3D, 'Matrix', c.T);
             end
         end
