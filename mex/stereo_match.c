@@ -100,8 +100,8 @@ stereo_matching_sad(
 				sum = 0;
 
                 /* inner matching loop */
-				for (i = -wx2; i < wx2; i++) {      // x
-					for (j = -wy2; j < wy2; j++) {  // y
+				for (i = -wx2; i <= wx2; i++) {      // x
+					for (j = -wy2; j <= wy2; j++) {  // y
 						pix_l = REF(p_l, i,j);
 						pix_r = REF(p_r, i,j);
 
@@ -170,8 +170,8 @@ stereo_matching_ssd(
 				sum = 0;
 
                 /* inner matching loop */
-				for (i = -wx2; i < wx2; i++) {      // x
-					for (j = -wy2; j < wy2; j++) {  // y
+				for (i = -wx2; i <= wx2; i++) {      // x
+					for (j = -wy2; j <= wy2; j++) {  // y
 						pix_l = REF(p_l, i,j);
 						pix_r = REF(p_r, i,j);
 
@@ -240,8 +240,8 @@ stereo_matching_ncc(
 				sum_r = 0;
 
                 /* inner matching loop */
-				for (i = -wx2; i < wx2; i++) {      // x
-					for (j = -wy2; j < wy2; j++) {  // y
+				for (i = -wx2; i <= wx2; i++) {      // x
+					for (j = -wy2; j <= wy2; j++) {  // y
 						pix_l = REF(p_l, i,j);
 						pix_r = REF(p_r, i,j);
 
@@ -331,8 +331,8 @@ stereo_matching_zncc(
 				sum_r = 0;
 
                 /* inner matching loop */
-				for (i = -wx2; i < wx2; i++) {      // x
-					for (j = -wy2; j < wy2; j++) {  // y
+				for (i = -wx2; i <= wx2; i++) {      // x
+					for (j = -wy2; j <= wy2; j++) {  // y
 						pix_l = REF(p_l, i,j) - *pmean_l;
 						pix_r = REF(p_r, i,j) - *pmean_r;
 
