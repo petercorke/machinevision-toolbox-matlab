@@ -209,25 +209,27 @@ function idisp(im, varargin)
     
     % get the min/max values to do some color map scaling
     set(gca, 'CLimMode', 'Manual');
-    i_min = min(im(:));
-    i_max = max(im(:));
+
    
-    % handle the case they are equal
+    % find min/max values and handle the case they are equal
     if isfloat(im)
+        i_min = min(im(:));
+        i_max = max(im(:));
         if abs(i_min - i_max) < eps
             i_min = 0;
             i_max = 1;
         end
     elseif isinteger(im)
+        i_min = min(im(:));
+        i_max = max(im(:));
         if i_min == i_max
             i_min = 0;
             i_max = intmax(class(im));
         end
     elseif islogical(im)
-        if i_min == i_max
-            i_min = 0;
-            i_max = 1;
-        end
+        % for logical images, don't do min/max test
+        i_min = 0;
+        i_max = 1;
     end
     set(gca, 'CLim', [i_min, i_max]);
     
@@ -401,6 +403,7 @@ function idisp(im, varargin)
             'WindowButtonUpFcn', @(src,event) button_up_callback(ud, src), ...
             'ResizeFcn', @(src,event) resize_callback(panel));
         
+        set(ud.image, 'DeleteFcn', @cleanup_callback);
         %set(hi, 'UserData', ud);
     end
 end
@@ -600,4 +603,14 @@ function resize_callback(panel)
         'OuterPosition', [0 0 fs(3) fs(4)-ps(4)]);
     % keep the panel anchored to the top left corner
     set(panel, 'Position', [0 fs(4)-ps(4) fs(3) ps(4)]);
+end
+
+function cleanup_callback(im, event)
+    % come here on clf of the figure window, remove all handlers
+    set(gcf, ...
+        'WindowButtonDownFcn', [], ...
+        'WindowButtonUpFcn', [], ...
+        'ResizeFcn', []);
+
+    set(im, 'DeleteFcn', []);
 end
