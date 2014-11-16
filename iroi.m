@@ -61,13 +61,11 @@ function [out, out2, out3] = iroi(image, reg, wh)
     else
         clf
         idisp(image, 'nogui');
-        oldpointer = get(gcf, 'pointer');
-        set(gcf, 'pointer', 'fullcrosshair');
 
         % get the rubber band box
-            [p1, p2] = pickregion();
-            cp0 = floor( p1 );
-            cp1 = floor( p2 );
+        [p1, p2] = pickregion();
+        cp0 = floor( p1 );
+        cp1 = floor( p2 );
 
         % determine the bounds of the ROI
         top = cp0(1,2);
@@ -84,11 +82,6 @@ function [out, out2, out3] = iroi(image, reg, wh)
             left = right;
             right = t;
         end
-
-        % restore the pointer
-        set(gcf, 'pointer', oldpointer);
-        
-
     end
     
     % extract the ROI
