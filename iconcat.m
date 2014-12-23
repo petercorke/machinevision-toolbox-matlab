@@ -86,8 +86,8 @@ function [out,u0] = iconcat(images, dir, bgval)
         end
         width = width + nc;
         height = max(height, nr);
-        if i > 1
-            u0(i) = u0(i-1) + nc;
+        if i ~= length(images)
+            u0(i+1) = u0(i) + nc;
         end
     end
     composite = bgval*ones(height, width, np, class(images{1}));
