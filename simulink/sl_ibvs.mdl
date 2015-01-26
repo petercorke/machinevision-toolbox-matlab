@@ -1,6 +1,6 @@
 Model {
   Name			  "sl_ibvs"
-  Version		  7.9
+  Version		  8.0
   MdlSubVersion		  0
   GraphicalInterface {
     NumRootInports	    0
@@ -16,7 +16,7 @@ Model {
       Name		      "v"
     }
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.31"
+    ComputedModelVersion    "1.32"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -32,15 +32,54 @@ Model {
   FPTRunName		  "Run 1"
   MaxMDLFileLineLength	  120
   InitFcn		  "cam = CentralCamera('default')"
+  Object {
+    $PropName		    "BdWindowsInfo"
+    $ObjectID		    1
+    $ClassName		    "Simulink.BDWindowsInfo"
+    Object {
+      $PropName		      "WindowsInfo"
+      $ObjectID		      2
+      $ClassName	      "Simulink.WindowInfo"
+      IsActive		      [1]
+      Location		      [482.0, 586.0, 977.0, 771.0]
+      Object {
+	$PropName		"ModelBrowserInfo"
+	$ObjectID		3
+	$ClassName		"Simulink.ModelBrowserInfo"
+	Visible			[0]
+	DockPosition		"Left"
+	Width			[50]
+	Height			[50]
+	Filter			[8]
+      }
+      Object {
+	$PropName		"ExplorerBarInfo"
+	$ObjectID		4
+	$ClassName		"Simulink.ExplorerBarInfo"
+	Visible			[1]
+      }
+      Object {
+	$PropName		"EditorsInfo"
+	$ObjectID		5
+	$ClassName		"Simulink.EditorInfo"
+	IsActive		[1]
+	ViewObjType		"SimulinkTopLevel"
+	LoadSaveID		"0"
+	Extents			[943.0, 597.0]
+	ZoomFactor		[1.0364298724954462]
+	Offset			[-29.927065026362065, 2.4920913884007021]
+      }
+    }
+  }
   Created		  "Sat Jan 26 02:15:13 2002"
   Creator		  "pic"
   UpdateHistory		  "UpdateHistoryNever"
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "corkep"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Sun Sep 23 11:14:54 2012"
-  RTWModifiedTimeStamp	  270299650
-  ModelVersionFormat	  "1.%<AutoIncrement:31>"
+  LastModifiedDate	  "Mon Jan 21 21:43:48 2013"
+  RTWModifiedTimeStamp	  280705392
+  ModelVersionFormat	  "1.%<AutoIncrement:32>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -73,6 +112,24 @@ Model {
   AccelTemplateMakefile	  "accel_default_tmf"
   AccelMakeCommand	  "make_rtw"
   TryForcingSFcnDF	  off
+  Object {
+    $PropName		    "DataLoggingOverride"
+    $ObjectID		    6
+    $ClassName		    "Simulink.SimulationData.ModelLoggingInfo"
+    model_		    "sl_ibvs"
+    Array {
+      Type		      "Cell"
+      Dimension		      1
+      Cell		      "sl_ibvs"
+      PropName		      "logAsSpecifiedByModels_"
+    }
+    Array {
+      Type		      "Cell"
+      Dimension		      1
+      Cell		      ""
+      PropName		      "logAsSpecifiedByModelsSSIDs_"
+    }
+  }
   RecordCoverage	  off
   CovPath		  "/"
   CovSaveName		  "covdata"
@@ -115,14 +172,14 @@ Model {
     Type		    "Handle"
     Dimension		    1
     Simulink.ConfigSet {
-      $ObjectID		      1
-      Version		      "1.12.0"
+      $ObjectID		      7
+      Version		      "1.12.1"
       Array {
 	Type			"Handle"
 	Dimension		8
 	Simulink.SolverCC {
-	  $ObjectID		  2
-	  Version		  "1.12.0"
+	  $ObjectID		  8
+	  Version		  "1.12.1"
 	  StartTime		  "0.0"
 	  StopTime		  "10"
 	  AbsTol		  "auto"
@@ -156,8 +213,8 @@ Model {
 	  InsertRTBMode		  "Whenever possible"
 	}
 	Simulink.DataIOCC {
-	  $ObjectID		  3
-	  Version		  "1.12.0"
+	  $ObjectID		  9
+	  Version		  "1.12.1"
 	  Decimation		  "1"
 	  ExternalInput		  "[t, u]"
 	  FinalStateName	  "xFinal"
@@ -188,8 +245,8 @@ Model {
 	  Refine		  "1"
 	}
 	Simulink.OptimizationCC {
-	  $ObjectID		  4
-	  Version		  "1.12.0"
+	  $ObjectID		  10
+	  Version		  "1.12.1"
 	  BlockReduction	  off
 	  BooleanDataType	  off
 	  ConditionallyExecuteInputs on
@@ -231,8 +288,8 @@ Model {
 	  ParallelExecutionInRapidAccelerator on
 	}
 	Simulink.DebuggingCC {
-	  $ObjectID		  5
-	  Version		  "1.12.0"
+	  $ObjectID		  11
+	  Version		  "1.12.1"
 	  RTPrefix		  "error"
 	  ConsistencyChecking	  "none"
 	  ArrayBoundsChecking	  "none"
@@ -281,7 +338,7 @@ Model {
 	  UnnecessaryDatatypeConvMsg "none"
 	  VectorMatrixConversionMsg "none"
 	  InvalidFcnCallConnMsg	  "error"
-	  FcnCallInpInsideContextMsg "Use local settings"
+	  FcnCallInpInsideContextMsg "UseLocalSettings"
 	  SignalLabelMismatchMsg  "none"
 	  UnconnectedInputMsg	  "warning"
 	  UnconnectedOutputMsg	  "warning"
@@ -317,10 +374,12 @@ Model {
 	  SFNoUnconditionalDefaultTransitionDiag "warning"
 	  SFTransitionOutsideNaturalParentDiag "warning"
 	  SFUnconditionalTransitionShadowingDiag "warning"
+	  SFUndirectedBroadcastEventsDiag "warning"
+	  SFTransitionActionBeforeConditionDiag	"warning"
 	}
 	Simulink.HardwareCC {
-	  $ObjectID		  6
-	  Version		  "1.12.0"
+	  $ObjectID		  12
+	  Version		  "1.12.1"
 	  ProdBitPerChar	  8
 	  ProdBitPerShort	  16
 	  ProdBitPerInt		  32
@@ -356,8 +415,8 @@ Model {
 	  ProdEqTarget		  on
 	}
 	Simulink.ModelReferenceCC {
-	  $ObjectID		  7
-	  Version		  "1.12.0"
+	  $ObjectID		  13
+	  Version		  "1.12.1"
 	  UpdateModelReferenceTargets "IfOutOfDateOrStructuralChange"
 	  CheckModelReferenceTargetMessage "error"
 	  EnableParallelModelReferenceBuilds off
@@ -371,8 +430,8 @@ Model {
 	  SupportModelReferenceSimTargetCustomCode off
 	}
 	Simulink.SFSimCC {
-	  $ObjectID		  8
-	  Version		  "1.12.0"
+	  $ObjectID		  14
+	  Version		  "1.12.1"
 	  SFSimEnableDebug	  on
 	  SFSimOverflowDetection  on
 	  SFSimEcho		  on
@@ -386,12 +445,13 @@ Model {
 	}
 	Simulink.RTWCC {
 	  $BackupClass		  "Simulink.RTWCC"
-	  $ObjectID		  9
-	  Version		  "1.12.0"
+	  $ObjectID		  15
+	  Version		  "1.12.1"
 	  SystemTargetFile	  "grt.tlc"
 	  GenCodeOnly		  off
 	  MakeCommand		  "make_rtw"
 	  GenerateMakefile	  on
+	  PackageGeneratedCodeAndArtifacts off
 	  TemplateMakefile	  "grt_default_tmf"
 	  GenerateReport	  off
 	  SaveLog		  off
@@ -408,6 +468,13 @@ Model {
 	  RTWUseSimCustomCode	  off
 	  IncludeHyperlinkInReport off
 	  LaunchReport		  off
+	  PortableWordSizes	  off
+	  GenerateErtSFunction	  off
+	  CreateSILPILBlock	  "None"
+	  CodeExecutionProfiling  off
+	  CodeExecutionProfileVariable "executionProfile"
+	  CodeProfilingSaveOptions "SummaryOnly"
+	  CodeProfilingInstrumentation off
 	  TargetLang		  "C"
 	  IncludeBusHierarchyInRTWFileBlockHierarchyMap	off
 	  IncludeERTFirstTime	  on
@@ -427,8 +494,8 @@ Model {
 	    Type		    "Handle"
 	    Dimension		    2
 	    Simulink.CodeAppCC {
-	      $ObjectID		      10
-	      Version		      "1.12.0"
+	      $ObjectID		      16
+	      Version		      "1.12.1"
 	      ForceParamTrailComments off
 	      GenerateComments	      on
 	      IgnoreCustomStorageClasses on
@@ -438,6 +505,7 @@ Model {
 	      PreserveName	      off
 	      PreserveNameWithParent  off
 	      ShowEliminatedStatement off
+	      OperatorAnnotations     off
 	      IncAutoGenComments      off
 	      SimulinkDataObjDesc     off
 	      SFDataObjDesc	      off
@@ -460,21 +528,21 @@ Model {
 	      SimulinkBlockComments   on
 	      MATLABSourceComments    off
 	      EnableCustomComments    off
+	      InternalIdentifier      "Classic"
 	      InlinedPrmAccess	      "Literals"
 	      ReqsInCode	      off
 	      UseSimReservedNames     off
 	    }
 	    Simulink.GRTTargetCC {
 	      $BackupClass	      "Simulink.TargetCC"
-	      $ObjectID		      11
-	      Version		      "1.12.0"
+	      $ObjectID		      17
+	      Version		      "1.12.1"
 	      TargetFcnLib	      "ansi_tfl_table_tmw.mat"
 	      TargetLibSuffix	      ""
 	      TargetPreCompLibLocation ""
 	      CodeReplacementLibrary  "ANSI_C"
 	      UtilityFuncGeneration   "Auto"
 	      ERTMultiwordTypeDef     "System defined"
-	      CodeExecutionProfiling  off
 	      ERTMultiwordLength      256
 	      MultiwordLength	      2048
 	      GenerateFullHeader      on
@@ -505,7 +573,6 @@ Model {
 	      SupportVariableSizeSignals off
 	      EnableShiftOperators    on
 	      ParenthesesLevel	      "Nominal"
-	      PortableWordSizes	      off
 	      ModelStepFunctionPrototypeControlCompliant off
 	      CPPClassGenCompliant    off
 	      AutosarCompliant	      off
@@ -537,7 +604,17 @@ Model {
   }
   Simulink.ConfigSet {
     $PropName		    "ActiveConfigurationSet"
-    $ObjectID		    1
+    $ObjectID		    7
+  }
+  Object {
+    $PropName		    "DataTransfer"
+    $ObjectID		    18
+    $ClassName		    "Simulink.GlobalDataTransfer"
+    DefaultTransitionBetweenSyncTasks "Ensure deterministic transfer (maximum delay)"
+    DefaultTransitionBetweenAsyncTasks "Ensure data integrity only"
+    DefaultTransitionBetweenContTasks "Ensure deterministic transfer (minimum delay)"
+    DefaultExtrapolationMethodBetweenContTasks "None"
+    AutoInsertRateTranBlk   [0]
   }
   ExplicitPartitioning	  off
   BlockDefaults {
@@ -570,6 +647,25 @@ Model {
     FontSize		    9
     FontWeight		    "normal"
     FontAngle		    "normal"
+  }
+  MaskDefaults {
+    SelfModifiable	    "off"
+    IconFrame		    "on"
+    IconOpaque		    "on"
+    RunInitForIconRedraw    "off"
+    IconRotate		    "none"
+    PortRotate		    "default"
+    IconUnits		    "autoscale"
+  }
+  MaskParameterDefaults {
+    Evaluate		    "on"
+    Tunable		    "on"
+    NeverSave		    "off"
+    Internal		    "off"
+    ReadOnly		    "off"
+    Enabled		    "on"
+    Visible		    "on"
+    ToolTip		    "on"
   }
   BlockParameterDefaults {
     Block {
@@ -679,7 +775,7 @@ Model {
   }
   System {
     Name		    "sl_ibvs"
-    Location		    [43, 50, 980, 643]
+    Location		    [482, 586, 1459, 1357]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -691,7 +787,7 @@ Model {
     TiledPaperMargins	    [0.500000, 0.500000, 0.500000, 0.500000]
     TiledPageScale	    1
     ShowPageBoundaries	    off
-    ZoomFactor		    "100"
+    ZoomFactor		    "103"
     ReportName		    "simulink-default.rpt"
     SIDHighWatermark	    "71"
     Block {
@@ -700,8 +796,9 @@ Model {
       SID		      "50"
       Ports		      [1]
       Position		      [265, 394, 295, 426]
+      ZOrder		      -1
       Floating		      off
-      Location		      [805, 435, 1438, 758]
+      Location		      [887, 71, 1520, 394]
       Open		      on
       NumInputPorts	      "1"
       ZoomMode		      "yonly"
@@ -720,9 +817,9 @@ Model {
 	MarkerStyles		"none|none|none|none|none|none"
       }
       ShowLegends	      off
-      TimeRange		      "20"
-      YMin		      "-0.4"
-      YMax		      "1.9"
+      TimeRange		      "10              "
+      YMin		      "-3"
+      YMax		      "0.75"
       DataFormat	      "StructureWithTime"
       SampleTime	      "0"
     }
@@ -732,6 +829,7 @@ Model {
       SID		      "1"
       Ports		      [1]
       Position		      [80, 349, 170, 471]
+      ZOrder		      -2
       BlockMirror	      on
       Format		      "bank"
       Decimation	      "1"
@@ -742,6 +840,7 @@ Model {
       Name		      "Clock"
       SID		      "39"
       Position		      [600, 20, 680, 40]
+      ZOrder		      -3
       DisplayTime	      on
     }
     Block {
@@ -750,6 +849,7 @@ Model {
       SID		      "3"
       Ports		      [1, 1]
       Position		      [425, 290, 485, 320]
+      ZOrder		      -4
       BackgroundColor	      "lightBlue"
       ShowName		      off
       MATLABFcn		      "u(:)"
@@ -767,6 +867,7 @@ Model {
       SID		      "4"
       Ports		      [1, 1]
       Position		      [565, 340, 625, 370]
+      ZOrder		      -5
       ShowName		      off
       MATLABFcn		      "norm(u)"
     }
@@ -776,6 +877,7 @@ Model {
       SID		      "69"
       Ports		      [1, 1]
       Position		      [240, 473, 270, 497]
+      ZOrder		      -6
       OutputDimensionality    "Customize"
       OutputDimensions	      "6"
     }
@@ -785,6 +887,7 @@ Model {
       SID		      "10"
       Ports		      [2, 1]
       Position		      [365, 295, 385, 315]
+      ZOrder		      -7
       BackgroundColor	      "lightBlue"
       ShowName		      off
       IconShape		      "round"
@@ -796,6 +899,7 @@ Model {
       SID		      "40"
       Ports		      [1]
       Position		      [235, 16, 570, 114]
+      ZOrder		      -8
       Decimation	      "1"
       Lockdown		      off
     }
@@ -805,9 +909,10 @@ Model {
       SID		      "47"
       Ports		      [1, 1]
       Position		      [250, 166, 330, 244]
+      ZOrder		      -9
       BackgroundColor	      "lightBlue"
       DropShadow	      on
-      LibraryVersion	      "1.54"
+      LibraryVersion	      "1.55"
       SourceBlock	      "roblocks/Vision/camera"
       SourceType	      ""
       cam		      "cam"
@@ -818,6 +923,7 @@ Model {
       Name		      "desired\nimage plane\ncoordinates"
       SID		      "16"
       Position		      [205, 279, 320, 331]
+      ZOrder		      -10
       BackgroundColor	      "green"
       Value		      "[412 412 612 612; 412 612 612 412]"
       VectorParams1D	      off
@@ -828,6 +934,7 @@ Model {
       SID		      "17"
       Ports		      [1]
       Position		      [410, 345, 500, 515]
+      ZOrder		      -11
       BlockMirror	      on
       Format		      "bank"
       Decimation	      "1"
@@ -839,6 +946,7 @@ Model {
       SID		      "18"
       Ports		      [1]
       Position		      [740, 340, 830, 370]
+      ZOrder		      -12
       Decimation	      "1"
       Lockdown		      off
     }
@@ -848,8 +956,9 @@ Model {
       SID		      "19"
       Ports		      [1]
       Position		      [605, 414, 635, 446]
+      ZOrder		      -13
       Floating		      off
-      Location		      [808, 71, 1435, 384]
+      Location		      [247, 71, 874, 384]
       Open		      on
       NumInputPorts	      "1"
       ZoomMode		      "yonly"
@@ -880,9 +989,9 @@ Model {
       Name		      "lambda"
       SID		      "51"
       Position		      [670, 265, 710, 320]
+      ZOrder		      -14
       BlockRotation	      270
       BlockMirror	      on
-      Gain		      "0.02"
     }
     Block {
       BlockType		      Reference
@@ -890,9 +999,10 @@ Model {
       SID		      "54"
       Ports		      [2, 2]
       Position		      [575, 190, 615, 250]
+      ZOrder		      -15
       BackgroundColor	      "red"
       DropShadow	      on
-      LibraryVersion	      "1.54"
+      LibraryVersion	      "1.55"
       SourceBlock	      "roblocks/Vision/pinvJac"
       SourceType	      ""
     }
@@ -902,9 +1012,10 @@ Model {
       SID		      "71"
       Ports		      [1, 1]
       Position		      [90, 178, 160, 232]
+      ZOrder		      -16
       BackgroundColor	      "red"
       DropShadow	      on
-      LibraryVersion	      "1.54"
+      LibraryVersion	      "1.55"
       SourceBlock	      "roblocks/Kinematics/pose integral"
       SourceType	      ""
       T0		      "transl(0,0,1)*trotz(1.5)"
@@ -916,6 +1027,7 @@ Model {
       SID		      "26"
       Ports		      [1]
       Position		      [740, 220, 830, 250]
+      ZOrder		      -17
       Decimation	      "1"
       Lockdown		      off
     }
@@ -925,19 +1037,21 @@ Model {
       SID		      "48"
       Ports		      [1, 1]
       Position		      [450, 179, 520, 231]
+      ZOrder		      -18
       BackgroundColor	      "lightBlue"
       DropShadow	      on
-      LibraryVersion	      "1.54"
+      LibraryVersion	      "1.55"
       SourceBlock	      "roblocks/Vision/image\nJacobian"
       SourceType	      ""
       cam		      "cam"
-      z			      "2"
+      z			      "3"
     }
     Block {
       BlockType		      Outport
       Name		      "p"
       SID		      "52"
       Position		      [395, 163, 425, 177]
+      ZOrder		      -19
       IconDisplay	      "Port number"
     }
     Block {
@@ -945,6 +1059,7 @@ Model {
       Name		      "v"
       SID		      "53"
       Position		      [305, 478, 335, 492]
+      ZOrder		      -20
       Port		      "2"
       IconDisplay	      "Port number"
     }

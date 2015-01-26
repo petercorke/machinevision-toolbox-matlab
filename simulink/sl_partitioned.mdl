@@ -1,33 +1,32 @@
 Model {
   Name			  "sl_partitioned"
-  Version		  7.9
+  Version		  8.4
   MdlSubVersion		  0
+  SavedCharacterEncoding  "ISO-8859-1"
   GraphicalInterface {
     NumRootInports	    0
     NumRootOutports	    3
     Outport {
-      BusObject		      ""
-      BusOutputAsStruct	      "off"
       Name		      "p"
-    }
-    Outport {
       BusObject		      ""
       BusOutputAsStruct	      "off"
-      Name		      "v"
     }
     Outport {
+      Name		      "v"
+      BusObject		      ""
+      BusOutputAsStruct	      "off"
+    }
+    Outport {
+      Name		      "e"
       BusObject		      ""
       BusOutputAsStruct	      "off"
       SignalName	      "feature error"
-      Name		      "e"
     }
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.30"
+    ComputedModelVersion    "1.31"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
-  SavedCharacterEncoding  "ISO-8859-1"
-  SaveDefaultBlockParams  on
   ScopeRefreshTime	  0.035000
   OverrideScopeRefreshTime on
   DisableAllScopes	  off
@@ -38,15 +37,54 @@ Model {
   FPTRunName		  "Run 1"
   MaxMDLFileLineLength	  120
   InitFcn		  "cam = CentralCamera('default')"
+  Object {
+    $PropName		    "BdWindowsInfo"
+    $ObjectID		    1
+    $ClassName		    "Simulink.BDWindowsInfo"
+    Object {
+      $PropName		      "WindowsInfo"
+      $ObjectID		      2
+      $ClassName	      "Simulink.WindowInfo"
+      IsActive		      [1]
+      Location		      [270.0, 44.0, 1026.0, 869.0]
+      Object {
+	$PropName		"ModelBrowserInfo"
+	$ObjectID		3
+	$ClassName		"Simulink.ModelBrowserInfo"
+	Visible			[0]
+	DockPosition		"Left"
+	Width			[50]
+	Height			[50]
+	Filter			[8]
+      }
+      Object {
+	$PropName		"ExplorerBarInfo"
+	$ObjectID		4
+	$ClassName		"Simulink.ExplorerBarInfo"
+	Visible			[1]
+      }
+      Object {
+	$PropName		"EditorsInfo"
+	$ObjectID		5
+	$ClassName		"Simulink.EditorInfo"
+	IsActive		[1]
+	ViewObjType		"SimulinkTopLevel"
+	LoadSaveID		"0"
+	Extents			[992.0, 699.0]
+	ZoomFactor		[1.0]
+	Offset			[0.0, 0.0]
+      }
+    }
+  }
   Created		  "Sat Jan 26 02:15:13 2002"
   Creator		  "pic"
   UpdateHistory		  "UpdateHistoryNever"
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "corkep"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Sun Sep 23 11:53:17 2012"
-  RTWModifiedTimeStamp	  270301718
-  ModelVersionFormat	  "1.%<AutoIncrement:30>"
+  LastModifiedDate	  "Mon Jan 26 15:07:51 2015"
+  RTWModifiedTimeStamp	  344185668
+  ModelVersionFormat	  "1.%<AutoIncrement:31>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -64,6 +102,7 @@ Model {
   SortedOrder		  off
   ExecutionContextIcon	  off
   ShowLinearizationAnnotations on
+  ShowMarkup		  on
   BlockNameDataTip	  off
   BlockParametersDataTip  on
   BlockDescriptionStringDataTip	off
@@ -72,6 +111,11 @@ Model {
   BrowserShowLibraryLinks off
   BrowserLookUnderMasks	  off
   SimulationMode	  "normal"
+  PauseTimes		  "5"
+  NumberOfSteps		  1
+  SnapshotBufferSize	  10
+  SnapshotInterval	  10
+  NumberOfLastSnapshots	  0
   LinearizationMsg	  "none"
   Profile		  off
   ParamWorkspaceSource	  "MATLABWorkspace"
@@ -79,6 +123,24 @@ Model {
   AccelTemplateMakefile	  "accel_default_tmf"
   AccelMakeCommand	  "make_rtw"
   TryForcingSFcnDF	  off
+  Object {
+    $PropName		    "DataLoggingOverride"
+    $ObjectID		    6
+    $ClassName		    "Simulink.SimulationData.ModelLoggingInfo"
+    model_		    "sl_partitioned"
+    Array {
+      Type		      "Cell"
+      Dimension		      1
+      Cell		      "sl_partitioned"
+      PropName		      "logAsSpecifiedByModels_"
+    }
+    Array {
+      Type		      "Cell"
+      Dimension		      1
+      Cell		      ""
+      PropName		      "logAsSpecifiedByModelsSSIDs_"
+    }
+  }
   RecordCoverage	  off
   CovPath		  "/"
   CovSaveName		  "covdata"
@@ -86,6 +148,7 @@ Model {
   CovNameIncrementing	  off
   CovHtmlReporting	  on
   CovForceBlockReductionOff on
+  CovEnableCumulative	  on
   covSaveCumulativeToWorkspaceVar on
   CovSaveSingleToWorkspaceVar on
   CovCumulativeVarName	  "covCumulativeData"
@@ -93,6 +156,12 @@ Model {
   CovReportOnPause	  on
   CovModelRefEnable	  "Off"
   CovExternalEMLEnable	  off
+  CovSFcnEnable		  off
+  CovBoundaryAbsTol	  0.000010
+  CovBoundaryRelTol	  0.010000
+  CovUseTimeInterval	  off
+  CovStartTime		  0
+  CovStopTime		  0
   ExtModeBatchMode	  off
   ExtModeEnableFloating	  on
   ExtModeTrigType	  "manual"
@@ -121,16 +190,16 @@ Model {
     Type		    "Handle"
     Dimension		    1
     Simulink.ConfigSet {
-      $ObjectID		      1
-      Version		      "1.12.0"
+      $ObjectID		      7
+      Version		      "1.14.3"
       Array {
 	Type			"Handle"
 	Dimension		8
 	Simulink.SolverCC {
-	  $ObjectID		  2
-	  Version		  "1.12.0"
+	  $ObjectID		  8
+	  Version		  "1.14.3"
 	  StartTime		  "0.0"
-	  StopTime		  "20.0"
+	  StopTime		  "160"
 	  AbsTol		  "auto"
 	  FixedStep		  "auto"
 	  InitialStep		  "auto"
@@ -162,8 +231,8 @@ Model {
 	  InsertRTBMode		  "Whenever possible"
 	}
 	Simulink.DataIOCC {
-	  $ObjectID		  3
-	  Version		  "1.12.0"
+	  $ObjectID		  9
+	  Version		  "1.14.3"
 	  Decimation		  "1"
 	  ExternalInput		  "[t, u]"
 	  FinalStateName	  "xFinal"
@@ -181,6 +250,7 @@ Model {
 	  SignalLogging		  on
 	  DSMLogging		  on
 	  InspectSignalLogs	  off
+	  VisualizeSimOutput	  on
 	  SaveTime		  on
 	  ReturnWorkspaceOutputs  on
 	  StateSaveName		  "xout"
@@ -194,19 +264,22 @@ Model {
 	  Refine		  "1"
 	}
 	Simulink.OptimizationCC {
-	  $ObjectID		  4
-	  Version		  "1.12.0"
+	  $ObjectID		  10
+	  Version		  "1.14.3"
 	  BlockReduction	  off
 	  BooleanDataType	  off
 	  ConditionallyExecuteInputs on
 	  InlineParams		  off
-	  UseIntDivNetSlope	  off
+	  UseDivisionForNetSlopeComputation "Off"
 	  UseFloatMulNetSlope	  off
+	  DefaultUnderspecifiedDataType	"double"
 	  UseSpecifiedMinMax	  off
 	  InlineInvariantSignals  off
 	  OptimizeBlockIOStorage  on
 	  BufferReuse		  on
 	  EnhancedBackFolding	  off
+	  CachingGlobalReferences off
+	  GlobalBufferReuse	  on
 	  StrengthReduction	  off
 	  ExpressionFolding	  on
 	  BooleansAsBitfields	  off
@@ -221,6 +294,7 @@ Model {
 	  SystemCodeInlineAuto	  off
 	  StateBitsets		  off
 	  DataBitsets		  off
+	  ActiveStateOutputEnumStorageType "Native Integer"
 	  UseTempVars		  off
 	  ZeroExternalMemoryAtStartup on
 	  ZeroInternalMemoryAtStartup on
@@ -237,8 +311,8 @@ Model {
 	  ParallelExecutionInRapidAccelerator on
 	}
 	Simulink.DebuggingCC {
-	  $ObjectID		  5
-	  Version		  "1.12.0"
+	  $ObjectID		  11
+	  Version		  "1.14.3"
 	  RTPrefix		  "error"
 	  ConsistencyChecking	  "none"
 	  ArrayBoundsChecking	  "none"
@@ -287,7 +361,7 @@ Model {
 	  UnnecessaryDatatypeConvMsg "none"
 	  VectorMatrixConversionMsg "none"
 	  InvalidFcnCallConnMsg	  "error"
-	  FcnCallInpInsideContextMsg "Use local settings"
+	  FcnCallInpInsideContextMsg "UseLocalSettings"
 	  SignalLabelMismatchMsg  "none"
 	  UnconnectedInputMsg	  "warning"
 	  UnconnectedOutputMsg	  "warning"
@@ -312,7 +386,7 @@ Model {
 	  SimStateInterfaceChecksumMismatchMsg "warning"
 	  SimStateOlderReleaseMsg "error"
 	  InitInArrayFormatMsg	  "warning"
-	  StrictBusMsg		  "None"
+	  StrictBusMsg		  "ErrorLevel1"
 	  BusNameAdapt		  "WarnAndRepair"
 	  NonBusSignalsTreatedAsBus "none"
 	  LoggingUnavailableSignals "error"
@@ -323,14 +397,18 @@ Model {
 	  SFNoUnconditionalDefaultTransitionDiag "warning"
 	  SFTransitionOutsideNaturalParentDiag "warning"
 	  SFUnconditionalTransitionShadowingDiag "warning"
+	  SFUndirectedBroadcastEventsDiag "warning"
+	  SFTransitionActionBeforeConditionDiag	"warning"
+	  IntegerSaturationMsg	  "warning"
 	}
 	Simulink.HardwareCC {
-	  $ObjectID		  6
-	  Version		  "1.12.0"
+	  $ObjectID		  12
+	  Version		  "1.14.3"
 	  ProdBitPerChar	  8
 	  ProdBitPerShort	  16
 	  ProdBitPerInt		  32
 	  ProdBitPerLong	  32
+	  ProdBitPerLongLong	  64
 	  ProdBitPerFloat	  32
 	  ProdBitPerDouble	  64
 	  ProdBitPerPointer	  32
@@ -340,17 +418,20 @@ Model {
 	  ProdEndianess		  "Unspecified"
 	  ProdWordSize		  32
 	  ProdShiftRightIntArith  on
+	  ProdLongLongMode	  off
 	  ProdHWDeviceType	  "32-bit Generic"
 	  TargetBitPerChar	  8
 	  TargetBitPerShort	  16
 	  TargetBitPerInt	  32
 	  TargetBitPerLong	  32
+	  TargetBitPerLongLong	  64
 	  TargetBitPerFloat	  32
 	  TargetBitPerDouble	  64
 	  TargetBitPerPointer	  32
 	  TargetLargestAtomicInteger "Char"
 	  TargetLargestAtomicFloat "None"
 	  TargetShiftRightIntArith on
+	  TargetLongLongMode	  off
 	  TargetIntDivRoundTo	  "Undefined"
 	  TargetEndianess	  "Unspecified"
 	  TargetWordSize	  32
@@ -362,8 +443,8 @@ Model {
 	  ProdEqTarget		  on
 	}
 	Simulink.ModelReferenceCC {
-	  $ObjectID		  7
-	  Version		  "1.12.0"
+	  $ObjectID		  13
+	  Version		  "1.14.3"
 	  UpdateModelReferenceTargets "IfOutOfDateOrStructuralChange"
 	  CheckModelReferenceTargetMessage "error"
 	  EnableParallelModelReferenceBuilds off
@@ -377,8 +458,8 @@ Model {
 	  SupportModelReferenceSimTargetCustomCode off
 	}
 	Simulink.SFSimCC {
-	  $ObjectID		  8
-	  Version		  "1.12.0"
+	  $ObjectID		  14
+	  Version		  "1.14.3"
 	  SFSimEnableDebug	  on
 	  SFSimOverflowDetection  on
 	  SFSimEcho		  on
@@ -389,16 +470,22 @@ Model {
 	  SimUseLocalCustomCode	  off
 	  SimParseCustomCode	  on
 	  SimBuildMode		  "sf_incremental_build"
+	  SimGenImportedTypeDefs  off
 	}
 	Simulink.RTWCC {
 	  $BackupClass		  "Simulink.RTWCC"
-	  $ObjectID		  9
-	  Version		  "1.12.0"
+	  $ObjectID		  15
+	  Version		  "1.14.3"
 	  SystemTargetFile	  "grt.tlc"
+	  TLCOptions		  ""
 	  GenCodeOnly		  off
 	  MakeCommand		  "make_rtw"
 	  GenerateMakefile	  on
+	  PackageGeneratedCodeAndArtifacts off
+	  PackageName		  ""
 	  TemplateMakefile	  "grt_default_tmf"
+	  PostCodeGenCommand	  ""
+	  Description		  ""
 	  GenerateReport	  off
 	  SaveLog		  off
 	  RTWVerbose		  on
@@ -409,11 +496,29 @@ Model {
 	  TLCAssert		  off
 	  ProcessScriptMode	  "Default"
 	  ConfigurationMode	  "Optimized"
+	  ProcessScript		  ""
+	  ConfigurationScript	  ""
 	  ConfigAtBuild		  off
 	  RTWUseLocalCustomCode	  off
 	  RTWUseSimCustomCode	  off
+	  CustomSourceCode	  ""
+	  CustomHeaderCode	  ""
+	  CustomInclude		  ""
+	  CustomSource		  ""
+	  CustomLibrary		  ""
+	  CustomInitializer	  ""
+	  CustomTerminator	  ""
+	  Toolchain		  "Automatically locate an installed toolchain"
+	  BuildConfiguration	  "Faster Builds"
 	  IncludeHyperlinkInReport off
 	  LaunchReport		  off
+	  PortableWordSizes	  off
+	  CreateSILPILBlock	  "None"
+	  CodeExecutionProfiling  off
+	  CodeExecutionProfileVariable "executionProfile"
+	  CodeProfilingSaveOptions "SummaryOnly"
+	  CodeProfilingInstrumentation off
+	  SILDebugging		  off
 	  TargetLang		  "C"
 	  IncludeBusHierarchyInRTWFileBlockHierarchyMap	off
 	  IncludeERTFirstTime	  on
@@ -427,16 +532,20 @@ Model {
 	  GenerateCodeMetricsReport off
 	  GenerateCodeReplacementReport	off
 	  RTWCompilerOptimization "Off"
+	  RTWCustomCompilerOptimizations ""
 	  CheckMdlBeforeBuild	  "Off"
 	  CustomRebuildMode	  "OnUpdate"
+	  DataInitializer	  ""
+	  SharedConstantsCachingThreshold 1024
 	  Array {
 	    Type		    "Handle"
 	    Dimension		    2
 	    Simulink.CodeAppCC {
-	      $ObjectID		      10
-	      Version		      "1.12.0"
+	      $ObjectID		      16
+	      Version		      "1.14.3"
 	      ForceParamTrailComments off
 	      GenerateComments	      on
+	      CommentStyle	      "Auto"
 	      IgnoreCustomStorageClasses on
 	      IgnoreTestpoints	      off
 	      IncHierarchyInIds	      off
@@ -444,6 +553,7 @@ Model {
 	      PreserveName	      off
 	      PreserveNameWithParent  off
 	      ShowEliminatedStatement off
+	      OperatorAnnotations     off
 	      IncAutoGenComments      off
 	      SimulinkDataObjDesc     off
 	      SFDataObjDesc	      off
@@ -451,13 +561,14 @@ Model {
 	      IncDataTypeInIds	      off
 	      MangleLength	      1
 	      CustomSymbolStrGlobalVar "$R$N$M"
-	      CustomSymbolStrType     "$N$R$M"
+	      CustomSymbolStrType     "$N$R$M_T"
 	      CustomSymbolStrField    "$N$M"
 	      CustomSymbolStrFcn      "$R$N$M$F"
 	      CustomSymbolStrFcnArg   "rt$I$N$M"
 	      CustomSymbolStrBlkIO    "rtb_$N$M"
 	      CustomSymbolStrTmpVar   "$N$M"
 	      CustomSymbolStrMacro    "$R$N$M"
+	      CustomSymbolStrUtil     "$N$C"
 	      DefineNamingRule	      "None"
 	      ParamNamingRule	      "None"
 	      SignalNamingRule	      "None"
@@ -466,27 +577,34 @@ Model {
 	      SimulinkBlockComments   on
 	      MATLABSourceComments    off
 	      EnableCustomComments    off
+	      InternalIdentifier      "Shortened"
 	      InlinedPrmAccess	      "Literals"
 	      ReqsInCode	      off
 	      UseSimReservedNames     off
 	    }
 	    Simulink.GRTTargetCC {
 	      $BackupClass	      "Simulink.TargetCC"
-	      $ObjectID		      11
-	      Version		      "1.12.0"
+	      $ObjectID		      17
+	      Version		      "1.14.3"
+	      Array {
+		Type			"Cell"
+		Dimension		1
+		Cell			"GenerateAllocFcn"
+		PropName		"DisabledProps"
+	      }
 	      TargetFcnLib	      "ansi_tfl_table_tmw.mat"
 	      TargetLibSuffix	      ""
 	      TargetPreCompLibLocation ""
-	      CodeReplacementLibrary  "ANSI_C"
+	      GenFloatMathFcnCalls    "NOT IN USE"
+	      TargetLangStandard      "C89/C90 (ANSI)"
+	      CodeReplacementLibrary  "None"
 	      UtilityFuncGeneration   "Auto"
 	      ERTMultiwordTypeDef     "System defined"
-	      CodeExecutionProfiling  off
 	      ERTMultiwordLength      256
 	      MultiwordLength	      2048
 	      GenerateFullHeader      on
 	      GenerateSampleERTMain   off
 	      GenerateTestInterfaces  off
-	      IsPILTarget	      off
 	      ModelReferenceCompliant off
 	      ParMdlRefBuildCompliant on
 	      CompOptLevelCompliant   off
@@ -503,6 +621,7 @@ Model {
 	      LogVarNameModifier      "rt_"
 	      MatFileLogging	      off
 	      MultiInstanceERTCode    off
+	      CodeInterfacePackaging  "Nonreusable function"
 	      SupportNonFinite	      on
 	      SupportComplex	      on
 	      PurelyIntegerCode	      off
@@ -511,11 +630,14 @@ Model {
 	      SupportVariableSizeSignals off
 	      EnableShiftOperators    on
 	      ParenthesesLevel	      "Nominal"
-	      PortableWordSizes	      off
+	      CastingMode	      "Nominal"
+	      MATLABClassNameForMDSCustomization "Simulink.SoftwareTarget.GRTCustomization"
 	      ModelStepFunctionPrototypeControlCompliant off
-	      CPPClassGenCompliant    off
+	      CPPClassGenCompliant    on
 	      AutosarCompliant	      off
 	      GRTInterface	      on
+	      GenerateAllocFcn	      off
+	      GenerateSharedConstants on
 	      UseMalloc		      off
 	      ExtMode		      off
 	      ExtModeStaticAlloc      off
@@ -529,6 +651,7 @@ Model {
 	      RTWCAPIStates	      off
 	      RTWCAPIRootIO	      off
 	      GenerateASAP2	      off
+	      MultiInstanceErrorCode  "Error"
 	    }
 	    PropName		    "Components"
 	  }
@@ -543,7 +666,17 @@ Model {
   }
   Simulink.ConfigSet {
     $PropName		    "ActiveConfigurationSet"
-    $ObjectID		    1
+    $ObjectID		    7
+  }
+  Object {
+    $PropName		    "DataTransfer"
+    $ObjectID		    18
+    $ClassName		    "Simulink.GlobalDataTransfer"
+    DefaultTransitionBetweenSyncTasks "Ensure deterministic transfer (maximum delay)"
+    DefaultTransitionBetweenAsyncTasks "Ensure data integrity only"
+    DefaultTransitionBetweenContTasks "Ensure deterministic transfer (minimum delay)"
+    DefaultExtrapolationMethodBetweenContTasks "None"
+    AutoInsertRateTranBlk   [0]
   }
   ExplicitPartitioning	  off
   BlockDefaults {
@@ -577,6 +710,25 @@ Model {
     FontWeight		    "normal"
     FontAngle		    "normal"
   }
+  MaskDefaults {
+    SelfModifiable	    "off"
+    IconFrame		    "on"
+    IconOpaque		    "on"
+    RunInitForIconRedraw    "off"
+    IconRotate		    "none"
+    PortRotate		    "default"
+    IconUnits		    "autoscale"
+  }
+  MaskParameterDefaults {
+    Evaluate		    "on"
+    Tunable		    "on"
+    NeverSave		    "off"
+    Internal		    "off"
+    ReadOnly		    "off"
+    Enabled		    "on"
+    Visible		    "on"
+    ToolTip		    "on"
+  }
   BlockParameterDefaults {
     Block {
       BlockType		      Clock
@@ -607,6 +759,7 @@ Model {
       Format		      "short"
       Decimation	      "10"
       Floating		      off
+      Lockdown		      off
       SampleTime	      "-1"
     }
     Block {
@@ -709,7 +862,7 @@ Model {
   }
   System {
     Name		    "sl_partitioned"
-    Location		    [308, 50, 1294, 741]
+    Location		    [270, 44, 1296, 913]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -723,15 +876,16 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    "75"
+    SIDHighWatermark	    "79"
     Block {
       BlockType		      Scope
       Name		      "Cartesian\nvelocity"
       SID		      "50"
       Ports		      [1]
       Position		      [235, 504, 265, 536]
+      ZOrder		      -1
       Floating		      off
-      Location		      [1, 576, 787, 1023]
+      Location		      [1492, 756, 2278, 1203]
       Open		      off
       NumInputPorts	      "1"
       ZoomMode		      "yonly"
@@ -739,12 +893,23 @@ Model {
 	ListType		AxesTitles
 	axes1			"%<SignalLabel>"
       }
+      List {
+	ListType		ScopeGraphics
+	FigureColor		"[0.5 0.5 0.5]"
+	AxesColor		"[0 0 0]"
+	AxesTickColor		"[1 1 1]"
+	LineColors		"[1 1 0;1 0 1;0 1 1;1 0 0;0 1 0;0 0 1]"
+	LineStyles		"-|-|-|-|-|-"
+	LineWidths		"[0.5 0.5 0.5 0.5 0.5 0.5]"
+	MarkerStyles		"none|none|none|none|none|none"
+      }
       ShowLegends	      off
       TimeRange		      "20"
       YMin		      "0"
       YMax		      "350"
       DataFormat	      "StructureWithTime"
       SampleTime	      "0"
+      ScrollMode	      off
     }
     Block {
       BlockType		      Display
@@ -752,16 +917,17 @@ Model {
       SID		      "1"
       Ports		      [1]
       Position		      [45, 459, 135, 581]
+      ZOrder		      -2
       BlockMirror	      on
       Format		      "bank"
       Decimation	      "1"
-      Lockdown		      off
     }
     Block {
       BlockType		      Clock
       Name		      "Clock"
       SID		      "39"
       Position		      [590, 15, 670, 35]
+      ZOrder		      -3
       DisplayTime	      on
     }
     Block {
@@ -769,6 +935,7 @@ Model {
       Name		      "Gain"
       SID		      "64"
       Position		      [520, 305, 550, 335]
+      ZOrder		      -4
       Gain		      "[0.05 0.05]"
       ParamDataTypeStr	      "Inherit: Inherit via internal rule"
       OutDataTypeStr	      "Inherit: Inherit via internal rule"
@@ -780,6 +947,7 @@ Model {
       SID		      "58"
       Ports		      [1, 1]
       Position		      [600, 165, 660, 195]
+      ZOrder		      -5
       MATLABFcn		      "u(:,[1 2 4 5])"
       Output1D		      off
     }
@@ -789,6 +957,7 @@ Model {
       SID		      "60"
       Ports		      [1, 1]
       Position		      [522, 220, 578, 250]
+      ZOrder		      -6
       BlockRotation	      270
       BlockMirror	      on
       NamePlacement	      "alternate"
@@ -801,6 +970,7 @@ Model {
       SID		      "3"
       Ports		      [1, 1]
       Position		      [435, 400, 495, 430]
+      ZOrder		      -7
       BackgroundColor	      "lightBlue"
       ShowName		      off
       MATLABFcn		      "u(:)"
@@ -818,6 +988,7 @@ Model {
       SID		      "4"
       Ports		      [1, 1]
       Position		      [665, 450, 725, 480]
+      ZOrder		      -8
       ShowName		      off
       MATLABFcn		      "norm(u)"
     }
@@ -827,6 +998,7 @@ Model {
       SID		      "54"
       Ports		      [2, 1]
       Position		      [475, 268, 480, 372]
+      ZOrder		      -9
       ShowName		      off
       Inputs		      "2"
       DisplayOption	      "bar"
@@ -837,6 +1009,7 @@ Model {
       SID		      "57"
       Ports		      [2, 1]
       Position		      [600, 274, 625, 336]
+      ZOrder		      -10
       ShowName		      off
       Multiplication	      "Matrix(*)"
       InputSameDT	      off
@@ -849,6 +1022,7 @@ Model {
       SID		      "10"
       Ports		      [2, 1]
       Position		      [330, 405, 350, 425]
+      ZOrder		      -11
       BackgroundColor	      "lightBlue"
       ShowName		      off
       IconShape		      "round"
@@ -860,6 +1034,7 @@ Model {
       SID		      "51"
       Ports		      [2, 1]
       Position		      [655, 295, 675, 315]
+      ZOrder		      -12
       BlockRotation	      270
       ShowName		      off
       IconShape		      "round"
@@ -874,8 +1049,8 @@ Model {
       SID		      "40"
       Ports		      [1]
       Position		      [205, 16, 540, 114]
+      ZOrder		      -13
       Decimation	      "1"
-      Lockdown		      off
     }
     Block {
       BlockType		      Concatenate
@@ -883,6 +1058,7 @@ Model {
       SID		      "61"
       Ports		      [2, 1]
       Position		      [800, 329, 815, 371]
+      ZOrder		      -14
       ConcatenateDimension    "2"
     }
     Block {
@@ -891,6 +1067,7 @@ Model {
       SID		      "55"
       Ports		      [1, 1]
       Position		      [385, 280, 445, 310]
+      ZOrder		      -15
       MATLABFcn		      "1-sqrt( abs(mpq_poly(u, 0,0)) )/200"
     }
     Block {
@@ -899,11 +1076,13 @@ Model {
       SID		      "47"
       Ports		      [1, 1]
       Position		      [215, 141, 295, 219]
+      ZOrder		      -16
       BackgroundColor	      "lightBlue"
       DropShadow	      on
-      LibraryVersion	      "1.54"
+      LibraryVersion	      "1.69"
       SourceBlock	      "roblocks/Vision/camera"
       SourceType	      ""
+      ContentPreviewEnabled   off
       cam		      "cam"
       points		      "mkgrid(2, 0.5, 'T', transl(0,0,3))"
     }
@@ -912,6 +1091,7 @@ Model {
       Name		      "desired\nimage plane\ncoordinates"
       SID		      "16"
       Position		      [170, 389, 285, 441]
+      ZOrder		      -17
       BackgroundColor	      "green"
       Value		      "[412 412 612 612; 412 612 612 412]"
       VectorParams1D	      off
@@ -922,10 +1102,10 @@ Model {
       SID		      "17"
       Ports		      [1]
       Position		      [420, 455, 510, 625]
+      ZOrder		      -18
       BlockMirror	      on
       Format		      "bank"
       Decimation	      "1"
-      Lockdown		      off
     }
     Block {
       BlockType		      Display
@@ -933,8 +1113,8 @@ Model {
       SID		      "18"
       Ports		      [1]
       Position		      [810, 450, 900, 480]
+      ZOrder		      -19
       Decimation	      "1"
-      Lockdown		      off
     }
     Block {
       BlockType		      Scope
@@ -942,9 +1122,10 @@ Model {
       SID		      "19"
       Ports		      [1]
       Position		      [705, 524, 735, 556]
+      ZOrder		      -20
       Floating		      off
-      Location		      [338, 438, 1124, 885]
-      Open		      on
+      Location		      [1493, 235, 2279, 682]
+      Open		      off
       NumInputPorts	      "1"
       ZoomMode		      "yonly"
       List {
@@ -968,6 +1149,7 @@ Model {
       SaveName		      "ScopeData1"
       DataFormat	      "StructureWithTime"
       SampleTime	      "0"
+      ScrollMode	      off
     }
     Block {
       BlockType		      Reference
@@ -975,11 +1157,13 @@ Model {
       SID		      "72"
       Ports		      [1, 1]
       Position		      [410, 154, 480, 206]
+      ZOrder		      -21
       BackgroundColor	      "lightBlue"
       DropShadow	      on
-      LibraryVersion	      "1.54"
+      LibraryVersion	      "1.69"
       SourceBlock	      "roblocks/Vision/image\nJacobian"
       SourceType	      ""
+      ContentPreviewEnabled   off
       cam		      "cam"
       z			      "2"
     }
@@ -988,6 +1172,7 @@ Model {
       Name		      "lambda"
       SID		      "63"
       Position		      [765, 240, 805, 295]
+      ZOrder		      -22
       BlockRotation	      270
       BlockMirror	      on
       Gain		      "0.005"
@@ -998,11 +1183,13 @@ Model {
       SID		      "73"
       Ports		      [2, 2]
       Position		      [700, 165, 740, 225]
+      ZOrder		      -23
       BackgroundColor	      "red"
       DropShadow	      on
-      LibraryVersion	      "1.54"
+      LibraryVersion	      "1.69"
       SourceBlock	      "roblocks/Vision/pinvJac"
       SourceType	      ""
+      ContentPreviewEnabled   off
     }
     Block {
       BlockType		      Reference
@@ -1010,11 +1197,13 @@ Model {
       SID		      "75"
       Ports		      [1, 1]
       Position		      [55, 153, 125, 207]
+      ZOrder		      -24
       BackgroundColor	      "red"
       DropShadow	      on
-      LibraryVersion	      "1.54"
+      LibraryVersion	      "1.69"
       SourceBlock	      "roblocks/Kinematics/pose integral"
       SourceType	      ""
+      ContentPreviewEnabled   off
       T0		      "transl(-1,-1,0)*trotx(0.2)*trotz(0.3)"
       dt		      "0.02"
     }
@@ -1024,6 +1213,7 @@ Model {
       SID		      "62"
       Ports		      [1, 1]
       Position		      [855, 335, 915, 365]
+      ZOrder		      -25
       MATLABFcn		      "u([1 2 5 3 4 6])"
     }
     Block {
@@ -1032,6 +1222,7 @@ Model {
       SID		      "56"
       Ports		      [1, 1]
       Position		      [385, 330, 445, 360]
+      ZOrder		      -26
       MATLABFcn		      "angdiff( atan2(u(2,3)-u(2,2),u(1,3)-u(1,2)), 0 )"
     }
     Block {
@@ -1040,14 +1231,15 @@ Model {
       SID		      "26"
       Ports		      [1]
       Position		      [825, 195, 915, 225]
+      ZOrder		      -27
       Decimation	      "1"
-      Lockdown		      off
     }
     Block {
       BlockType		      Outport
       Name		      "p"
       SID		      "69"
       Position		      [355, 143, 385, 157]
+      ZOrder		      -28
       IconDisplay	      "Port number"
     }
     Block {
@@ -1055,6 +1247,7 @@ Model {
       Name		      "v"
       SID		      "70"
       Position		      [235, 588, 265, 602]
+      ZOrder		      -29
       Port		      "2"
       IconDisplay	      "Port number"
     }
@@ -1063,47 +1256,58 @@ Model {
       Name		      "e"
       SID		      "71"
       Position		      [630, 493, 660, 507]
+      ZOrder		      -30
       Port		      "3"
       IconDisplay	      "Port number"
     }
     Line {
+      ZOrder		      1
       SrcBlock		      "camera"
       SrcPort		      1
       Points		      [40, 0]
       Branch {
+	ZOrder			2
 	Points			[0, 115]
 	Branch {
+	  ZOrder		  3
 	  DstBlock		  "area"
 	  DstPort		  1
 	}
 	Branch {
+	  ZOrder		  4
 	  Points		  [0, 50]
 	  Branch {
+	    ZOrder		    5
 	    DstBlock		    "Sum"
 	    DstPort		    1
 	  }
 	  Branch {
+	    ZOrder		    6
 	    DstBlock		    "theta"
 	    DstPort		    1
 	  }
 	}
       }
       Branch {
+	ZOrder			7
 	DstBlock		"p"
 	DstPort			1
       }
       Branch {
+	ZOrder			8
 	DstBlock		"image\nJacobian"
 	DstPort			1
       }
     }
     Line {
+      ZOrder		      9
       SrcBlock		      "Sum"
       SrcPort		      1
       DstBlock		      "MATLAB Fcn"
       DstPort		      1
     }
     Line {
+      ZOrder		      10
       SrcBlock		      "desired\nimage plane\ncoordinates"
       SrcPort		      1
       DstBlock		      "Sum"
@@ -1111,76 +1315,93 @@ Model {
     }
     Line {
       Name		      "feature error"
+      ZOrder		      11
       Labels		      [0, 0]
       SrcBlock		      "MATLAB Fcn"
       SrcPort		      1
       Points		      [90, 0]
       Branch {
+	ZOrder			12
 	Points			[75, 0]
 	DstBlock		"Sum1"
 	DstPort			2
       }
       Branch {
+	ZOrder			13
 	Points			[0, 50]
 	Branch {
+	  ZOrder		  14
 	  Points		  [0, 35]
 	  Branch {
+	    ZOrder		    15
 	    Points		    [0, 40]
 	    Branch {
+	      ZOrder		      16
 	      DstBlock		      "feature error"
 	      DstPort		      1
 	    }
 	    Branch {
+	      ZOrder		      17
 	      DstBlock		      "feature error2"
 	      DstPort		      1
 	    }
 	  }
 	  Branch {
+	    ZOrder		    18
 	    DstBlock		    "e"
 	    DstPort		    1
 	  }
 	}
 	Branch {
+	  ZOrder		  19
 	  DstBlock		  "MATLAB Fcn1"
 	  DstPort		  1
 	}
       }
     }
     Line {
+      ZOrder		      20
       SrcBlock		      "MATLAB Fcn1"
       SrcPort		      1
       DstBlock		      "feature error\nnorm"
       DstPort		      1
     }
     Line {
+      ZOrder		      21
       SrcBlock		      "pose integral"
       SrcPort		      1
       Points		      [35, 0]
       Branch {
+	ZOrder			22
 	Points			[0, -115]
 	DstBlock		"T"
 	DstPort			1
       }
       Branch {
+	ZOrder			23
 	DstBlock		"camera"
 	DstPort			1
       }
     }
     Line {
+      ZOrder		      24
       Labels		      [0, 0]
       SrcBlock		      "image\nJacobian"
       SrcPort		      1
       Points		      [65, 0]
       Branch {
+	ZOrder			25
 	DstBlock		"Jxy"
 	DstPort			1
       }
       Branch {
+	ZOrder			26
 	DstBlock		"Jz"
 	DstPort			1
       }
     }
     Line {
+      ZOrder		      27
       Labels		      [0, 0]
       SrcBlock		      "Jxy"
       SrcPort		      1
@@ -1188,6 +1409,7 @@ Model {
       DstPort		      1
     }
     Line {
+      ZOrder		      28
       SrcBlock		      "Sum1"
       SrcPort		      1
       Points		      [0, -80]
@@ -1195,18 +1417,21 @@ Model {
       DstPort		      2
     }
     Line {
+      ZOrder		      29
       SrcBlock		      "theta"
       SrcPort		      1
       DstBlock		      "Mux"
       DstPort		      2
     }
     Line {
+      ZOrder		      30
       SrcBlock		      "Mux"
       SrcPort		      1
       DstBlock		      "Gain"
       DstPort		      1
     }
     Line {
+      ZOrder		      31
       SrcBlock		      "Jz"
       SrcPort		      1
       Points		      [0, 35]
@@ -1214,6 +1439,7 @@ Model {
       DstPort		      1
     }
     Line {
+      ZOrder		      32
       SrcBlock		      "pinvJac"
       SrcPort		      1
       Points		      [40, 0]
@@ -1221,81 +1447,120 @@ Model {
       DstPort		      1
     }
     Line {
+      ZOrder		      33
       SrcBlock		      "Vector\nConcatenate"
       SrcPort		      1
       DstBlock		      "rearrange"
       DstPort		      1
     }
     Line {
+      ZOrder		      34
       SrcBlock		      "rearrange"
       SrcPort		      1
       Points		      [20, 0; 0, 305; -740, 0]
       Branch {
+	ZOrder			35
 	Points			[0, -60]
 	Branch {
+	  ZOrder		  36
 	  Points		  [0, -75]
 	  Branch {
+	    ZOrder		    37
 	    DstBlock		    "Cartesian velocity dmd"
 	    DstPort		    1
 	  }
 	  Branch {
+	    ZOrder		    38
 	    DstBlock		    "Cartesian\nvelocity"
 	    DstPort		    1
 	  }
 	}
 	Branch {
+	  ZOrder		  39
 	  DstBlock		  "v"
 	  DstPort		  1
 	}
       }
       Branch {
+	ZOrder			40
 	Points			[-180, 0; 0, -475]
 	DstBlock		"pose integral"
 	DstPort			1
       }
     }
     Line {
+      ZOrder		      41
       SrcBlock		      "lambda"
       SrcPort		      1
       DstBlock		      "Vector\nConcatenate"
       DstPort		      1
     }
     Line {
+      ZOrder		      42
       SrcBlock		      "Gain"
       SrcPort		      1
       Points		      [15, 0]
       Branch {
+	ZOrder			43
 	DstBlock		"Product"
 	DstPort			2
       }
       Branch {
+	ZOrder			44
 	Points			[0, 40]
 	DstBlock		"Vector\nConcatenate"
 	DstPort			2
       }
     }
     Line {
+      ZOrder		      45
       SrcBlock		      "area"
       SrcPort		      1
       DstBlock		      "Mux"
       DstPort		      1
     }
     Line {
+      ZOrder		      46
       SrcBlock		      "Product"
       SrcPort		      1
       DstBlock		      "Sum1"
       DstPort		      1
     }
     Line {
+      ZOrder		      47
       SrcBlock		      "pinvJac"
       SrcPort		      2
       DstBlock		      "visjac\ncondition"
       DstPort		      1
     }
     Annotation {
+      SID		      "77"
+      Name		      "vz wz"
+      Position		      [730, 360, 756, 372]
+      InternalMargins	      [0, 0, 0, 0]
+      FixedHeight	      off
+      FixedWidth	      off
+      HorizontalAlignment     "left"
+      VerticalAlignment	      "top"
+    }
+    Annotation {
+      SID		      "76"
+      Name		      "vx vy wx wy"
+      Position		      [730, 303, 784, 315]
+      InternalMargins	      [0, 0, 0, 0]
+      FixedHeight	      off
+      FixedWidth	      off
+      HorizontalAlignment     "left"
+      VerticalAlignment	      "top"
+    }
+    Annotation {
       SID		      "74"
       Name		      "desired camera velocity"
-      Position		      [567, 669]
+      Position		      [567, 669, 673, 681]
+      InternalMargins	      [0, 0, 0, 0]
+      FixedHeight	      off
+      FixedWidth	      off
+      ZOrder		      -1
     }
   }
 }
