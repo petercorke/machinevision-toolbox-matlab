@@ -377,7 +377,6 @@ classdef Camera < handle
                 else
                     h = c.h_image;
                 end
-                h
                 return;
             end
 
@@ -392,7 +391,7 @@ classdef Camera < handle
                 h = hin;
                 set(h, 'HandleVisibility', 'off');
             else
-                clf
+                figure
                 h = axes
                 fig = get(h, 'Parent');
                 disp('make axes');
