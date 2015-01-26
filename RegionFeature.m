@@ -11,35 +11,36 @@
 % plot_ellipse    Plot the equivalent ellipse
 % display         Display value
 % char            Convert value to string
+% pick            Return the index of the blob that is clicked
 %
 % Properties::
-%  uc            centroid, horizontal coordinate
-%  vc            centroid, vertical coordinate
-%  p             centroid (uc, vc)
-%  umin          bounding box, minimum horizontal coordinate
-%  umax          bounding box, maximum horizontal coordinate
-%  vmin          bounding box, minimum vertical coordinate
-%  vmax          bounding box, maximum vertical coordinate
-%  area          the number of pixels
-%  class         the value of the pixels forming this region
-%  label         the label assigned to this region
-%  children      a list of indices of features that are children of this feature
-%  edgepoint     coordinate of a point on the perimeter
-%  edge          a list of edge points 2xN matrix
-%  perimeter     edge length (pixels)
-%  touch         true if region touches edge of the image
-%  a             major axis length of equivalent ellipse
-%  b             minor axis length of equivalent ellipse
-%  theta         angle of major ellipse axis to horizontal axis
-%  shape         aspect ratio b/a (always <= 1.0)
-%  circularity   1 for a circle, less for other shapes
-%  moments       a structure containing moments of order 0 to 2
-%  bbox          the bounding box, 2x2 matrix [umin umax; vmin vmax]
-%
+%  uc*            centroid, horizontal coordinate
+%  vc*            centroid, vertical coordinate
+%  p              centroid (uc, vc)
+%  umin           bounding box, minimum horizontal coordinate
+%  umax           bounding box, maximum horizontal coordinate
+%  vmin           bounding box, minimum vertical coordinate
+%  vmax           bounding box, maximum vertical coordinate
+%  area*          the number of pixels
+%  class*         the value of the pixels forming this region
+%  label*         the label assigned to this region
+%  children       a list of indices of features that are children of this feature
+%  edgepoint      coordinate of a point on the perimeter
+%  edge           a list of edge points 2xN matrix
+%  perimeter*     edge length (pixels)
+%  touch*         true if region touches edge of the image
+%  a              major axis length of equivalent ellipse
+%  b              minor axis length of equivalent ellipse
+%  theta*         angle of major ellipse axis to horizontal axis
+%  shape*         aspect ratio b/a (always <= 1.0)
+%  circularity*   1 for a circle, less for other shapes
+%  moments        a structure containing moments of order 0 to 2
+%  bbox*          the bounding box, 2x2 matrix [umin umax; vmin vmax]
+%  bboxarea*      bounding box area
 % Note::
-%  - Properties uc, vc, p, class, label, touch, theta, shape, circularity,
-%    perimeter can be referenced from a vector of RegionFeature objects 
-%    and return a vector of values (not a list).
+%  - Properties indicated with a * can be determined for a vector of RegionFeatures
+%    and the result will be a vector of those properties (not a list) with elements
+%    corresponding to the original vector of RegionFeatures.
 %  - RegionFeature is a reference object.
 %  - RegionFeature objects can be used in vectors and arrays
 %  - This class behaves differently to LineFeature and PointFeature when
@@ -96,10 +97,12 @@ classdef RegionFeature < handle
         circularity_
 
         moments     % moments, a struct of: m00, m01, m10, m02, m20, m11
+
     end
 
     properties (Dependent=true)
-        bbox
+        bbox_       % bounding box
+        bboxarea_   % bounding box area
     end
 
     methods
@@ -260,6 +263,49 @@ classdef RegionFeature < handle
             end
         end
         
+        function t = contains(f, coord)
+        %RegionFeature.contains Test if coordinate is contained within region bounding box
+        %
+        % R.contains(coord) true if the coordinate COORD lies within the bounding box
+        % of the region feature R.  If R is a vector, return a vector of logical
+        % values, one per input region.
+        %
+            u = coord(1);
+            v = coord(2);
+            t = zeros(1,length(f));
+            for i=1:length(f)
+                box = f(i).bbox_();
+
+                t(i) = u>= box(1,1) && u<=box(1,2) && v>=box(2,1) && v<=box(2,2);
+            end
+        end
+        
+        function sel = pick(f)
+        %RegionFeature.pick Select blob from mouse click
+        %
+        % I = R.pick() is the index of the region feature within the vector of
+        % RegionFeatures R to which the clicked point corresponds.  Since regions
+        % can overlap of be contained in other regions, the region with the
+        % smallest area of bounding box that contains the selected point is
+        % returned.
+        %
+        % See also GINPUT, RegionFeature.inbox.
+        
+        [u,v] = ginput(1);
+            
+            ind = [];
+            areas = [];
+            for i=1:length(f)
+                blob = f(i);
+                if blob.contains([u,v])
+                    ind = [ind i];
+                    areas = [areas blob.bboxarea];
+                end
+            end
+            [~,k] = min(areas);
+            sel = ind(k);
+        end
+        
         function [ri,thi] = boundary(f, varargin)
         %RegionFeature.boundary Boundary in polar form
         %
@@ -284,8 +330,12 @@ classdef RegionFeature < handle
             end
         end
 
-        function bb = get.bbox(f)
+        function bb = get.bbox_(f)
             bb = [f.umin f.umax; f.vmin f.vmax];
+        end
+        
+        function a = get.bboxarea_(f)
+            a = (f.umax-f.umin)*(f.vmax-f.vmin);
         end
 
         % methods to provide convenient access to properties of object vectors
@@ -329,6 +379,12 @@ classdef RegionFeature < handle
             val = [f.perimeter_];
         end
 
+        function val = bboxarea(f)
+            val = [f.bboxarea_];
+        end
+        
+        function val = bbox(f)
+            val = [f.bbox_];
+        end
     end
-
 end
