@@ -56,6 +56,6 @@ function s = kcircle(r, w)
         [x,y] = imeshgrid(s);
         x = x - c;
         y = y - c;
-        l = find(x.^2 + y.^2 - r^2 < 0);
+        l = find(round(x.^2 + y.^2 - r^2) <= 0);
         s(l) = 1;
     end
