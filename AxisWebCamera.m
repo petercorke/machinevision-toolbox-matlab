@@ -114,12 +114,17 @@ classdef AxisWebCamera < ImageSource
                 % instance creation time
                 im = wc.convert( wc.firstImage );
                 wc.firstImage = [];
-                return;
-            end
+            else
 
-            url = sprintf('%s/axis-cgi/jpg/image.cgi?resolution=%dx%d', wc.url, wc.width, wc.height);
-            url
-            im = wc.convert( imread(url) );
+                url = sprintf('%s/axis-cgi/jpg/image.cgi?resolution=%dx%d', wc.url, wc.width, wc.height);
+                im = wc.convert( imread(url) );
+            end
+            
+            if nargout > 0
+                out = im;
+            else
+                idisp(im);
+            end
 
         end
 
