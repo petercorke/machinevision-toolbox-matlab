@@ -90,6 +90,8 @@ function [h,xbin] = ihist(im, varargin)
         [n,x] = fhist(im);
     elseif isinteger(im)
         [n,x] = hist(idouble(im(:)), opt.nbins);
+        n = n'; x = x';
+
     else
         % remove NaN and Infs from floating point data
         z = im(:);
