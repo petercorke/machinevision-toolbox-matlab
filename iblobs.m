@@ -41,12 +41,12 @@
 % References::
 %  - Robotics, Vision & Control, Section 13.1,
 %    P. Corke, Springer 2011.
-% - METHODS TO ESTIMATE AREAS AND PERIMETERS OF BLOB-LIKE OBJECTS: A COMPARISON
-%   Luren Yang, Fritz Albregtsen, Tor Lgnnestad and Per Grgttum
-%   IAPR Workshop on Machine Vision Applications Dec. 13-15, 1994, Kawasaki
-% - Area and perimeter measurement of blobs in discrete binary pictures. 
-%   Z.Kulpa.
-%   Comput. Graph. Image Process., 6:434-451, 1977.
+%  - METHODS TO ESTIMATE AREAS AND PERIMETERS OF BLOB-LIKE OBJECTS: A COMPARISON
+%    Luren Yang, Fritz Albregtsen, Tor Lgnnestad and Per Grgttum
+%    IAPR Workshop on Machine Vision Applications Dec. 13-15, 1994, Kawasaki
+%  - Area and perimeter measurement of blobs in discrete binary pictures. 
+%    Z.Kulpa.
+%    Comput. Graph. Image Process., 6:434-451, 1977.
 %
 % Notes::
 % - The RegionFeature objects are ordered by the raster order of the top most
