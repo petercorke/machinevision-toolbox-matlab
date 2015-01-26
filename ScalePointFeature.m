@@ -76,21 +76,22 @@ classdef ScalePointFeature < PointFeature
         % for book compatibility
 
         function plot_scale(features, varargin)
-            feature.plot(varargin{:});
+            features.plot('circle', varargin{:});
         end
 
         function plot(features, varargin)
         %ScalePointFeature.plot Plot feature 
         %
-        % F.plot(OPTIONS) overlay a marker at the feature position.
+        % F.plot(OPTIONS) overlay a marker at the feature position.  The default
+        % is a point marker.
         %
-        % F.plot_scale(OPTIONS, LS) as above but the optional line style arguments LS are
+        % F.plot(OPTIONS, LS) as above but the optional line style arguments LS are
         % passed to plot.
         %
         % If F is a vector then each element is plotted.
         %
         % Options::
-        % 'circle'    Indicate scale by a circle (default)
+        % 'circle'    Indicate scale by a circle
         % 'disk'      Indicate scale by a translucent disk
         % 'color',C   Color of circle or disk (default green)
         % 'alpha',A   Transparency of disk, 1=opaque, 0=transparent (default 0.2)
