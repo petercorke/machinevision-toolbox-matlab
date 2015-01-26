@@ -1,29 +1,29 @@
 %ISTEREO Stereo matching
 %
-% D = ISTEREO(LEFT, RIGHT, H, RANGE, OPTIONS) is a disparity image computed
+% D = ISTEREO(LEFT, RIGHT, RANGE, H, OPTIONS) is a disparity image computed
 % from the epipolar aligned stereo pair: the left image LEFT (HxW) and the
 % right image RIGHT (HxW).  D (HxW) is the disparity and the value at each 
 % pixel is the horizontal shift of the corresponding pixel in IML as observed 
 % in IMR. That is, the disparity d=D(v,u) means that the pixel at RIGHT(v,u-d)
 % is the same world point as the pixel at LEFT(v,u).
 %
-% H is the half size of the matching window, which can be a scalar for NxN or a
-% 2-vector [N,M] for an NxM window.
-%
 % RANGE is the disparity search range, which can be a scalar for disparities in
 % the range 0 to RANGE, or a 2-vector [DMIN DMAX] for searches in the range
 % DMIN to DMAX.
 %
-% [D,SIM] = ISTEREO(IML, IMR, W, RANGE, OPTIONS) as above but returns SIM 
+% H is the half size of the matching window, which can be a scalar for NxN or a
+% 2-vector [N,M] for an NxM window.
+%
+% [D,SIM] = ISTEREO(LEFT, RIGHT, RANGE, H, OPTIONS) as above but returns SIM 
 % which is the same size as D and the elements are the peak matching score 
 % for the corresponding elements of D.  For the default matching metric ZNCC
 % this varies between -1 (very bad) to +1 (perfect).
 %
-% [D,SIM,DSI] = ISTEREO(IML, IMR, W, RANGE, OPTIONS) as above but returns DSI 
+% [D,SIM,DSI] = ISTEREO(LEFT, RIGHT, RANGE, H, OPTIONS) as above but returns DSI 
 % which is the disparity space image (HxWxN) where N=DMAX-DMIN+1. The I'th 
 % plane is the similarity of IML to IMR shifted to the left by DMIN+I-1.
 %
-% [D,SIM,P] = ISTEREO(IML, IMR, W, RANGE, OPTIONS) if the 'interp' option is 
+% [D,SIM,P] = ISTEREO(LEFT, RIGHT, RANGE, H, OPTIONS) if the 'interp' option is 
 % given then disparity is estimated to sub-pixel precision using quadratic
 % interpolation.  In this case D is the interpolated disparity and P is
 % a structure with elements A, B, dx.  The interpolation polynomial is 
@@ -38,6 +38,7 @@
 %              one of 'zncc' (default), 'ncc', 'ssd' or 'sad'.
 % 'interp'     enable subpixel interpolation and D contains non-integer
 %              values (default false)
+% 'vshift',V   move the right image V pixels vertically with respect to left.
 %
 % Example::
 %
@@ -90,6 +91,7 @@ function [disp,sim, o3] = istereo(L, R, drange, h, varargin)
 
     opt.metric = 'zncc';
     opt.interp = false;
+    opt.vshift = 0;
 
     opt = tb_optparse(opt, varargin);
 
@@ -97,17 +99,18 @@ function [disp,sim, o3] = istereo(L, R, drange, h, varargin)
     L = imono(L);
     R = imono(R);
 
-    if length(drange) > 2
-        vshift = drange(3);
-        if vshift > 0
-            L = L(vshift:end,:);
-            R = R(1:end-vshift,:);
+    opt.vshift = round(opt.vshift);
+    if opt.vshift ~= 0
+        if opt.vshift > 0
+            L = L(1:end-opt.vshift,:);
+            R = R(opt.vshift:end,:);
         else
             vshift = -vshift;
-            L = L(1:end-vshift,:);
-            R = R(vshift:end,:);
+            L = L(opt.vshift:end,:);
+            R = R(1:end-opt.vshift,:);
         end
     end
+        
     % compute the score cube, 3rd dimension is disparity
     DSI = stereo_match(L, R, 2*h+1, drange(1:2), opt.metric);
 
