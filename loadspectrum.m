@@ -39,7 +39,7 @@ function [s,lam] = loadspectrum(lambda, filename)
     lambda = lambda(:);
     tab = load(filename);
 
-    s = interp1(tab(:,1), tab(:,2:end), lambda);
+    s = interp1(tab(:,1), tab(:,2:end), lambda, 'linear', 0);
 
     if nargout == 2
         lam = lambda;
