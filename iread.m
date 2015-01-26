@@ -157,13 +157,16 @@ function [I,info] = iread(filename, varargin)
             
             % search for the folder name along the path
             folderonpath = pth;
-            for p=path2cell(path)'  % was userpath
-                if exist( fullfile(p{1}, pth) ) == 7
-                    folderonpath = fullfile(p{1}, pth);
-                    if opt.verbose
-                        fprintf('folder found\n');
+            if ~(isempty(pth) || pth(1) == '.' || pth(1) == '/')
+                
+                for p=path2cell(path)'  % was userpath
+                    if exist( fullfile(p{1}, pth) ) == 7
+                        folderonpath = fullfile(p{1}, pth);
+                        if opt.verbose
+                            fprintf('folder found\n');
+                        end
+                        break;
                     end
-                    break;
                 end
             end
             s = dir( fullfile(folderonpath, [name, ext]));      % do a wildcard lookup
@@ -261,7 +264,7 @@ function im = loadimg(filename, opt)
 
     % optionally gamma correct it
     if ~isempty(opt.gamma)
-        im = igamma(im, opt.gamma);
+        im = igamm(im, opt.gamma);
     end
 
     if opt.disp
