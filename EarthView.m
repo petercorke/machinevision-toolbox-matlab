@@ -33,6 +33,11 @@
 %
 % See also ImageSource.
 
+%TODO:
+% map features/element control
+% street view
+% roadmap, satellite, terrain, hybrid
+
 classdef EarthView < ImageSource
 
 % e = EarthView() is an object that returns images of the Earth's surface
@@ -126,10 +131,14 @@ classdef EarthView < ImageSource
             % geocoding web site to resolve the name to a location.
             % 
             % Options::
-            % 'satellite'    Retrieve satellite image
-            % 'map'          Retrieve map image
-            % 'hybrid'       Retrieve satellite image with map overlay
-            % 'scale'        Google map scale (default 18)
+            % 'satellite'      Retrieve satellite image
+            % 'map'            Retrieve map image
+            % 'hybrid'         Retrieve satellite image with map overlay
+            % 'roadmap'        Retrieve a binary image that shows only roads, no labels.
+            %                  Roads are white, everything else is black.
+            % 'noplacenames'   Don't show placenames.
+            % 'noroadnames'    Don't show roadnames.
+            %
             %
             % Examples::
             % Zoom into QUT campus in Brisbane
@@ -145,10 +154,20 @@ classdef EarthView < ImageSource
             %   get_google_map on MATLAB Central.
             % - If no output argument is given the image is displayed using idisp.
 
-            opt.type = {'satellite', 'map', 'hybrid'};
+            opt.type = {'satellite', 'map', 'hybrid', 'roadmap'};
             opt.scale = ev.scale;
+            opt.roadnames = true;
+            opt.placenames = true;
+            opt.landscape = false;
+            opt.roadmap = false;
+            opt.onlyroads = false;
 
             [opt,args] = tb_optparse(opt, varargin);
+
+            if strcmp(opt.type, 'roadmap')
+                opt.type = 'map';
+                opt.onlyroads = true;
+            end
 
             % build the URL
             if ischar(args{1})
@@ -187,9 +206,35 @@ classdef EarthView < ImageSource
                 
             end
             % now read the map
-            url = sprintf('http://maps.google.com/staticmap?center=%.6f,%.6f&zoom=%d&size=%dx%d&scale=%d&format=png&maptype=%s&key=%s&sensor=false', lat, lon, zoom, ev.width, ev.height, opt.scale, opt.type, ev.key);
+            baseurl = sprintf('http://maps.google.com/maps/api/staticmap?center=%.6f,%.6f&zoom=%d&size=%dx%d&scale=%d&format=png&maptype=%s&key=%s&sensor=false', lat, lon, zoom, ev.width, ev.height, opt.scale, opt.type, ev.key);
 
-            [idx,cmap] = imread(url, 'png');
+            opturl = '';
+            
+            if ~opt.roadnames
+                opturl = strcat(opturl, '&style=feature:road|element:labels|visibility:off');
+            end
+            if ~opt.placenames
+                opturl = strcat(opturl, '&style=feature:administrative|element:labels.text|visibility:off&style=feature:poi|visibility:off');
+            end
+            
+            if opt.onlyroads
+                opturl = strcat(opturl, ['&style=feature:landscape|element:geometry.fill|color:0x000000|visibility:on'...
+                    '&style=feature:landscape|element:labels|visibility:off'...
+                    '&style=feature:administrative|visibility:off'...
+                    '&style=feature:road|element:geometry.fill|color:0xffffff|visibility:on'...
+                    '&style=feature:road|element:labels|visibility:off'...
+                    '&style=feature:poi|element:all|visibility:off'...
+                    '&style=feature:transit|element:all|visibility:off'...
+                    '&style=feature:water|element:all|visibility:off'...
+                    ]);
+            end
+            
+            %opturl = urlencode(opturl)
+            opturl = strrep(opturl, '|', '%7C');
+            
+            opturl
+
+            [idx,cmap] = imread([baseurl opturl], 'png');
             cmap = iint(cmap);
 
             % apply the color map
