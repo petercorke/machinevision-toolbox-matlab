@@ -68,14 +68,18 @@ function moveCursor(src, event)
     % cp = [xfront yfront xfront; xback yback zback]
 
     if cp(1,1) < ud.w
+        % clicked in the left pane
         set(ud.hline, 'YData', [cp(1,2) cp(1,2)]);
         set(ud.vline_l, 'XData', [cp(1,1) cp(1,1)]);
         set(ud.vline_r, 'XData', ud.w+[cp(1,1) cp(1,1)]);
     else
+        % clicked in the right pane
         set(ud.vline_r2, 'XData', [cp(1,1) cp(1,1)]);
         xl = get(ud.vline_l, 'XData');
+        yl = get(ud.hline, 'YData');
         %fprintf('d = %f\n', cp(1,1) - xl(1) - ud.w);
-        set(ud.panel, 'string', sprintf('d = %f\n',  xl(1) + ud.w - cp(1,1)));
+        set(ud.panel, 'string', sprintf('dh = %.2f, dv = %.2f\n',  ...
+            xl(1) + ud.w - cp(1,1), cp(1,2) - yl(1)));
     end
 end
 
