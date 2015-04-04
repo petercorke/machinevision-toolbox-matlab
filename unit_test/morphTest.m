@@ -1,52 +1,52 @@
-function MorphTest
-  initTestSuite;
+function tests = MorphTest(testCase)
+    tests = functiontests(localfunctions);
 end
 
-function imorph1_test
+function imorph1_test(testCase)
     in = [1 2; 3 4];
     se = 1;
-    assertEqual( imorph(in, se, 'min'), in);
-    assertEqual( imorph(in, se, 'max'), in);
-    assertEqual( imorph(in, se, 'min', 'replicate'), in);
-    assertEqual( imorph(in, se, 'min', 'valid'), in);
-    assertEqual( imorph(in, se, 'min', 'valid'), in);
+    verifyEqual(testCase,  imorph(in, se, 'min'), in);
+    verifyEqual(testCase,  imorph(in, se, 'max'), in);
+    verifyEqual(testCase,  imorph(in, se, 'min', 'replicate'), in);
+    verifyEqual(testCase,  imorph(in, se, 'min', 'valid'), in);
+    verifyEqual(testCase,  imorph(in, se, 'min', 'valid'), in);
     
     % test different input formats
-    assertEqual( imorph(cast(in, 'uint8'), se, 'min'), in);
-    assertEqual( imorph(cast(in, 'uint16'), se, 'min'), in);    
-    assertEqual( imorph(cast(in, 'single'), se, 'min'), in);
+    verifyEqual(testCase,  imorph(cast(in, 'uint8'), se, 'min'), in);
+    verifyEqual(testCase,  imorph(cast(in, 'uint16'), se, 'min'), in);    
+    verifyEqual(testCase,  imorph(cast(in, 'single'), se, 'min'), in);
     in2 = [1 0 1; 0 1 0; 1 1 0];
-    assertEqual( imorph(logical(in2), se, 'min'), in2);    
+    verifyEqual(testCase,  imorph(logical(in2), se, 'min'), in2);    
 
     % test a SE that falls over the boundary  
     se = [0 0 0; 0 1 0; 0 0 0];
-    assertEqual( imorph(in, se, 'min', 'replicate'), in);
+    verifyEqual(testCase,  imorph(in, se, 'min', 'replicate'), in);
     
     in = [
         1 2 3
         4 5 6
         7 8 9
         ];
-    assertEqual( imorph(in, se, 'min', 'valid'), in(2,2));
+    verifyEqual(testCase,  imorph(in, se, 'min', 'valid'), in(2,2));
 
     % border none trim wrap
 end
 
-function imorph2_test
+function imorph2_test(testCase)
     % test wrap case
     in = [
         1 2 3
         4 5 6
         7 8 9
         ];
-    assertEqual( imorph(in, [0 0 1], 'min', 'wrap'),  circshift(in, [ 0 -1]));
-    assertEqual( imorph(in, [1 0 0], 'min', 'wrap'),  circshift(in, [ 0  1]));
-    assertEqual( imorph(in, [0 0 1]', 'min', 'wrap'), circshift(in, [-1  0]));
-    assertEqual( imorph(in, [1 0 0]', 'min', 'wrap'), circshift(in, [ 1  0]));
+    verifyEqual(testCase,  imorph(in, [0 0 1], 'min', 'wrap'),  circshift(in, [ 0 -1]));
+    verifyEqual(testCase,  imorph(in, [1 0 0], 'min', 'wrap'),  circshift(in, [ 0  1]));
+    verifyEqual(testCase,  imorph(in, [0 0 1]', 'min', 'wrap'), circshift(in, [-1  0]));
+    verifyEqual(testCase,  imorph(in, [1 0 0]', 'min', 'wrap'), circshift(in, [ 1  0]));
 
 end
 
-function imorph3_test
+function imorph3_test(testCase)
     % test simple erosion (double)
     in = [
         1 2 3
@@ -54,35 +54,35 @@ function imorph3_test
         7 8 9
         ];
 
-    assertEqual(imorph(in, ones(3,3), 'max', 'valid'), 9);
+    verifyEqual(testCase, imorph(in, ones(3,3), 'max', 'valid'), 9);
 
     out = [
         9 9 9
         9 9 9
         9 9 9
         ];
-    assertEqual(imorph(in, ones(3,3), 'max', 'wrap'), out);
+    verifyEqual(testCase, imorph(in, ones(3,3), 'max', 'wrap'), out);
 
     out = [
         1 1 1
         1 1 1
         1 1 1
         ];
-    assertEqual(imorph(in, ones(3,3), 'min', 'wrap'), out);
+    verifyEqual(testCase, imorph(in, ones(3,3), 'min', 'wrap'), out);
 
     out = [
         1 1 2
         1 1 2
         4 4 5
         ];
-    assertEqual(imorph(in, ones(3,3), 'min', 'replicate'), out);
+    verifyEqual(testCase, imorph(in, ones(3,3), 'min', 'replicate'), out);
 
     out = [
         5 6 6
         8 9 9
         8 9 9
         ];
-    assertEqual(imorph(in, ones(3,3), 'max', 'none'), out);
+    verifyEqual(testCase, imorph(in, ones(3,3), 'max', 'none'), out);
 
 
     % test simple erosion (int)
@@ -98,10 +98,10 @@ function imorph3_test
         0 0 0
         ];
 
-    assertEqual(imorph(in, ones(3,3), 'min'), out);
+    verifyEqual(testCase, imorph(in, ones(3,3), 'min'), out);
 end
 
-function ierode_test
+function ierode_test(testCase)
     in = [
         1 0 0 0 0 0
         0 0 1 1 1 0
@@ -117,7 +117,7 @@ function ierode_test
         0 0 0 0 0 0
         ];
 
-    assertEqual(ierode(in, ones(3,3)), out);
+    verifyEqual(testCase, ierode(in, ones(3,3)), out);
 
     out = [
         0 0 0 0 0 0
@@ -126,14 +126,14 @@ function ierode_test
         0 0 0 0 0 0
         0 0 0 0 0 0
         ];
-    assertEqual(ierode(in, ones(3,3), 2), out);
+    verifyEqual(testCase, ierode(in, ones(3,3), 2), out);
 
     out = [
         0 0 0 0
         0 0 1 0
         0 0 0 0
         ];
-    assertEqual(ierode(in, ones(3,3), 'valid'), out);
+    verifyEqual(testCase, ierode(in, ones(3,3), 'valid'), out);
 
     in = [
         1 1 1 0
@@ -145,7 +145,7 @@ function ierode_test
         0 0 0 0
         0 0 0 0
         ];
-    assertEqual(ierode(in, ones(3,3), 'replicate'), out);
+    verifyEqual(testCase, ierode(in, ones(3,3), 'replicate'), out);
 
     in = [
         1 1 0 1
@@ -159,10 +159,10 @@ function ierode_test
         0 0 0 0
         0 0 0 0
         ];
-    assertEqual(ierode(in, ones(3,3), 'wrap'), out);
+    verifyEqual(testCase, ierode(in, ones(3,3), 'wrap'), out);
 end
 
-function idilate_test
+function idilate_test(testCase)
     in = [
         0 0 0 0 0 0 0
         0 0 0 0 0 0 0
@@ -184,7 +184,7 @@ function idilate_test
         0 0 0 0 0 0 0
         ];
 
-    assertEqual(idilate(in, ones(3,3)), out);
+    verifyEqual(testCase, idilate(in, ones(3,3)), out);
 
     out = [
         0 0 0 0 0 0 0
@@ -197,10 +197,10 @@ function idilate_test
         0 0 0 0 0 0 0
         ];
 
-    assertEqual(idilate(in, ones(3,3), 2), out);
+    verifyEqual(testCase, idilate(in, ones(3,3), 2), out);
 end
 
-function iwindow_test
+function iwindow_test(testCase)
     in = [
         3     5     8    10     9
         7    10     3     6     3
@@ -210,9 +210,9 @@ function iwindow_test
     ];
     se = 1;
     % test different input formats
-    assertEqual( iwindow(in, se, 'sum'), in);
-    assertEqual( iwindow(cast(in, 'uint8'), se, 'sum'), in);
-    assertEqual( iwindow(cast(in, 'uint16'), se, 'sum'), in);
+    verifyEqual(testCase,  iwindow(in, se, 'sum'), in);
+    verifyEqual(testCase,  iwindow(cast(in, 'uint8'), se, 'sum'), in);
+    verifyEqual(testCase,  iwindow(cast(in, 'uint16'), se, 'sum'), in);
 
     se = [1 1 1; 1 0 1; 1 1 1];
     out = iwindow(in, se, 'sum');
@@ -224,7 +224,7 @@ function iwindow_test
         22    40    36    53    44
     ];
 
-    assertEqual(out, out2);
+    verifyEqual(testCase, out, out2);
 
     %out = iwindow(im, se, 
     % se = ones(3,3), compare to conv2
@@ -232,7 +232,7 @@ function iwindow_test
 
 end
 
-function ivar_test
+function ivar_test(testCase)
     in = [
         0.7577    0.7060    0.8235    0.4387    0.4898
         0.7431    0.0318    0.6948    0.3816    0.4456
@@ -248,11 +248,11 @@ function ivar_test
         0.0552    0.1060    0.1216    0.1365    0.0618
     ];
 
-    assertAlmostEqual( ivar(in, ones(3,3), 'var'), out, 'absolute', 1e-4);
-    assertAlmostEqual( iwindow(in, ones(3,3), 'std').^2, out, 'absolute', 1e-4);
+    verifyEqual(testCase,  ivar(in, ones(3,3), 'var'), out, 'AbsTol', 1e-4);
+    verifyEqual(testCase,  iwindow(in, ones(3,3), 'std').^2, out, 'AbsTol', 1e-4);
 end
 
-function irank_test
+function irank_test(testCase)
     in = [
         1 2 3
         4 5 6
@@ -260,12 +260,12 @@ function irank_test
 
     se = 1;
     % test different input formats
-    assertEqual( iwindow(in, se, 'sum'), in);
-    assertEqual( iwindow(cast(in, 'uint8'), se, 'sum'), in);
-    assertEqual( iwindow(cast(in, 'uint16'), se, 'sum'), in);
+    verifyEqual(testCase,  iwindow(in, se, 'sum'), in);
+    verifyEqual(testCase,  iwindow(cast(in, 'uint8'), se, 'sum'), in);
+    verifyEqual(testCase,  iwindow(cast(in, 'uint16'), se, 'sum'), in);
 end
 
-function thin_test
+function thin_test(testCase)
     in = [
         0 0 0 0 0 1 1 1
         0 0 0 0 1 1 1 0
@@ -282,10 +282,10 @@ function thin_test
         0 0 0 0 0 1 0 0
         0 0 0 0 0 0 1 0
     ];
-    assertEqual( ithin(in), out);
+    verifyEqual(testCase,  ithin(in), out);
 end
 
-function triplepoint_test
+function triplepoint_test(testCase)
     in = [
         0 0 0 0 0 1 0 0
         0 0 0 0 1 0 0 0
@@ -302,10 +302,10 @@ function triplepoint_test
         0 0 0 0 0 0 0 0
         0 0 0 0 0 0 0 0
     ];
-    assertEqual( itriplepoint(in), logical(out));
+    verifyEqual(testCase,  itriplepoint(in), logical(out));
 end
 
-function endpoint_test
+function endpoint_test(testCase)
     in = [
         0 0 0 0 0 0 0 0
         0 0 0 0 0 0 0 0
@@ -322,5 +322,5 @@ function endpoint_test
         0 0 0 0 0 0 0 0
         0 0 0 0 0 0 0 0
     ];
-    assertEqual( iendpoint(in), logical(out));
+    verifyEqual(testCase,  iendpoint(in), logical(out));
 end

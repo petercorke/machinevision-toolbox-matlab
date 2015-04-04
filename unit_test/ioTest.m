@@ -1,40 +1,41 @@
-function ioTest
-  initTestSuite;
+function tests = ioTest(testCase)
+    tests = functiontests(localfunctions);
 end
 
-function fileio_test
+function fileio_test(testCase)
     % iread
     z = iread('lena.png');
-    assertTrue(iscolor(z));
-    assertTrue( isa(z, 'uint8'));
+    verifyTrue(testCase, iscolor(z));
+    verifyTrue(testCase,  isa(z, 'uint8'));
 
-    z = iread('lena.pnm', 'double');
-    assertFalse(iscolor(z));
-    assertTrue( isa(z, 'double'));
+    z = iread('lena.pgm', 'double');
+    verifyFalse(testCase, iscolor(z));
+    verifyTrue(testCase,  isa(z, 'double'));
 
     z = iread('lena.png', 'mono', 'double');
-    assertFalse(iscolor(z));
+    verifyFalse(testCase, iscolor(z));
     z = iread('lena.png', 'grey');
-    assertFalse(iscolor(z));
+    verifyFalse(testCase, iscolor(z));
     z = iread('lena.png', 'grey_709');
-    assertFalse(iscolor(z));
+    verifyFalse(testCase, iscolor(z));
     z = iread('lena.png', 'grey');
-    assertFalse(iscolor(z));
+    verifyFalse(testCase, iscolor(z));
 
     sz = size(z);
-    z = iread('lena.png', 'reduce', 2);
-    assertEqual( size(z)*2, sz);
+    z = iread('lena.png', 'grey', 'reduce', 2);
+    verifyEqual(testCase,  size(z)*2, sz);
+
+    z = iread('lena.png', 'gamma', 2.2);
 
     z = iread('lena.png', 'roi', [100 200; 200 350]);
-    assertEqual(size(z), [150 100]);
+    verifyEqual(testCase, size(z), [151 101 3]);
 
     % pnmfilt
     z2 = pnmfilt(z, 'pnmrotate 30');
-    assertEqual(size(z2), size(z));
+    verifyEqual(testCase, size(z2), size(z));
 end
 
-
-function idisp_test
+function idisp_test(testCase)
     z = iread('lena.png');
     zm = imono(z);
 
@@ -68,7 +69,7 @@ function idisp_test
 
     clf
     idisp(z, 'print', 'test.eps');
-    assertTrue( exist('test.eps', 'file') > 0 );
+    verifyTrue(testCase,  exist('test.eps', 'file') > 0 );
     system('rm -f test.eps');
 
     clf
@@ -89,7 +90,7 @@ function idisp_test
     idisp(zm, 'cscale', [0.2 0.8]);
 
     clf
-    idisp(z, 'xydata', linspace(0,5, 10), linspace(0,5,10));
+    idisp(z, 'xydata', {linspace(0,5, 10), linspace(0,5,10)});
 
     clf
     idisp(z, 'grey');
@@ -121,4 +122,3 @@ function idisp_test
     clf
     stdisp(zm, zm);
 end
-

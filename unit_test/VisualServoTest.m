@@ -1,8 +1,8 @@
-function VisualServoTest
-    initTestSuite;
-    
-    
-function pbvs_test
+function VisualServoTest(testCase)
+      tests = functiontests(localfunctions);
+end
+
+function pbvs_test(testCase)
     
     cam = CentralCamera('default');
     Tc0 = transl(1,1,-3)*trotz(0.6);
@@ -15,8 +15,9 @@ function pbvs_test
     pbvs.plot_camera
     
     close all
-    
-function ibvs_test
+end
+
+function ibvs_test(testCase)
     
     cam = CentralCamera('default');
     Tc0 = transl(1,1,-3)*trotz(0.6);
@@ -36,20 +37,22 @@ function ibvs_test
     ibvs.run();
     
         close all
+end
 
-    
-function ibvs_line
+function ibvs_line(testCase)
     cam = CentralCamera('default');
     
     ibvs = IBVS_l(cam, 'example'); 
     ibvs.run()
     
         close all
+end
 
-function ibvs_circle
+function ibvs_circle(testCase)
     cam = CentralCamera('default');
     
     ibvs = IBVS_e(cam, 'example'); 
     ibvs.run()
     
         close all
+end

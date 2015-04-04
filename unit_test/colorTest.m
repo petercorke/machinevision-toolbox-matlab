@@ -1,58 +1,59 @@
-function ColorTest
-  initTestSuite;
+function tests = ColorTest(testCase)
+    tests = functiontests(localfunctions);
 end
 
-function colorname_test
+function colorname_test(testCase)
     rgb = colorname('skyblue');
-    assertAlmostEqual(rgb, [0 0.541176470588235 1], 'absolute', 1e-6);
+    verifyEqual(testCase, rgb, [0 0.541176470588235 1], 'AbsTol', 1e-6);
     xy = colorname('skyblue', 'xy');
-    assertAlmostEqual(xy, [0.184454842683699 0.184037626225452], 'absolute', 1e-6);
+    verifyEqual(testCase, xy, [0.184454842683699 0.184037626225452], 'AbsTol', 1e-6);
 
     s = colorname([.2 .3 .4]);
-    assertEqual(s, 'darkslateblue');
+    verifyEqual(testCase, s, 'darkslateblue');
 
-    s = colorname([.2 .3]);
-    assertEqual(s, 'cerulean');
+    s = colorname([.2 .3], 'xy');
+    verifyEqual(testCase, s, 'turquoise1');
 end
 
-function xycolor_test
+function xycolor_test(testCase)
+    clf
     xycolorspace
     rg_addticks
 
     xy = colorname('skyblue', 'xy');
-    xycolorspace(xy);
+    xycolorspace(xy');
 end
 
-function loadspec_test
+function loadspec_test(testCase)
     lam = [400:10:700]*1e-9;
 
     brick = loadspectrum(lam, 'redbrick.dat');
-    assertEqual(numrows(brick), length(lam));
-    assertEqual(numcols(brick), 1);
+    verifyEqual(testCase, numrows(brick), length(lam));
+    verifyEqual(testCase, numcols(brick), 1);
 
     [brick,lam2] = loadspectrum(lam, 'redbrick.dat');
-    assertEqual(lam, lam2);
+    verifyEqual(testCase, lam, lam2');
 
     cones = loadspectrum(lam, 'cones.dat');
-    assertEqual(numrows(brick), length(lam));
-    assertEqual(numcols(brick), 3);
+    verifyEqual(testCase, numrows(cones), length(lam));
+    verifyEqual(testCase, numcols(cones), 3);
 end
 
-function specfuncs_test
+function specfuncs_test(testCase)
     r = rluminos(555e-9);
-    lam = [400:10:700]*1e-9;
+    lam = [400:5:700]*1e-9;
     r = rluminos(lam);
-    assertAlmostEqual(max(r), 1, 'absolute', 1e-6);
-    assertAlmostEqual(min(r), 0, 'absolute', 1e-6);
+    verifyEqual(testCase, max(r), 1, 'AbsTol', 1e-3);
+    verifyEqual(testCase, min(r), 0, 'AbsTol', 1e-3);
 
     r = rluminos(555e-9);
     r = rluminos(lam);
  end
 
- function chrom_test
+ function chrom_test(testCase)
     rgb = lambda2rg(555e-9);
     xy = lambda2xy(555e-9);
  end
 
- function cmf_test
+ function cmf_test(testCase)
  end
