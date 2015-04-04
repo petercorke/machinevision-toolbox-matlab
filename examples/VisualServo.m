@@ -105,16 +105,10 @@ classdef VisualServo < handle
             % - Repeatedly calls the subclass step() method which returns
             %   a flag to indicate if the simulation is complete.
             vs.init();
-
-            if nargin == 1
-                if isempty(vs.niter)
-                    nsteps = Inf;
-                else
-                    nsteps = vs.niter;
-                end
-            end
-
-            for k=1:nsteps
+            
+            ksteps = 0;
+            while true
+                ksteps = ksteps + 1;
                 status = vs.step();
 
                 drawnow
@@ -125,6 +119,10 @@ classdef VisualServo < handle
                     break;
                 elseif status < 0
                     fprintf('failed on error\n');
+                    break;
+                end
+                
+                if ~isempty(vs.niter) && (ksteps > vs.niter)
                     break;
                 end
             end
