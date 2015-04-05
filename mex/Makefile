@@ -40,9 +40,8 @@ ifeq ($(UNAME), Darwin)
     # for MacOS we use QTKit to access the camera, the code is written in ObjC++
     # need to modify mexopts.sh to include the frameworks since they cannot be passed as
     # options.  You need to add:
-    # -framework QTKit -framework Foundation -framework QTKit -framework CoreVideo 
-    # -framework Cocoa
-
+    # -framework QTKit -framework Foundation -framework CoreVideo -framework Cocoa
+    # to the LDFLAGS line for the maci64) case
 	g++ -I ${MATLAB}/extern/include -c $(DEBUG) framegrabber_qtkit.mm
 	mex $(DEBUG) -output framegrabber -cxx framegrabber_qtkit.o 
 endif
