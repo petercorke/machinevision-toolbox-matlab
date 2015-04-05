@@ -46,7 +46,7 @@ testpattern
 h1. Monadic operators
 icolor
 colorize
-igamma
+igamm
 imono
 inormhist
 istretch
@@ -79,7 +79,7 @@ ksobel
 ktriangle
 
 h2. Non-linear
-dxform
+dtransform
 irank
 ivar
 iwindow
@@ -182,6 +182,7 @@ idisp
 idisplabel
 iread
 pnmfilt
+showpixels
 
 h2. Image generation
 iconcat
