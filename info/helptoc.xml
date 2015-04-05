@@ -1,11 +1,12 @@
-<?xml version='1.0' encoding='ISO-8859-1' ?>
-<toc version="1.0">
+<?xml version='1.0' encoding='utf-8' ?>
+<toc version="2.0">
 
 <!-- this goes into the MVTB menu in the doc browser contents pane -->
 
 <!-- Machine Vision Toolbox -->
 <tocitem target="vision_product_page.html" image="$toolbox/matlab/icons/book_mat.gif">Machine Vision Toolbox for MATLAB
 
+<!--INSERT_HERE-->
   <!-- Help -->
 
   <!-- MATLAB Functions -->
