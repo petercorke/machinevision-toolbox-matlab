@@ -2,7 +2,8 @@
 %
 % IANIMATE(IM, OPTIONS) displays a greyscale image sequence IM (HxWxN) or
 % a color image sequence IM (HxWx3xN) where N is the number of frames in 
-% the sequence.
+% the sequence, or a cell-array of length N and the elements are either
+% greyscale (HxW) or color (HxWx3).
 %
 % IANIMATE(IM, FEATURES, OPTIONS) as above but with point features overlaid.
 % FEATURES (Nx1) is a cell array whose elements are vectors of feature 
@@ -85,12 +86,22 @@ function ianimate(im, varargin)
         framenum = 1;
     end
 
-    if ndims(im) == 3
-        nframes = size(im, 3);
-        color = false;
+    if iscell(im)
+        if ndims(im{1}) == 3
+            color = false;
+        else
+            color = true;
+        end
+        nframes = size(im);
+        
     else
-        nframes = size(im, 4);
-        color = true;
+        if ndims(im) == 3
+            nframes = size(im, 3);
+            color = false;
+        else
+            nframes = size(im, 4);
+            color = true;
+        end
     end
     
     while true
@@ -99,11 +110,20 @@ function ianimate(im, varargin)
                 continue;
             end
             
-            if color
-                image(im(:,:,:,i)); 
+            if iscell(im)
+                if color
+                    image(im{i});
+                else
+                    colormap(gray(256));
+                    image(im{i}, 'CDataMapping', 'Scaled');
+                end
             else
-                colormap(gray(256));
-                image(im(:,:,i), 'CDataMapping', 'Scaled');
+                if color
+                    image(im(:,:,:,i));
+                else
+                    colormap(gray(256));
+                    image(im(:,:,i), 'CDataMapping', 'Scaled');
+                end
             end
             if ~isempty(points)
                 f = points{i};
