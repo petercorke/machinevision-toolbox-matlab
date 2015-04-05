@@ -102,6 +102,16 @@ classdef VideoCamera_fg < ImageSource
                 camera = args(1);
             end
             framegrabber(VideoCamera_fg.CAMERA_OP_OPEN, camera);
+            
+            for i=1:10
+                k = framegrabber(VideoCamera_fg.CAMERA_OP_ISRUNNING);
+
+                if k > 0
+                    break;
+                end
+                pause(0.5);
+            end
+
 
             % get the parameters of the video source
             sz = framegrabber(VideoCamera_fg.CAMERA_OP_GET_PARAMS);
@@ -122,6 +132,8 @@ classdef VideoCamera_fg < ImageSource
         %VideoCamera_fg.close Close the image source
         %
         % V.close() closes the connection to the camera.
+            framegrabber(VideoCamera_fg.CAMERA_OP_STOP);
+            pause(2);
             framegrabber(VideoCamera_fg.CAMERA_OP_CLOSE);
         end
 
