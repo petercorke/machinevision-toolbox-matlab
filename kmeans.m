@@ -169,7 +169,7 @@ function [label,centroid,resid] = kmeans(x, K, varargin)
         end
 
         if delta == 0
-            fprintf('delta to zero\n');
+            %fprintf('delta to zero\n');
             iterating = false;
         end
         z = zp;
@@ -184,7 +184,7 @@ function [label,centroid,resid] = kmeans(x, K, varargin)
         
         % if no point assignments changed then we are done
         if all(sp == s)
-            fprintf('no point assignments changed\n');
+            %fprintf('no point assignments changed\n');
             iterating = 0;
         end
         sp = s;
