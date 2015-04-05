@@ -33,6 +33,11 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
+/*
+ * TODO
+ *   STOP/START methods are pretty fragile and crash MATLAB
+ */
 #include <iostream>
 #import <QTKit/QTKit.h>
 
@@ -70,6 +75,7 @@ using namespace std;
 	uint8_t* imagedata; 
 	size_t currSize; 
     size_t rowBytes;
+    int    nframes;
 
   @package;
     size_t width;
@@ -117,7 +123,7 @@ public:
 	
 	int startCaptureDevice(int cameraNum); 
 	void stopCaptureDevice(); 
-    int inRunning();
+    int isRunning();
 	
 	bool grabFrame(double timeOut); 
 	
@@ -201,7 +207,7 @@ void mexFunction(
 
         case CAMERA_OP_ISRUNNING:
             if (nlhs > 0) {
-                double r = grabber->started;
+                double r = grabber->isRunning();
                 plhs[0] = mxCreateDoubleScalar(r);
             }
             break;
@@ -231,8 +237,12 @@ void mexFunction(
                 // grab the frame from QTKit using the Objective C class
                 grabber->grabFrame();
                 frame = grabber->retrieveFrame(0);
-                if (frame == NULL)
-                    mexErrMsgTxt("failed to grab a frame");
+                if (frame == NULL) {
+                    mexWarnMsgTxt("failed to grab a frame");
+                    plhs[0] = mxCreateDoubleMatrix(
+                        (mwSize) 0, (mwSize) 0, mxREAL);
+                    return;
+                }
 
                 // assign an output matrix
                 //   ret_image points to that matrix
@@ -336,27 +346,42 @@ int CvCaptureCAM::didStart() {
 	return started; 
 }
 
+int CvCaptureCAM::isRunning() {
+	return capture != nil;
+}
+
 
 bool CvCaptureCAM::grabFrame() {
 	return grabFrame(5); 
 }
 
 bool CvCaptureCAM::grabFrame(double timeOut) {
+    // poll the capture delegate object (in a thread kind way) until an
+    // image is available
 	
 	NSAutoreleasePool* localpool = [[NSAutoreleasePool alloc] init];
 
-	double sleepTime = 0.005; 
-	double total = 0; 
-
-	NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:sleepTime];
-	while (![capture updateImage] && (total += sleepTime)<=timeOut &&
-		   [[NSRunLoop currentRunLoop] runMode: NSDefaultRunLoopMode 
-									beforeDate:loopUntil])
-		loopUntil = [NSDate dateWithTimeIntervalSinceNow:sleepTime]; 
+	double sleepTime = 0.005;
+	double total = 0;
+    int retval = 0;
+    
+	
+    NSDate * startLoop = [NSDate date];  // time now
+    
+	while ([startLoop timeIntervalSinceNow ] > -timeOut) {  // run till now+timeOut
+        // try to grab a frame
+        if (retval=[capture updateImage])
+            break;
+        
+        // run the event loop once but block no more than sleepTime
+        NSDate *runUntil = [NSDate dateWithTimeIntervalSinceNow:sleepTime];
+        [[NSRunLoop currentRunLoop] runMode: NSDefaultRunLoopMode
+                                         beforeDate:runUntil];
+    }
 
 	[localpool drain];
 
-	return total <= timeOut; 	
+	return retval;
 }
 
 uint8_t* CvCaptureCAM::retrieveFrame(int) {
@@ -377,7 +402,8 @@ void CvCaptureCAM::stopCaptureDevice() {
 	
 	[mCaptureDecompressedVideoOutput setDelegate:mCaptureDecompressedVideoOutput]; 
 	[mCaptureDecompressedVideoOutput release]; 
-	[capture release]; 
+	[capture release];
+    capture = nil;
 	[localpool drain]; 
 	
 }
@@ -430,7 +456,7 @@ int CvCaptureCAM::startCaptureDevice(int cameraNum) {
 		
 		
 		mCaptureDecompressedVideoOutput = [[QTCaptureDecompressedVideoOutput alloc] init];
-		[mCaptureDecompressedVideoOutput setDelegate:capture]; 
+		[mCaptureDecompressedVideoOutput setDelegate:capture];
 		NSDictionary *pixelBufferOptions ;
 		if (width > 0 && height > 0) {
 			pixelBufferOptions = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -462,7 +488,7 @@ int CvCaptureCAM::startCaptureDevice(int cameraNum) {
 		
 		[mCaptureSession startRunning];
 		
-		grabFrame(60); 
+		grabFrame(10);
 		
 		return 1; 
 	}
@@ -496,7 +522,7 @@ void  CvCaptureCAM::setProperty(int &width, int &height) {
 						  nil]; 
 	
 	[mCaptureDecompressedVideoOutput setPixelBufferAttributes:pixelBufferOptions];
-	grabFrame(60); 
+	grabFrame(10);
 	[localpool drain]; 
 }
 
@@ -520,6 +546,7 @@ void  CvCaptureCAM::setProperty(int &width, int &height) {
 	newFrame = 0; 
 	imagedata = NULL; 
 	currSize = 0;
+    nframes = 0;
 	return self; 
 }
 
@@ -529,23 +556,34 @@ void  CvCaptureCAM::setProperty(int &width, int &height) {
 	[super dealloc]; 
 }
 
+// delegate method for QTCaptureDecompressedVideoOutput
+//   invoked when a frame is available
+//    sets the newFrame property
+//    mCurrentImageBuffer points to the latest image
 - (void)captureOutput:(QTCaptureOutput *)captureOutput 
   didOutputVideoFrame:(CVImageBufferRef)videoFrame 
 	 withSampleBuffer:(QTSampleBuffer *)sampleBuffer 
 	   fromConnection:(QTCaptureConnection *)connection {
 	
-    CVBufferRetain(videoFrame);
+    CVBufferRetain(videoFrame);  // mark new buffer to be retained
+    // make a reference to current buffer
 	CVImageBufferRef imageBufferToRelease  = mCurrentImageBuffer;
     
     @synchronized (self) {
 		
+        // update current buffer to the new frame
         mCurrentImageBuffer = videoFrame;
 		newFrame = 1; 
     }
 	
+    // release the previous buffer
 	CVBufferRelease(imageBufferToRelease);
+    nframes++;
     
 }
+
+// delegate method for QTCaptureDecompressedVideoOutput
+//  invoked when a frame is dropped
 - (void)captureOutput:(QTCaptureOutput *)captureOutput 
 didDropVideoFrameWithSampleBuffer:(QTSampleBuffer *)sampleBuffer 
 	   fromConnection:(QTCaptureConnection *)connection {
@@ -557,14 +595,18 @@ didDropVideoFrameWithSampleBuffer:(QTSampleBuffer *)sampleBuffer
 }
 
 -(int) updateImage {
-	if (newFrame==0) return 0; 
-	CVPixelBufferRef pixels; 
+    // attempt to copy the image placed in shared memory by the captureOutput method
+    //  return 0 if no image actually available
+	if (newFrame==0)
+        return 0;
+	CVPixelBufferRef pixels; // a CoreVideo pixel buffer
 	
 	@synchronized (self){
 		pixels = CVBufferRetain(mCurrentImageBuffer);
 		newFrame = 0; 
 	}
 	
+    // lock it down and get memory pointer and dimensions
 	CVPixelBufferLockBaseAddress(pixels, 0);		
 	uint32_t* baseaddress = (uint32_t*)CVPixelBufferGetBaseAddress(pixels);
 	
@@ -572,22 +614,25 @@ didDropVideoFrameWithSampleBuffer:(QTSampleBuffer *)sampleBuffer
 	height = CVPixelBufferGetHeight(pixels);
 	rowBytes = CVPixelBufferGetBytesPerRow(pixels);
 	
-	if (rowBytes != 0) { 
-		
+    int retval = 0;
+	if (rowBytes != 0) { // if it has finite size
+        
+		// if image size has changed, realloc buffer
 		if (currSize != rowBytes*height*sizeof(uint8_t)) {
 			currSize = rowBytes*height*sizeof(uint8_t); 
 			if (imagedata != NULL) free(imagedata); 
             imagedata = (uint8_t *) malloc(currSize);
 		}
 		
+        // copy pixels to imagedata
 		memcpy(imagedata, baseaddress, currSize);
-		
+		retval = 1;
 	}
 	
 	CVPixelBufferUnlockBaseAddress(pixels, 0);
 	CVBufferRelease(pixels); 
 	
-	return 1; 
+	return retval;
 }
 
 @end
