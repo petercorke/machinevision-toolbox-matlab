@@ -21,6 +21,7 @@ build:
 	cp -r ../examples rvctools/vision
 	cp -r ../mex rvctools/vision
 	cp -r ../private rvctools/vision
+	cp -r ../IPT rvctools/vision
 	#cp -r ../images rvctools/vision
 	mkdir rvctools/vision/images
 
@@ -37,7 +38,12 @@ build:
 
 
 	# remove all SVN files
-	find rvctools -name .svn -exec rm {} \;
+	find rvctools -name .svn -type d | xargs rm -rf
+
+CMD = '/INSERT_HERE/ {\
+r helpfuncbycat.xml\
+d\
+}'
 
 doco:
 	-\rm -rf tmpdoc
@@ -48,9 +54,10 @@ doco:
 	-rm tmpdoc/HiddenFigure.m
 
 	# build the PDF manual
-	(cd tmpdoc; help3.py -l --include @* *.m; mv all.tex ../../doc)
-	(cd ../doc; make)
-	mv ../doc/vision.pdf rvctools/vision
+	(cd tmpdoc; help3.py -l --include @* *.m; mv all.tex ../../doc/manual)
+	-cp funcidx* ../doc/manual
+	(cd ../doc/manual; make)
+	mv ../doc/manual/vision.pdf rvctools/vision
 
 	# build the XML/info stuff for matlab help browser system
 	-mkdir -p rvctools/vision/info/html
@@ -60,14 +67,14 @@ doco:
 	cp contents_alpha.html rvctools/vision/info
 	cp contents_toc.html rvctools/vision/info
 
+	# create the helptoc.xml file
 	cp ../info.xml rvctools/vision
-	cp ../info/helptoc.xml rvctools/vision/info
+	sed '/<!--INSERT_HERE-->/r helpfuncbycat.xml' < ../info/helptoc.xml > rvctools/vision/info/helptoc.xml 
 	cp ../info/*.html rvctools/vision/info
 	cp -r ../info/icons rvctools/vision/info
 	cp -r ../doc/mvtb-montage-notext.png rvctools/vision/info
 
 	# copy over the autogen files
-	cp helpfuncbycat.xml rvctools/vision/info
 	cp contents_toc.html rvctools/vision/info
 
 	# build the web/HTML doco
@@ -85,15 +92,25 @@ zipit:
 	zip -rq vision-`cat ../RELEASE`.zip ./rvctools
 	#tar zcf vision.tgz ./rvctools
 
+toolbox:
+	# build the .mltbx file
+	mkdir flat
+	cp -r rvctools/vision/* flat
+	cp rvctools/common/* flat
+	cp ~/rvc/vision/images/*.png flat/images
+	cp ~/rvc/vision/images/*.jpg flat/images
+	cp ~/rvc/vision/images/*.mpg flat/images
+	rm flat/vision/startup_mvtb.m
+
 dropbox:
 	cp -r ./{vision,simulink,common} $(HOME)/Dropbox
 
 install: zipit
-	scp -C vision-*.zip geek:www/MVTB
+	scp -C vision-`cat ../RELEASE`.zip geek:www/MVTB/r3
 	#scp -Cr html geek:www/MVTB
-	rsync -az html geek:www/MVTB
-	scp -C rvctools/vision/vision.pdf geek:www/MVTB
-	ssh geek chmod -R a+rX www/MVTB
+	rsync -az html geek:www/MVTB/r3
+	scp -C rvctools/vision/vision.pdf geek:www/MVTB/r3
+	ssh geek chmod -R a+rX www/MVTB/r3
 
 stage:
 	ssh geek mv www/MVTB/vision-*.zip www/MVTB/r3
