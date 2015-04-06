@@ -1,10 +1,10 @@
-ROOT = ~/lib/matlab/rvctools
+ROOT = ~/rvc
 
 release:  build doco 
 
 build: 
 	# clean up
-	-\rm -rf rvctools tmpdoc vision.zip vision.tgz
+	-\rm -rf rvctools tmpdoc vision.zip vision.tgz 
 
 	# make a temp directory to hold the files
 	mkdir -p rvctools/vision rvctools/simulink rvctools/common
@@ -35,7 +35,6 @@ build:
 
 	cp $(ROOT)/common/*.m rvctools/common
 	cp $(ROOT)/startup_rvc.m rvctools
-
 
 	# remove all SVN files
 	find rvctools -name .svn -type d | xargs rm -rf
@@ -119,5 +118,5 @@ clean:
 	@-\rm -rf vision.zip vision.tgz
 	@-\rm -rf simulink common tmpdoc vision vision.zip vision.tgz
 	@-\rm -rf info tmpdoc html
-	@-\rm *.m *.xml *.html *.png Manifest
+	@-\rm *.m *.xml *.html *.png Manifest funcid*
 	-\rm -rf rvctools tmpdoc vision.zip vision.tgz
