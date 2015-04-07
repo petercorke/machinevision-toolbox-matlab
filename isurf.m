@@ -134,7 +134,11 @@ function features = isurf(im, varargin)
     %   written by D.Kroon University of Twente (July 2010)
     %   based on the C++ implementation by Chris Evans
 
-    Ipts = SurfPointFeature.surf(im, opt);
+    try
+        Ipts = SurfPointFeature.surf(im, opt);
+    catch
+        error('Contributed software [OpenSurf] for SURF features is not installed');
+    end
 
     % Ipts is a structure array with elements x, y, scale, orientation, descriptor
 
