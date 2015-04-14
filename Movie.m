@@ -51,6 +51,8 @@ classdef Movie < ImageSource
         skip
         
         movie
+        
+        fullfilename
 
     end
 
@@ -79,7 +81,23 @@ classdef Movie < ImageSource
             
             % open the movie file and copy some of its parameters to object
             % properties
-            m.movie = VideoReader(filename);
+            
+            % see if it exists on the MATLAB search path
+            p = fileparts( which('iread') );
+            pth = [ fullfile(p, 'images') path2cell(path)];
+            for p=pth
+                fname = fullfile(p{1}, filename);
+                if exist( fname ) > 0
+                    m.fullfilename = fullfile(p{1}, filename);
+                    m.movie = VideoReader(m.fullfilename);
+                    break;
+                end
+            end
+            
+            if isempty(m.movie)
+                error('MVTB:badarg:nosuchfile', 'Can''t find file: %s', filename);
+            end
+
             m.width = m.movie.Width;
             m.height = m.movie.Height;
             m.rate = m.movie.FrameRate;
@@ -179,10 +197,21 @@ classdef Movie < ImageSource
         % M.char() is a string representing the state of the movie object in 
         % human readable form.
 
-            s = '';
+            s = m.fullfilename;
             s = strvcat(s, sprintf('%d x %d @ %d fps; %d frames, %f sec', m.width, m.height, m.rate,  m.nframes, m.totalDuration));
             s = strvcat(s, sprintf('cur frame %d/%d (skip=%d)', m.curFrame, m.nframes, m.skip));
         end
 
+    end
+end
+
+
+function c = path2cell(s)
+    remain = s;
+    c = {};
+    while true
+        [str, remain] = strtok(remain, ':');
+        if isempty(str), break; end
+        c = [c str];
     end
 end
