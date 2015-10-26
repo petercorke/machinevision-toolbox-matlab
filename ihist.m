@@ -89,7 +89,8 @@ function [h,xbin] = ihist(im, varargin)
         % use quick mex function if data is integer
         [n,x] = fhist(im);
     elseif isinteger(im)
-        [n,x] = hist(idouble(im(:)), opt.nbins);
+        imax = double(intmax(class(im)));
+        [n,x] = hist(double(im(:)), [0:round(imax/opt.nbins):imax]);
         n = n'; x = x';
 
     else
@@ -105,7 +106,7 @@ function [h,xbin] = ihist(im, varargin)
         if length(k) > 0
             warning('%d Infs removed', length(k));
         end
-        [n,x] = hist(z, opt.nbins);
+        [n,x] = hist(idouble(im(:)), [0:256]/opt.nbins);
         n = n'; x = x';
     end
 
