@@ -38,7 +38,7 @@
 % Demo for colorspace.m - the CIE xyY "tongue"
 
 function [im,ax,ay] = xycolorspace(cxy)
-    N = 160;
+    N = 500;
     Nx = round(N*0.8);
     Ny = round(N*0.9);
     e = 0.01;
@@ -57,7 +57,7 @@ function [im,ax,ay] = xycolorspace(cxy)
 
 
     % define the boundary
-    lambda = [400:20:700]*1e-9';
+    lambda = [400:5:700]*1e-9';
     xyz = ccxyz(lambda);
 
     xy = xyz(:,1:2);
