@@ -42,7 +42,7 @@ function m = dgauss(sigma, w)
 
     [x,y] = meshgrid(-w:w, -w:w);
 
-    m = -x/sigma^2 /(2*pi) .*  exp( -(x.^2 + y.^2)/2/sigma^2);
+    m = -x/sigma^4 /(2*pi) .*  exp( -(x.^2 + y.^2)/2/sigma^2);
 
     %m = m / sum(sum(m));
 
