@@ -220,8 +220,8 @@ function [I,info] = iread(filename, varargin)
         end
     else
         % if no output arguments display the image
-        if ndims(I) <= 3
-            idisp(I);
+        if ndims(im) <= 3
+            idisp(im);
         end
     end
 end
