@@ -120,8 +120,9 @@ function [imt, thresh] = ithresh(im, t)
         'UserData', ud, ...
         'Value', t, ...
         'Tag', 'threshold', ...
-        'Callback', @thresh_callback );
-    
+        'TooltipString', 'threshold'  );
+            % ask for continuous callbacks
+        addlistener(slider, 'ContinuousValueChange', @thresh_callback );
     set_threshold(t, ud);
 
     %{
