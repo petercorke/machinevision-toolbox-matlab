@@ -6,6 +6,7 @@
  *  [L,LMAX] = ILABEL(IM)
  *  [L,LMAX,PARENTS] = ILABEL(IM)
  *  [L,LMAX,PARENTS,COLOR] = ILABEL(IM)
+ *  [L,LMAX,PARENTS,COLOR,EDGE] = ILABEL(IM)
  *
  * Copyright (C) 1995-2009, by Peter I. Corke
  *
@@ -34,6 +35,7 @@
   */
 #include "mex.h"
 #include <math.h>
+#include <string.h>
 
 #ifdef __LCC__
 #ifdef  WIN32
@@ -72,7 +74,6 @@ typedef unsigned int uint32_t;
 #define COLOR_OUT   plhs[3]
 #define EDGE_OUT    plhs[4]
 
-#define MAXLABEL    10000
 #define UNKNOWN     0
 
 #define TERMINAL    0x8000000
@@ -93,7 +94,7 @@ typedef int  PIXEL;
 
 LABEL lresolve(LABEL label);
 
-static LABEL    *lmap;
+static LABEL    *lmap; // why static?t
 
 #define NEWLABEL    (++newlabel)
 
@@ -124,28 +125,28 @@ ilabel(PIXEL *im, int width, int height, int connectivity, int minsize,
     PIXEL   curpix, prevpix;
     PIXEL   *color;
     unsigned int    *edge;
-    int     maxlabel = MAXLABEL;
+    int     maxlabel = width*height;
 
     /* allocate label map and initialize to zero */
     lmap = (LABEL *)mxCalloc(maxlabel, sizeof(LABEL));
-    lmap2 = (LABEL *)mxCalloc(maxlabel, sizeof(LABEL));
+    /* region size */
+    blobsize = (int *)mxCalloc(maxlabel, sizeof(int));
 
     if (parent_out)
         parents = (LABEL *)mxCalloc(maxlabel, sizeof(LABEL));
     if (color_out)
         color = (PIXEL *)mxCalloc(maxlabel, sizeof(PIXEL));
     if (edge_out)
-        edge = (unsigned int *)mxCalloc(maxlabel, sizeof(int));
+        edge = (unsigned int *)mxCalloc(maxlabel, sizeof(unsigned int));
 
-    /* region size */
-    blobsize = (int *)mxCalloc(maxlabel, sizeof(int));
+    
 
     /*
      * Blob labels are ints >= 1
      * newlabel holds the most recently assigned label value.
      * labels are unique and never recycled.
      *
-     * When 2 blobs merge: A = A + B an entry is placed in the label map
+     * When 2 blobs merge: A := A + B an entry is placed in the label map
      *     lmap[B] = A indicating that all pixels that were B are now A.
      * If lmap[X] = 0 then X is unmerged, X is X
      * It is possible that a later merge: C = C + A
@@ -318,25 +319,6 @@ ilabel(PIXEL *im, int width, int height, int connectivity, int minsize,
             /* if label still not known, assign new */
             if (curlab == UNKNOWN) {
                 curlab = NEWLABEL;
-                if (newlabel >= maxlabel) {
-                    /*
-                     * too many labels, increase the size of all the working arrays 
-                     */
-                    maxlabel *= 2;
-                    printf("realloc array, maxlabel now %d\n", maxlabel);
-                    lmap = (LABEL *)mxRealloc(lmap, maxlabel*sizeof(LABEL));
-                    lmap2 = (LABEL *)mxRealloc(lmap2, maxlabel*sizeof(LABEL));
-
-                    if (parent_out)
-                        parents = (LABEL *)mxRealloc(parents, maxlabel*sizeof(LABEL));
-                    if (color_out)
-                        color = (PIXEL *)mxRealloc(color, maxlabel*sizeof(PIXEL));
-                    if (edge_out)
-                        edge = (unsigned int *)mxRealloc(edge, maxlabel*sizeof(int));
-
-                    /* region size */
-                    blobsize = (int *)mxRealloc(blobsize, maxlabel*sizeof(int));
-                }
                 color[curlab] = curpix;
                 edge[curlab] = row + height*col + 1;
                 //printf("color %d %f\n", curlab, curpix);
@@ -370,6 +352,11 @@ ilabel(PIXEL *im, int width, int height, int connectivity, int minsize,
      /*
       * create a new label map that maps all old labels to new consecutive labels
       */
+    lmap2 = (LABEL *)mxCalloc(newlabel+1, sizeof(LABEL));
+
+     /*
+      * Create a vector of all the final label values, ie. lmap[i] == 0
+      */
 #ifdef  DEBUG
     printf("----------------------\nlmap:\n");
 #endif
@@ -377,12 +364,12 @@ ilabel(PIXEL *im, int width, int height, int connectivity, int minsize,
 #ifdef  DEBUG
         printf("(%d) = %d\n", i, lmap[i]);
 #endif
-        if (lmap[i] == 0)
+        if (lmap[i] == 0) 
             lmap2[i] = ++nlabels;   /* assign new sequential label */
     }
     /*
-     * now adjust the label map so that consecutive labels appear in the
-     * labelled image, ie. no missing labels.
+     * now resolve each labels appear in the
+     * labelled image, 
      */
     for (i=0; i<=newlabel; i++)
         if (lmap[i] != 0) {
@@ -439,10 +426,14 @@ ilabel(PIXEL *im, int width, int height, int connectivity, int minsize,
             //printf("edge %d %d %d\n", i, l, edge[i]);
             //printf("color [%d] = %f\n", l, color[i]);
         }
-        mxFree(color);
-        mxFree(edge);
-        *color_out = c;
-        *edge_out = e;
+        if (color_out) {
+            mxFree(color);
+            *color_out = c;
+        }
+        if (edge_out) {
+            mxFree(edge);
+            *edge_out = e;
+        }
    }
 
     /*
