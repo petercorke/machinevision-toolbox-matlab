@@ -32,7 +32,7 @@ function rg_addticks(lam1, lam2, lamd)
     r = rgb(:,1)./sum(rgb')';    
     g = rgb(:,2)./sum(rgb')';    
     hold on
-    plot(r,g, 'o')
+    plot(r,g, 'ko', 'MarkerFaceColor', 'k', 'MarkerSize', 6)
     hold off
 
     for i=1:numcols(lambda)
