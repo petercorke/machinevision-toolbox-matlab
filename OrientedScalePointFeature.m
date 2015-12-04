@@ -93,7 +93,7 @@ classdef OrientedScalePointFeature < ScalePointFeature
             opt.display = {'', 'circle', 'clock', 'arrow', 'disk'};
             opt.color = 'g';
             opt.alpha = 0.2;
-            opt.scale = 1;
+            opt.scale = 6;
             [opt,args] = tb_optparse(opt, varargin);
 
             if length(args) == 1 && isstr(args{1})
