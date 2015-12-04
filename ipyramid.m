@@ -41,9 +41,9 @@ function p = ipyramid(im, sigma, N)
     end
     if nargin < 2,
         sigma = 1;
-        N = floor( log2( min(size(im) ) ) );
-    elseif nargin < 3,
-        N = floor(log2(min(size(im))));
+    end
+    if nargin < 3,
+        N = max(size(im));
     end
 
     [height,width] = size(im);
@@ -51,8 +51,11 @@ function p = ipyramid(im, sigma, N)
 
     p{1} = im;
 
-    for k = 1:N,
+    for k = 1:N
         [nrows,ncols] = size(im);
+        if any([nrows ncols] == 1)
+            break;
+        end
 
         % smooth
         im = conv2(im, K, 'same');
