@@ -99,7 +99,7 @@ classdef AxisWebCamera < ImageSource
         % A.close() closes the connection to the web camera.
         end
 
-        function im = grab(wc)
+        function out = grab(wc)
         %AxisWebCamera.grab Acquire image from the camera
         %
         % IM = A.grab() is an image acquired from the web camera.
