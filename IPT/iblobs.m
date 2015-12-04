@@ -130,7 +130,7 @@ function [features,labimg] = iblobs(im, varargin)
 			shape = F.b / F.a;
         end
 
-        color = i <= nb; 
+        color = (i <= nb) && (i > 0); 
         
 		% apply various filters
 		if 	((t == opt.touch) || isnan(opt.touch)) && ...
