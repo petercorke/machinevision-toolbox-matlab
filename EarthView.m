@@ -90,7 +90,7 @@ classdef EarthView < ImageSource
             
             opt.type = {'satellite', 'map', 'hybrid'};
             opt.scale = 18;
-            opt.key = '';
+            opt.key = [];
             
             [opt,args] = tb_optparse(opt, varargin);
             
@@ -133,8 +133,10 @@ classdef EarthView < ImageSource
             % Options::
             % 'satellite'      Retrieve satellite image
             % 'map'            Retrieve map image
+            % 'roadmap'        Retrieve map image (synonym for 'map')
+            % 'terrain'        Retrieve terrain map
             % 'hybrid'         Retrieve satellite image with map overlay
-            % 'roadmap'        Retrieve a binary image that shows only roads, no labels.
+            % 'roads'          Retrieve a binary image that shows only roads, no labels.
             %                  Roads are white, everything else is black.
             % 'noplacenames'   Don't show placenames.
             % 'noroadnames'    Don't show roadnames.
@@ -154,19 +156,21 @@ classdef EarthView < ImageSource
             %   get_google_map on MATLAB Central.
             % - If no output argument is given the image is displayed using idisp.
 
-            opt.type = {'satellite', 'map', 'hybrid', 'roadmap'};
+            opt.type = {'satellite', 'map', 'hybrid', 'terrain', 'roadmap', 'roads'};
             opt.scale = ev.scale;
             opt.roadnames = true;
             opt.placenames = true;
             opt.landscape = false;
-            opt.roadmap = false;
             opt.onlyroads = false;
-
+            
             [opt,args] = tb_optparse(opt, varargin);
 
-            if strcmp(opt.type, 'roadmap')
-                opt.type = 'map';
-                opt.onlyroads = true;
+            switch opt.type
+                case 'map'
+                    opt.type = 'roadmap'
+                case 'roads'
+                    opt.type = 'roadmap';
+                    opt.onlyroads = true;
             end
 
             % build the URL
@@ -232,9 +236,13 @@ classdef EarthView < ImageSource
             %opturl = urlencode(opturl)
             opturl = strrep(opturl, '|', '%7C');
             
-            opturl
+            %opturl
 
+            try
             [idx,cmap] = imread([baseurl opturl], 'png');
+            catch
+                error('Failed to read the URL: check your Google API key');
+            end
             cmap = iint(cmap);
 
             % apply the color map
