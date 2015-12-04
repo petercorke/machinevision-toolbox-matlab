@@ -113,6 +113,7 @@
 %  put operations off a menubutton
 %  for zooming show the window within the big big picture, use an inset
 %  image
+% red NaN or inf, add extra row to color map, set cscale appropriately
 
 function idisp(im, varargin)
 
@@ -147,6 +148,7 @@ function idisp(im, varargin)
     opt.here = false;
     opt.new = false;
     opt.figure = [];
+    opt.black = 0;
     
     [opt,arglist] = tb_optparse(opt, varargin);
     
@@ -210,6 +212,18 @@ function idisp(im, varargin)
     % get the min/max values to do some color map scaling
     set(gca, 'CLimMode', 'Manual');
 
+    % The figure has a color map, as do axes.  Axis colormap has priority.
+    % If ndims(im) == 2 --> Indexed color surface
+    %  If CDataMapping == 'direct'
+    %    - Direct mapping: pixel is integer color map index
+    %  If CDataMapping == 'scaled'
+    %    - scale the pixel values to range between the limits CLim
+    %      idx = fix((im-cmin)/(cmax-cmin) * cmaplength + 1;
+    %    - (cmin,max) are set by axis property CLim with CLimMode = manual
+    % If ndims(im) == 3 --> Truecolor surface
+    %  - provide RGB values at every point, image is HxWx3
+    % 
+    % CLim = [minval maxval]
    
     % find min/max values and handle the case they are equal
     if isfloat(im)
@@ -251,6 +265,9 @@ function idisp(im, varargin)
             % default colormap
             %disp('default color map');
             cmap = gray(opt.ncolors);
+            if opt.black > 0
+                cmap = min(1, cmap + opt.black);
+            end
         else
             % load a Matlab color map
             cmap = opt.colormap;
@@ -321,6 +338,7 @@ function idisp(im, varargin)
         set(gcf, 'name', opt.title);
     end
     ud.fig = gcf;
+    set(gca, 'UserData', ud);
     
     %--- display the idisp tool bar
     if opt.gui
