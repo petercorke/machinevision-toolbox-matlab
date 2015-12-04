@@ -172,7 +172,7 @@ function [features, corner_strength] = icorner(im, varargin)
             for i=1:size(im,3)
                 f = icorner(im(:,:,i), 'setopt', opt);
                 for j=1:length(f)
-                    %f(j).image_id_ = i;
+                    f(j).image_id_ = i;
                 end
                 features{i} = f;
                 fprintf('.');
