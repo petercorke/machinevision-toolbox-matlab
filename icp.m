@@ -91,7 +91,11 @@ function [T,d] = icp(set1, set2, varargin)
 	p1 = mean(set1');
 	p2 = mean(set2');
 	t = p2 - p1;
-	T = transl(t);
+    if ndims == 2
+        T = transl2(t);
+    else
+        T = transl(t);
+    end
     
 	dnorm = 0;
     dnorm_p = NaN;
@@ -205,16 +209,20 @@ function [T,d] = icp(set1, set2, varargin)
 		%disp([t' tr2rpy(R)])
 
 		% update the transform from data (observation) to model
+        if ndims == 3
 		T = trnorm( T * rt2tr(R, t) );
 		%count = count + 1;
-		rpy = tr2rpy(T);
+            rpy = tr2rpy(T);
+        else
+           T = T * rt2tr(R, t);
+        end
 		
         dnorm = norm(distance);
         
         if opt.verbose
             if ndims == 2
                 fprintf('[%d]: n=%d/%d, d=%8.3f, t = (%8.3f %8.3f), th = (%6.1f) deg\n', ...
-                    count, length(distance), numcols(set2), dnorm, transl(T), atan2(T(2,1), T(2,2))*180/pi);
+                    count, length(distance), numcols(set2), dnorm, transl2(T), atan2(T(2,1), T(2,2))*180/pi);
             elseif ndims == 3
                 fprintf('[%d] n=%d/%d, d=%8.3f, t = (%8.3f %8.3f %8.3f), rpy = (%6.1f %6.1f %6.1f) deg\n', ...
                     count, length(distance), numcols(set2), dnorm, transl(T), rpy*180/pi);
