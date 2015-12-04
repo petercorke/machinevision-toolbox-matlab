@@ -140,10 +140,9 @@ function [features,labimg] = iblobs(im, varargin)
 
             % optionally follow the boundary
             if opt.boundary
-                e = edgelist(im, [x y]);
-                F.edge = e';
+                F.edge = edgelist(im, [x y]);;
 
-                e = diff([e; e(1,:)])';
+                ed = diff([F.edge F.edge(:,1)]')';
                 
                 % compute length:
                 %   - 1 for horizontal/vertical segment
@@ -152,7 +151,7 @@ function [features,labimg] = iblobs(im, varargin)
                 % Apply Kulpa's correction factor when computing
                 % circularity
                 kulpa = pi/8*(1+sqrt(2));
-                F.perimeter_ = sum( colnorm(e) );
+                F.perimeter_ = sum( colnorm(ed) );
                 
                 F.circularity_ = 4*pi*F.area_/ (F.perimeter_*kulpa)^2;
             end
