@@ -50,57 +50,66 @@
 % You should have received a copy of the GNU Leser General Public License
 % along with MVTB.  If not, see <http://www.gnu.org/licenses/>.
 
-function [all,nsets] = imser(im, varargin)
-    if size(im,3) > 1
-        error('monochrome images only');
-    end
+function [all,nsets,R] = imser(im, varargin)
+    assert(exist('vl_mser') == 3, 'VL_FEAT is not installed');
+    assert(size(im,3) == 1, 'monochrome images only');
 
     % process the argument list.
     %  we add two arguments 'light', 'dark' for the wrapper, the rest get
     % get passed to MSER.
-    opt.invert = {'dark', 'light'};
+    opt.invert = {'', 'dark', 'light'};
+    opt.area = [];
+    opt.delta = 5;
+    opt.maxvariation = 0.25;
+    opt.mindiversity = 0.2;
 
-    [opt,mser_args] = tb_optparse(opt, varargin);
+    [opt] = tb_optparse(opt, varargin);
 
     % add default args if none given
-    if isempty(mser_args)
-        mser_args = {'BrightOnDark', 0, 'DarkOnBright', 1, 'MinArea', 0.0001, 'MaxArea', 0.1};
-    end
-
-    if opt.verbose
-        mser_args = [mser_args 'Verbose' ];
-    end
-
-    invert = true;
     switch opt.invert
         case 'dark'
-            invert = false;
+            args = {'BrightOnDark', 0, 'DarkOnBright', 1 };
         case 'light'
-            invert = true;
+            args = {'BrightOnDark', 1, 'DarkOnBright', 0 };
+        otherwise
+            args = {'BrightOnDark', 1, 'DarkOnBright', 1 };
     end
+    
+    if ~isempty(opt.area)
+        assert(length(opt.area) == 2, 'area option must be [min max] in pixels');
+        np = prod(size(im));
+        args = [args, 'MinArea', opt.area(1)/np, 'MaxArea', opt.area(2)/np];
+    else
+        args = [args, 'MinArea', 0.0001, 'MaxArea', 0.1];
+    end
+    args = [args, 'MinDiversity', opt.mindiversity, 'MaxVariation', opt.maxvariation, 'Delta', opt.delta];
+    
+    if opt.verbose
+        args = [args, 'Verbose'];
+    end
+
 
     % MSER operates on a uint8 image
     if isfloat(im)
-        if invert
-            im = 1.0-im;
-        end
         im = iint(im);
-    else
-        if invert
-            im = 255-im;
-        end
     end
 
-    [R,F] = vl_mser(im, mser_args{:});
+    R = vl_mser(im, args{:});
     fprintf('%d MSERs found\n', length(R)+1);
 
     %f1
     %idisp(im);
 
-    all = zeros( size(im));
+    all = zeros( size(im) );
     count = 1;
-    for r=abs(R)'
-        bim = im <= im(r);
+    for r=R'
+        if r > 0
+            bim = im <= im(r);
+        else
+                        r = -r;
+
+            bim = im >= im(r);
+        end
         % HACK bim = im <= im(r);
         lim = ilabel(bim);
         mser_blob = lim == lim(r);
@@ -110,7 +119,7 @@ function [all,nsets] = imser(im, varargin)
         %idisp(mser_blob)
         all(mser_blob) =  count;
         count = count + 1;
-        [row,col] = ind2sub(size(bim), r);
+%         [row,col] = ind2sub(size(bim), r);
         %hold on
         %plot(col, row, 'g*');
         %pause(.2)
