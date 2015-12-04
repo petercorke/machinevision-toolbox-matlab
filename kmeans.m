@@ -6,7 +6,7 @@
 % centres C (DxK). L is a vector (Nx1) whose elements indicates which 
 % cluster the corresponding element of X belongs to.  
 %
-% [L,C] = KMEANS(X, K, C0) as above but the initial clusters C0 (DxK) is given
+% [L,C] = KMEANS(X, K, ) as above but the initial clusters C0 (DxK) is given
 % and column I is the initial estimate of the centre of cluster I.
 %
 % L = KMEANS(X, C) is similar to above but the clustering step is not performed,
@@ -19,6 +19,7 @@
 %            data points X (default)
 % 'spread'   initial cluster centres are chosen randomly from within the 
 %            hypercube spanned by X.
+% 'initial',C0   Provide initial cluster centers
 %
 % Reference::
 % "Pattern Recognition Principles",
@@ -76,14 +77,15 @@ function [label,centroid,resid] = kmeans(x, K, varargin)
 
     opt.plot = false;
     opt.init = {'random', 'spread'};
-    [opt,z0] = tb_optparse(opt, varargin);
+    opt.initial = [];
+    [opt,args] = tb_optparse(opt, varargin);
 
     if opt.plot && numrows(x) > 3
         warning('cant plot for more than 3D data');
         opt.plot = false;
     end
-    if ~isempty(z0)
-        z0 = z0{1};
+    if ~isempty(opt.initial)
+        z0 = opt.initial;
         % an initial condition was supplied
         if numcols(z0) ~= K
             error('initial cluster length should be k');
@@ -92,12 +94,13 @@ function [label,centroid,resid] = kmeans(x, K, varargin)
             error('number of dimensions of z0 must match dimensions of x');
         end
     else
+        switch opt.init
+            case 'random'
         % determine initial condition
-        if strcmp(opt.init, 'random')
             % select K points from the set given as initial cluster centres
             k = randi(n, K, 1);
             z0 = x(:,k);
-        elseif strcmp(opt.init, 'spread')
+            case 'spread'
             % select K points from within the hypercube defined by the points
             mx = max(x')';
             mn = min(x')';
@@ -110,7 +113,7 @@ function [label,centroid,resid] = kmeans(x, K, varargin)
     % s is the vector of cluster labels corresponding to rows in x
     
     z = z0;
-    z
+    
 
     %
     % step 1
