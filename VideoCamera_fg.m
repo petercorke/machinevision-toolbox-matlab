@@ -96,7 +96,7 @@ classdef VideoCamera_fg < ImageSource
             
             % open the video source
 
-            if length(varargin) > 0
+            if length(varargin) == 0
                 camera = -1;        % choose default
             else
                 camera = args(1);
