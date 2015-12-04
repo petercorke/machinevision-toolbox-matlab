@@ -263,6 +263,16 @@ classdef RegionFeature < handle
             end
         end
         
+        function plot_centroid(bb, ls)
+            
+            if nargin == 1
+            
+            plot_points(bb.p,'ko'); plot_points(bb.p, 'kx');
+            else
+                plot_points(bb.p, ls{:});
+            end
+        end
+        
         function t = contains(f, coord)
         %RegionFeature.contains Test if coordinate is contained within region bounding box
         %
@@ -306,27 +316,27 @@ classdef RegionFeature < handle
             sel = ind(k);
         end
         
-        function [ri,thi] = boundary(f, varargin)
+        function [ri,thi] = boundary(fv, varargin)
         %RegionFeature.boundary Boundary in polar form
         %
         % [D,TH] = R.boundary() is a polar representation of the boundary with
         % respect to the centroid.  D(i) and TH(i) are the distance to the boundary
         % point and the angle respectively.  These vectors have 400 elements
         % irrespective of region size.
+            ri = []; thi = [];
+            assert(~isempty(fv(1).edge), 'No edge points -- use the ''boundary'' option');
+            
+            for f = fv
+                dxy = bsxfun(@minus, f.edge, [f.uc_ f.vc_]');
 
-            dxy = bsxfun(@minus, f.edge, [f.uc_ f.vc_]');
+                r = colnorm(dxy)';
+                th = -atan2(dxy(2,:), dxy(1,:));
 
-            r = colnorm(dxy)';
-            th = -atan2(dxy(2,:), dxy(1,:));
-            [th,k] = sort(th, 'ascend');
-            r = r(k);
-
-            if nargout == 0
-                plot(dxy(1,:), dxy(2,:), varargin{:});
-
-            else
-                thi = [0:399]'/400*2*pi - pi;
-                ri = interp1(th, r, thi, 'spline');
+                s = linspace(1, length(r), 400)';
+                ri = [ri interp1(1:length(r), r, s, 'spline')];
+                if nargout > 1
+                thi = [thi interp1(1:length(th), th, s, 'spline')];
+                end
             end
         end
 
@@ -386,5 +396,74 @@ classdef RegionFeature < handle
         function val = bbox(f)
             val = [f.bbox_];
         end
+    end
+    
+    methods(Static = true)
+        %BOUNDMATCH Match boundary profiles
+%
+% X = BOUNDMATCH(R1, R2) is the correlation of the two boundary profiles
+% R1 and R2.  Each is an Nx1 vector of distances from the centroid of
+% an object to points on its perimeter at equal angular increments spanning
+% 2pi radians.  X is also Nx1 and is a correlation whose peak indicates the 
+% relative orientation of one profile with respect to the other.
+%
+% [X,S] = BOUNDMATCH(R1, R2) as above but also returns the relative scale
+% S which is the size of object 2 with respect to object 1.
+%
+% Notes::
+% - Can be considered as matching two functions defined over S(1).
+%
+% See also RegionFeature.boundary, XCORR.
+
+
+% Copyright (C) 1993-2011, by Peter I. Corke
+%
+% This file is part of The Machine Vision Toolbox for Matlab (MVTB).
+% 
+% MVTB is free software: you can redistribute it and/or modify
+% it under the terms of the GNU Lesser General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% MVTB is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU Lesser General Public License for more details.
+% 
+% You should have received a copy of the GNU Leser General Public License
+% along with MVTB.  If not, see <http://www.gnu.org/licenses/>.
+function [s,kk] = boundmatch(r1, r2, varargin)
+
+    assert(numrows(r1) == numrows(r2), 'r1 and r2 must have same number of rows');
+    
+    opt.normalize = true;
+    opt = tb_optparse(opt, varargin);
+    if opt.normalize
+        r1 = r1/sum(r1);
+        r2 = bsxfun(@times, r2, 1./sum(r2));
+    end
+    r1 = r1 - mean(r1);
+    r2 = bsxfun(@minus, r2, mean(r2));
+    
+    ss1 = sum(r1.^2);
+
+    
+    for i=1:numcols(r2)
+        r = r2(:,i);
+            ss2 = sum(r.^2);
+            denom = sqrt(ss1 * ss2);
+                  z = zeros(size(r1));
+  
+        for j=1:length(r1)
+            rs = circshift(r, j-1);
+            z(j) = (r1' * rs) / denom;
+        end
+        
+        [s(i),idx(i)] = max(z);
+    end
+    if nargout > 1
+        kk = idx;
+    end
+end
     end
 end
