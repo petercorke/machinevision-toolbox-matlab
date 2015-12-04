@@ -27,8 +27,11 @@
 % You should have received a copy of the GNU Leser General Public License
 % along with MVTB.  If not, see <http://www.gnu.org/licenses/>.
 
-function stdisp(L, R)
+function stdisp(L, R, varargin)
 
+    opt.vdisp = false;
+    opt = tb_optparse(opt, varargin);
+    
     % display the images side by side
     idisp([L R], 'nogui');
     
@@ -54,6 +57,7 @@ function stdisp(L, R)
             'HorizontalAlignment', 'left', ...
             'string', ' Machine Vision Toolbox for Matlab  ' ...
         );
+    ud.opt = opt;
    set(gca, 'UserData', ud);
 
     % Set the WindowButtonFcn of the figure
@@ -78,8 +82,14 @@ function moveCursor(src, event)
         xl = get(ud.vline_l, 'XData');
         yl = get(ud.hline, 'YData');
         %fprintf('d = %f\n', cp(1,1) - xl(1) - ud.w);
-        set(ud.panel, 'string', sprintf('dh = %.2f, dv = %.2f\n',  ...
-            xl(1) + ud.w - cp(1,1), cp(1,2) - yl(1)));
+        if ud.opt.vdisp
+            str = sprintf('dh = %.2f, dv = %.2f',  ...
+            xl(1) + ud.w - cp(1,1), cp(1,2) - yl(1));
+        else
+            str = sprintf('dh = %.2f',  ...
+            xl(1) + ud.w - cp(1,1));
+        end
+        set(ud.panel, 'string', str);
     end
 end
 
