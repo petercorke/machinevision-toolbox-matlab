@@ -2,7 +2,7 @@
 %
 % D = DISTANCE(A,B) is the Euclidean distances between L-dimensional points
 % described by the matrices A (LxM) and B (LxN) respectively.  The distance 
-% D is MxN and element D(I,J) is the distance between points A(I) and D(J).
+% D is MxN and element D(I,J) is the distance between points A(I) and B(J).
 %
 % Example:: 
 %    A = rand(400,100); B = rand(400,200);
