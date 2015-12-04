@@ -161,8 +161,19 @@ classdef Movie < ImageSource
             end
             
             % read next frame from the file
-            if m.curFrame <= m.nframes
-                data = read(m.movie, m.curFrame);
+            if m.curFrame < m.nframes
+                try
+                    data = read(m.movie, m.curFrame);
+                catch me
+                    % it seems that the test above is not enough to prevent reading past
+                    % the end of file...
+                    if strcmp(me.identifier, 'MATLAB:audiovideo:VideoReader:invalidFrameVarFrameRate')
+                        out = [];
+                        return;
+                    else
+                        rethrow(me);
+                    end
+                end
             else
                 out = [];
                 return;
@@ -198,7 +209,7 @@ classdef Movie < ImageSource
         % human readable form.
 
             s = m.fullfilename;
-            s = strvcat(s, sprintf('%d x %d @ %d fps; %d frames, %f sec', m.width, m.height, m.rate,  m.nframes, m.totalDuration));
+            s = strvcat(s, sprintf('%d x %d @ %d fps; %d frames, %g sec', m.width, m.height, m.rate,  m.nframes, m.totalDuration));
             s = strvcat(s, sprintf('cur frame %d/%d (skip=%d)', m.curFrame, m.nframes, m.skip));
         end
 
