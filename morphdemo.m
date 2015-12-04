@@ -24,9 +24,8 @@
 
 function out = morphdemo(input, se, varargin)
     
-    opt.dilate = false;
-    opt.erode = false;
-    opt.delay = 0.5;
+    opt.op = {[], 'erode', 'dilate', 'min', 'max'};
+    opt.delay = 0.1;
     opt.movie = [];
     opt.scale = 64;
     opt = tb_optparse(opt, varargin);
@@ -36,15 +35,15 @@ function out = morphdemo(input, se, varargin)
         framenum = 1;
     end
     
-    input = idouble(input) * 0.5;
+    input = idouble(input>0);
     
     clf
 
     %se = [0 1 0; 1 1 1; 0 1 0];
     
     white = [1 1 1] * 0.5;
-    red = [1 0 0] * 0.5;
-    blue = [0 0 1] * 0.5;
+    red = [1 0 0] * 0.8;
+    blue = [0 0 1] * 0.8;
     
     result = ones(size(input)) * 0.5;
     
@@ -53,6 +52,7 @@ function out = morphdemo(input, se, varargin)
     im = icolor(input);
     h1 = image(im);
     set(h1, 'CDataMapping', 'direct');
+    axis equal
     
     subplot(122);
     h2 = image(result);
@@ -60,18 +60,20 @@ function out = morphdemo(input, se, varargin)
     set(h2, 'CDataMapping', 'scaled');
     set(gca, 'CLim', [0 1]);
     set(gca, 'CLimMode', 'manual');
+    axis equal
     
     nr_se = (numrows(se)-1)/2;
     nc_se = (numcols(se)-1)/2;
     
     for r=nr_se+1:numrows(input)-nr_se
         for c=nc_se+1:numcols(input)-nc_se
-            im = icolor(input);
+            im = icolor(input*0.7);
             
             win = input(r-nr_se:r+nr_se, c-nc_se:c+nc_se);
             
             rr = win .* se;
-            if opt.erode
+            switch opt.op
+                case {'erode', 'min'}
                 if all(rr(find(se)))
                     color = blue;
                     result(r,c) = 1;
@@ -79,7 +81,7 @@ function out = morphdemo(input, se, varargin)
                     color = red;
                     result(r,c) = 0;
                 end
-            elseif opt.dilate
+                case {'erode', 'max'}
                 if any(rr(find(se)))
                     color = blue;
                     result(r,c) = 1;
@@ -92,7 +94,7 @@ function out = morphdemo(input, se, varargin)
             for i=-nr_se:nr_se
                 for j=-nc_se:nc_se
                     if se(i+nr_se+1,j+nc_se+1) > 0
-                        im(r+i,c+j,:) = im(r+i,c+j,:) + reshape(color, [1 1 3]);
+                        im(r+i,c+j,:) = min(1, im(r+i,c+j,:) + reshape(color, [1 1 3]));
                     end
                 end
             end
