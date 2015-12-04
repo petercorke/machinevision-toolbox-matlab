@@ -16,7 +16,7 @@
 % 
 % You should have received a copy of the GNU Leser General Public License
 % along with MVTB.  If not, see <http://www.gnu.org/licenses/>.
-function sphere_paint(sph, varargin)
+function h = sphere_paint(sph, varargin)
 
     % if only a hemisphere pad the other hemisphere with grey
     if nargin > 1
@@ -34,6 +34,5 @@ function sphere_paint(sph, varargin)
     % create the sphere and get handle
     sphere
     h=findobj('Type', 'surface');
-
     set(h,'cdata', sph, 'facecolor', 'texture');
     colormap(gray)
