@@ -46,13 +46,13 @@ function C = iconv(A, B, opt)
 
     if numcols(A) < numcols(B)
         % B is the image
-        A = fliplr(flipud(A));
+        %A = fliplr(flipud(A));
         for k=1:size(B,3)
             C(:,:,k) = conv2(B(:,:,k), A, opt);
         end
     else
         % A is the image
-        B = fliplr(flipud(B));
+        %B = fliplr(flipud(B));
         for k=1:size(A,3)
             C(:,:,k) = conv2(A(:,:,k), B, opt);
         end
