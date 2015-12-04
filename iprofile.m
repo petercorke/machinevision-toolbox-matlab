@@ -34,6 +34,14 @@
 
 function [p,uv] = iprofile(c, p1, p2)
 
+    if nargin == 2
+        % p1 is a set of points, in columns
+        p = [];
+        for i=2:numcols(p1)
+            p = [p; iprofile(c, p1(:,i-1), p1(:,i))];
+        end
+        return
+    end
     % coordinates must be integers
     p1 = round(p1); p2 = round(p2);
     
