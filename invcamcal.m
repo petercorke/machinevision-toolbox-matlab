@@ -36,7 +36,7 @@
 
 function c = invcamcal(C)
 
-    if ~all(size(C) == [3 4]),
+    if ~all(size(C) == [3 4])
         error('argument is not a 3x4 matrix');
     end
     [u,s,v] = svd(C);
@@ -46,19 +46,33 @@ function c = invcamcal(C)
     t = t(1:3);
 
     M = C(1:3,1:3);
+    
+    % M = K * R
     [K,R] = vgg_rq(M);
 
+    % deal with K having negative elements on the diagonal
+    
+    % make a matrix to fix this, K*C has positive diagonal
+    C = diag(sign(diag(K)));
+    
+    % now  K*R = (K*C) * (inv(C)*R), so we need to check C is a proper rotation
+    % matrix.  If isn't then the situation is unfixable
+    assert(det(C) == 1, 'MVTB:invcamcal', 'cannot correct signs in the intrinsic matrix');
+    
+    % all good, let's fix it
+    K = K * C;
+    R = C' * R;
+    
     % normalize K so that lower left is 1
     K = K/K(3,3);
-
+    
+    % pull out focal length and scale factors
     f = K(1,1);
     s = [1 K(2,2)/K(1,1)];
-    if f < 0,
-        f = -f;
-        s = -s;
-    end
+
+    % build an equivalent camera model
     c = CentralCamera( 'name', 'invcamcal', ...
         'focal', f, ...
         'centre', K(1:2,3), ...
         'pixel', s, ...
-        'pose', [R t; 0 0 0 1] );
+        'pose', [R' t; 0 0 0 1] );
