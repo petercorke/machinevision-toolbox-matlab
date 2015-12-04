@@ -165,11 +165,13 @@ classdef PointFeature < handle
             [z,k] = sort(dist, 'ascend');
             matches = matches(:,k);
             dist = dist(:,k);
+            
 
+            
             m = [];
             cor = [];
 
-            for i=1:numcols(matches),
+            for i=1:numcols(matches)
                 k1 = matches(1,i);
                 k2 = matches(2,i);
                 mm = FeatureMatch(f1(k1), f2(k2), dist(i));
@@ -201,6 +203,13 @@ classdef PointFeature < handle
 
         function val = descriptor(f)
             val = [f.descriptor_];
+        end
+        
+        function k = pick(f)
+            
+            [u,v] = ginput(1);
+            uv = f.uv;
+            k = closest([u v]', uv);
         end
 
         function display(f)
