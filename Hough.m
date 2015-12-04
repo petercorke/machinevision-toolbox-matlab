@@ -175,15 +175,15 @@ classdef Hough < handle
         %
         % See also COLORMAP, HOT.
             clf
-            hi = image(h.theta, h.rho, h.A/max(max(h.A)));
+            hi = imagesc(h.theta, h.rho, h.A);
             set(hi, 'CDataMapping', 'scaled');
             set(gca, 'YDir', 'normal');
-            set(gca, 'Xcolor', [1 1 1]*0.5);
-            set(gca, 'Ycolor', [1 1 1]*0.5);
+%             set(gca, 'Xcolor', [1 1 1]*0.5);
+%             set(gca, 'Ycolor', [1 1 1]*0.5);
             grid on
             xlabel('\theta (rad)');
             ylabel('\rho (pixels)');
-            colormap(hot)
+            colormap(parula)
         end
             
         function handles = plot(h, varargin)
