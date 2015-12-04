@@ -102,19 +102,21 @@ classdef BagOfWords < handle
             elseif isa(a1, 'BagOfWords')
                 oldbag = a1;
 
-                bag.K = oldbag.K;
-                bag.stopwords = oldbag.stopwords;
-
                 % cluster using number of words from old bag
                 bag.words = closest([bag.features.descriptor], oldbag.C);
-
-                k = find(ismember(bag.words, oldbag.stopwords));
-
-                fprintf('Removing %d features associated with stop words\n', length(k));
-
-                bag.words(k) = [];
-                bag.words = oldbag.map(bag.words);
-                bag.features(k) = [];
+                
+                if oldbag.stopwords > 0
+                    % remove stopwords as per the original bag file
+                    bag.K = oldbag.K;
+                    bag.stopwords = oldbag.stopwords;
+                    k = find(ismember(bag.words, oldbag.stopwords));
+                    
+                    fprintf('Removing %d features associated with stop words\n', length(k));
+                    
+                    bag.words(k) = [];
+                    bag.words = oldbag.map(bag.words);
+                    bag.features(k) = [];
+                end
 
                 bag.compute_wv(oldbag);
 
@@ -236,6 +238,7 @@ classdef BagOfWords < handle
                 nid = W(:,i)';
 
                 v = nid/nd .* log(N./Ni);
+                v(~isfinite(v)) = 0;
                 m = [m v'];
             end
 
@@ -312,7 +315,7 @@ classdef BagOfWords < handle
             v = unique([bag.isword(word).image_id]);
         end
             
-        function exemplars(bag, words, images, varargin)
+        function out = exemplars(bag, words, images, varargin)
         %BagOfWords.exemplars Display exemplars of words
         %
         % B.exemplars(W, IMAGES, OPTIONS) displays examples of the support regions of
@@ -321,100 +324,99 @@ classdef BagOfWords < handle
         % were extracted must be provided as IMAGES.
         %
         % Options::
-        % 'ncolumns',N      Number of columns to display (default 10)
+        % 'columns',N      Number of columns to display (default 10)
         % 'maxperimage',M   Maximum number of exemplars to display from any 
         %                   one image (default 2)
         % 'width',W         Width of each thumbnail [pixels] (default 50)
 
-            nwords = length(words);
-            gap = 2;
-
-            opt.ncolumns = 10;
+            opt.gap = 2;
+            opt.columns = 10;
             opt.maxperimage = 2;
             opt.width = 50;
+            opt.label = false;
+            opt.rows = [];
 
             opt = tb_optparse(opt, varargin);
 
             % figure the number of exemplars to show, no more than opt.maxperimage
             % from any one image
             nexemplars = 0;
+            exemplars = {};
             for w=words
-                h = hist(bag.contains(w));
-                h = min(h, opt.maxperimage);
-                nexemplars = nexemplars + sum(h);
-            end
-            opt.ncolumns = min(nexemplars, opt.ncolumns);
-
-            Ng = opt.width+gap;
-            panel = zeros(nwords*Ng, opt.ncolumns*Ng);
-            L = bag.words;
-
-            for i=1:nwords
-                % for each word specified
-                word = words(i);
-
-                features = bag.isword(word);  % find features corresponding to the word
-
                 image_prev = [];
-                count = 1;
-                for j=1:length(features)
-                    % for each instance of that word
-                    sf = features(j);
-
-                    % only display one template from each image to show some
-                    % variety
-                    if sf.image_id == image_prev
-                        c = c - 1;
-                        if c <= 0
+                count = 0;
+                for f=bag.isword(w)
+                    if f.image_id == image_prev
+                        count = count + 1;
+                        if count > opt.maxperimage
                             continue;
                         end
-                    else
-                        c = opt.maxperimage;
                     end
-                    % extract it from the containing image
-                    out = sf.support(images, opt.width);
+                    
+                    exemplars = [exemplars {{w, f}}];
+                end
+            end
+            
+            if isempty(opt.rows)
+                nr = ceil( length(exemplars) / opt.columns);
+            else
+                nr = opt.rows;
+            end
+            nc = min(length(exemplars), opt.columns);
+            
+            n = min(length(exemplars), nr*nc);
+            exemplars = exemplars(1:n);
 
-                    % paste it into the panel
-                    panel = ipaste(panel, out, [count-1 i-1]*Ng, 'zero');
-                    image_prev = sf.image_id;
-                    count = count + 1;
-                    if count > opt.ncolumns
-                        break;
+            Ng = opt.width+opt.gap;
+            composite = ones(nr*Ng, nc*Ng);
+            
+            % render the support regions into composite image
+            row = 0; col = 0;
+            for ex=exemplars
+                ex = ex{1};
+                word = ex{1}; f = ex{2};
+                
+                % extract it from the containing image
+                support = f.support(images, opt.width);
+                
+                % paste it into the panel
+                composite = ipaste(composite, support, [col row]*Ng, 'zero');
+                
+                % update row/column indices
+                col = col + 1;
+                if col >= opt.columns
+                    row = row + 1;
+                    col = 0;
+                end
+            end
+            
+            % optionally label the cells
+            if opt.label
+                if nargout == 0
+                    idisp(composite, 'plain');
+                end
+                
+                row = 0; col = 0;
+                for ex=exemplars
+                    ex = ex{1};
+                    word = ex{1}; f = ex{2};
+                    
+                    text(col*Ng+opt.gap*2, row*Ng+3*opt.gap, ...
+                        sprintf('%d #%d', word, f.image_id), 'Color', 'g')
+                    
+                    % update row/column indices
+                    col = col + 1;
+                    if col >= opt.columns
+                        row = row + 1;
+                        col = 0;
                     end
                 end
             end
-
-            idisp(panel, 'plain');
-
-
-            for i=1:nwords
-                % for each word specified
-                word = words(i);
-                features = bag.isword(word);  % find features corresponding to the word
-
-                image_prev = [];
-                count = 1;
-                for j=1:length(features)
-                    % for each instance of that word
-                    sf = features(j);
-                    if sf.image_id == image_prev
-                        c = c - 1;
-                        if c <= 0
-                            continue;
-                        end
-                    else
-                        c = opt.maxperimage;
-                    end
-                    % extract it from the containing image
-                    text((count-1)*Ng+gap*2, (i-1)*Ng+3*gap, ...
-                        sprintf('%d/%d', word, sf.image_id), 'Color', 'g')
-                    image_prev = sf.image_id;
-                    count = count + 1;
-                    if count > opt.ncolumns
-                        break;
-                    end
-                end
+            
+            if nargout > 0
+                out = composite;
             end
+            
         end
     end
 end
