@@ -57,12 +57,33 @@
 % along with MVTB.  If not, see <http://www.gnu.org/licenses/>.
 function [labels,C,resid] = colorkmeans(im, k, varargin)
 
-    % convert RGB to xy space
-    rgbcol = im2col(im);
-    XYZcol = rgb2xyz(rgbcol);
-    sXYZ = sum(XYZcol')';
-    x = XYZcol(:,1) ./ sXYZ;
-    y = XYZcol(:,2) ./ sXYZ;
+    opt.initial = {'random', 'spread', 'pick'};
+    opt.colorspace = {'xyz', 'lab', 'Lab'};
+    
+    opt = tb_optparse(opt, varargin);
+    
+    switch opt.colorspace
+        case 'xyz'
+            
+            % convert RGB to xy space
+            im = colorspace('RGB->XYZ', im);
+            
+            x = im(:,:,1) ./ sum(im, 3);
+            y = im(:,:,2) ./ sum(im, 3);
+            x = x(:); y = y(:);
+
+            
+%                 rgbcol = im2col(im);
+%                 XYZcol = rgb2xyz(rgbcol);
+%                 sXYZ = sum(XYZcol')';
+%                 x = XYZcol(:,1) ./ sXYZ;
+%                 y = XYZcol(:,2) ./ sXYZ;
+        case {'lab', 'Lab'}
+            im = colorspace('RGB->Lab', im);
+            x = reshape( im(:,:,2), [], 1);
+            y = reshape( im(:,:,3), [], 1);
+            
+    end
     
     if any(isnan(x)) || any(isnan(y))
         error('undefined xy chromaticity for some pixels: input image has pixels with value (0,0,0)');
