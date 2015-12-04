@@ -107,7 +107,7 @@ function co = ipixswitch(mask, I1, I2)
     nplanes = max(size(I1,3), size(I2,3));
 
     if nplanes == 3
-        mask = repmat(mask, [1 1 3]);
+        %mask = repmat(mask, [1 1 3]);
         if size(I1,3) == 1
             I1 = repmat(I1, [1 1 3]);
         end
@@ -120,6 +120,8 @@ function co = ipixswitch(mask, I1, I2)
     % using arithmetic
     % out = mask .* I1 + (1-mask) .* I2;
     out = I2;
+    mask = logical(mask);
+    mask = repmat(mask, [1 1 nplanes]);
     out(mask) = I1(mask);
 
     if nargout > 0
