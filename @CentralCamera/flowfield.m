@@ -34,7 +34,9 @@ function flowfield(cam, vel)
     end
 
     quiver(U, V, du, dv, 0.4)
-    axis([1 cam.npix(1) 1 cam.npix(2)]);
+    axis equal
+        axis([1 cam.npix(1) 1 cam.npix(2)]);
+
     set(gca, 'Ydir', 'reverse');
     xlabel('u (pixels)');
     ylabel('v (pixels)');
