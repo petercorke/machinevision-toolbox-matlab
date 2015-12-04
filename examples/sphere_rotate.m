@@ -17,31 +17,29 @@
 % You should have received a copy of the GNU Leser General Public License
 % along with MVTB.  If not, see <http://www.gnu.org/licenses/>.
 function sphrot = sphere_rotate(sph, T, varargin)
-    % if only a hemisphere pad the other hemisphere with grey
-    if nargin > 2
-        if strcmp(varargin(1), 'north')
-            sph = [sph; 0.3*ones(size(sph))];
-        elseif strcmp(varargin(1), 'south')
-            sph = [0.3*ones(size(sph)); sph];
-        end
-    end
+%     % if only a hemisphere pad the other hemisphere with grey
+%     if nargin > 2
+%         if strcmp(varargin(1), 'north')
+%             sph = [sph; 0.3*ones(size(sph))];
+%         elseif strcmp(varargin(1), 'south')
+%             sph = [0.3*ones(size(sph)); sph];
+%         end
+%     end
 
     [nr,nc] = size(sph);
-    nr2 = floor(nr/2);
 
     % theta spans [0, pi]
-    theta_range = (0:nr-1)/(nr-1)*pi;
+    theta_range = linspace(0, pi, nr);
 
     % phi spans [-pi, pi]
-    phi_range = ((0:nc-1)/(nc-1) - 0.5)*2*pi;
+    phi_range = linspace(-pi, pi, nc);
 
     % build the plaid matrices
     [Phi,Theta] = meshgrid(phi_range, theta_range);
 
     % convert the spherical coordinates to Cartesian
-    r = sin(Theta);
-    x = r .* cos(Phi);
-    y = r .* sin(Phi);
+    x = sin(Theta) .* cos(Phi);
+    y = sin(Theta) .* sin(Phi);
     z = cos(Theta);
 
     % convert to 3xN format
@@ -56,14 +54,24 @@ function sphrot = sphere_rotate(sph, T, varargin)
     z = reshape(p(3,:), size(x));
 
     % convert back to spherical coordinates
-    r = sqrt(x.^2 + y.^2);
+%     r = sqrt(x.^2 + y.^2);
+% 
+%     asin is multiple valued over the interval [0,pi]
+%     nTheta = asin(r);
+%     nTheta(nr2:end,:) = pi-nTheta(nr2:end,:);
+% 
+%     nPhi = atan2(y, x);
 
-    % asin is multiple valued over the interval [0,pi]
-    nTheta = asin(r);
-    nTheta(nr2:end,:) = pi-nTheta(nr2:end,:);
+nTheta = acos(z);
+nPhi = atan2(y, x);
+    
+%     % phi long
+%     % theta colat
+%     nPhi = Phi+0.5;
+%     nTheta = Theta ;
+%     
+%     nPhi = angdiff(nPhi);
+%     nTheta = mod(nTheta, pi);
 
-    nPhi = atan2(y, x);
-
-    whos
     % warp the image
     sphrot = interp2(Phi, Theta, sph, nPhi, nTheta);
