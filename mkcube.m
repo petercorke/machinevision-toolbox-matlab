@@ -42,11 +42,18 @@
 function [o1,o2,o3] = mkcube(s, varargin)
     
     opt.centre = [];
-    opt.T = [];
+    opt.pose = [];
     opt.edge = false;
     opt.facepoint = false;
 
     opt = tb_optparse(opt, varargin);
+ 
+    % offset it
+    if ~isempty(opt.centre)
+        assert(isvec(opt.centre), 'Centre must be a 3-vector');
+        assert(isempty(opt.pose), 'Cannot specify centre and pose options');
+        opt.pose = SE3(opt.centre);
+    end
 
     % vertices of a unit cube with one corner at origin
     cube = [
@@ -55,6 +62,7 @@ function [o1,o2,o3] = mkcube(s, varargin)
        -1    -1    -1    -1     1     1     1     1 ];
 
     if opt.facepoint
+        % append face centre points if required
         faces = [
           1    -1     0     0     0     0
           0     0     1    -1     0     0
@@ -63,21 +71,19 @@ function [o1,o2,o3] = mkcube(s, varargin)
     end
 
     % vertices of cube about the origin
-    cube = cube / 2 * s;
-
-    % offset it
-    if ~isempty(opt.centre)
-        cube = bsxfun(@plus, cube, opt.centre(:));
+    if isvec(s)
+        s = diag(s);
     end
+    cube = s * cube / 2;
+
+
     % optionally transform the vertices
-    if ~isempty(opt.T)
-        if isvec(opt.T)
-            opt.T = transl(opt.T);
-        end
-        cube = homtrans(opt.T, cube);
+    if ~isempty(opt.pose)
+        cube = homtrans(opt.pose, cube);
     end
 
     if opt.edge == false
+        % point model, return the vertices
         if nargout <= 1,
             o1 = cube;
         elseif nargout == 3,
@@ -86,6 +92,7 @@ function [o1,o2,o3] = mkcube(s, varargin)
             o3 = cube(3,:);
         end
     else
+        % edge model, return plaid matrices
         cube = cube(:,[1:4 1 5:8 5]);
         o1 = reshape(cube(1,:), 5, 2)';
         o2 = reshape(cube(2,:), 5, 2)';
