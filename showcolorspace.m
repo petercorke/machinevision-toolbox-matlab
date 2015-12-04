@@ -1,12 +1,15 @@
 %SHOWCOLORSPACE Display spectral locus
 %
-% XYCOLORSPACE() display a fully colored spectral locus in terms of CIE x and y 
+% SHOWCOLORSPACE('xy') display a fully colored spectral locus in terms of CIE x and y 
 % coordinates.
 %
-% XYCOLORSPACE(P) as above but plot the points whose xy-chromaticity
+% SHOWCOLORSPACE('Lab') display a fully colored spectral locus in terms of CIE L*a*b* 
+% coordinates.
+%
+% SHOWCOLORSPACE(WHICH, P) as above but plot the points whose xy- or a*b*-chromaticity
 % is given by the columns of P.
 %
-% [IM,AX,AY] = XYCOLORSPACE() as above returns the spectral locus as an
+% [IM,AX,AY] = SHOWCOLORSPACE(...) as above returns the spectral locus as an
 % image IM, with corresponding x- and y-axis coordinates AX and AY 
 % respectively.
 %
