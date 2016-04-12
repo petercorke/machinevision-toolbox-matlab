@@ -718,7 +718,7 @@ classdef Camera < handle
                 c.T = Tc;
             end
             if ~isempty(c.h_visualize) && ishandle(c.h_visualize)
-                set(c.h_camera3D, 'Matrix', c.T);
+                set(c.h_visualize, 'Matrix', c.T);
             end
         end
 
