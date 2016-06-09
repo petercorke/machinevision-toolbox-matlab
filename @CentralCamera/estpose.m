@@ -29,6 +29,9 @@
 
 function T = estpose(c, XYZ, uv)
 
+    if ~isempty(c.distortion)
+        uv = c.undistort(uv);
+    end
     [R, t] = efficient_pnp(XYZ', uv', c.K);
 
     T = [R t; 0 0 0 1];
