@@ -622,6 +622,7 @@ classdef CentralCamera < Camera
                             % add lens distortion
                             
                             X = inv(c.K) * X;   % convert to normalized image coordinates
+                            X = h2e(X); %% //CC seems this was missing  
                             u = X(1,:); v = X(2,:); % unpack coordinates
                             k = c.distortion(1:3); p = c.distortion(4:5); % unpack distortion vector
                             r = sqrt( u.^2 + v.^2 ); % distance from princ point
@@ -681,6 +682,7 @@ classdef CentralCamera < Camera
                             % add lens distortion
                             
                            X = inv(c.K) * X;   % convert to normalized image coordinates
+                            X = h2e(X); %% //CC seems this was missing  
                             u = X(1,:); v = X(2,:); % unpack coordinates
                             k = c.distortion(1:3); p = c.distortion(4:5); % unpack distortion vector
                             r = sqrt( u.^2 + v.^2 ); % distance from princ point
@@ -736,6 +738,27 @@ classdef CentralCamera < Camera
         % p 162
         %
         % See also Ray3D.
+
+            if ~isempty(cam.distortion)
+            %%    % add lens distortion
+                X = e2h(p);
+                
+                X = inv(cam.K) * X;   % convert to normalized image coordinates
+                X = h2e(X); %% //CC seems this was missing  
+                u = X(1,:); v = X(2,:); % unpack coordinates
+                k = cam.distortion(1:3); pd = cam.distortion(4:5); % unpack distortion vector
+                rd = sqrt( u.^2 + v.^2 ); % distance from princ point
+                
+                % compute the shift due to distortion
+                delta_u = u .* (k(1)*rd.^2 + k(2)*rd.^4 + k(3)*rd.^6) + ...
+                    2*pd(1)*u.*v + pd(2)*(rd.^2 + 2*u.^2);
+                delta_v = v .* (k(1)*rd.^2 + k(2)*rd.^4 + k(3)*rd.^6) + ...
+                    pd(1)*(rd.^2 + 2*v.^2) + 2*pd(1)*u.*v;
+                
+                ud = u - delta_u;  vd = v - delta_v; % undistorted coordinates
+                X = cam.K * e2h( [ud; vd] ); % convert to pixel coords
+                p = h2e(X);            % convert to Euclidean coordinates
+            end
 
             C = cam.C();
             Mi = inv(C(1:3,1:3));
@@ -841,6 +864,25 @@ classdef CentralCamera < Camera
 
                 set(h, 'Parent', opt.parent);
             end
+        end
+        function undistp = undistort(cam,distp)
+            X = e2h(distp);
+            
+            X = inv(cam.K) * X;   % convert to normalized image coordinates
+            X = h2e(X); %% //CC seems this was missing  
+            u = X(1,:); v = X(2,:); % unpack coordinates
+            k = cam.distortion(1:3); pd = cam.distortion(4:5); % unpack distortion vector
+            rd = sqrt( u.^2 + v.^2 ); % distance from princ point
+            
+            % compute the shift due to distortion
+            delta_u = u .* (k(1)*rd.^2 + k(2)*rd.^4 + k(3)*rd.^6) + ...
+                2*pd(1)*u.*v + pd(2)*(rd.^2 + 2*u.^2);
+            delta_v = v .* (k(1)*rd.^2 + k(2)*rd.^4 + k(3)*rd.^6) + ...
+                pd(1)*(rd.^2 + 2*v.^2) + 2*pd(1)*u.*v;
+            
+            ud = u - delta_u;  vd = v - delta_v; % undistorted coordinates
+            X = cam.K * e2h( [ud; vd] ); % convert to pixel coords
+            undistp = h2e(X);            % convert to Euclidean coordinates
         end
     end % methods
 end % class
