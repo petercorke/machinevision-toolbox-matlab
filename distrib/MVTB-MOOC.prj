@@ -1,0 +1,547 @@
+<deployment-project plugin="plugin.toolbox" plugin-version="1.0">
+  <configuration build-checksum="464665319" file="/Users/corkep/code/RVC/machinevision-toolbox-matlab/distrib/Machine Vision Toolbox (MOOC build).prj" location="/Users/corkep/code/RVC/machinevision-toolbox-matlab/distrib" name="Machine Vision Toolbox (MOOC build)" target="target.toolbox" target-name="Package Toolbox">
+    <param.appname>Machine Vision Toolbox (MOOC build)</param.appname>
+    <param.authnamewatermark>Peter Corke</param.authnamewatermark>
+    <param.email>rvc@petercorke.com</param.email>
+    <param.company />
+    <param.summary>Files and classes for machine vision</param.summary>
+    <param.description>Files and classes for machine vision: basic image processing, feature extraction, camera models, multiview imaging, etc.
+
+(Updated with several bug fixes, vgg functions, mex binaries, IPT versions of hitormiss+ilabel)</param.description>
+    <param.screenshot>/Users/corkep/code/RVC/machinevision-toolbox-matlab/doc/manual/mvtb-montage-notext.png</param.screenshot>
+    <param.version>3.4.1</param.version>
+    <param.output>${PROJECT_ROOT}/Machine Vision Toolbox (MOOC build).mltbx</param.output>
+    <param.products.name>
+      <item>MATLAB</item>
+      <item>Computer Vision System Toolbox</item>
+      <item>Signal Processing Toolbox</item>
+      <item>Simulink</item>
+      <item>SystemTest</item>
+      <item>Image Processing Toolbox</item>
+      <item>Symbolic Math Toolbox</item>
+      <item>Image Acquisition Toolbox</item>
+      <item>Optimization Toolbox</item>
+    </param.products.name>
+    <param.products.id>
+      <item>1</item>
+      <item>96</item>
+      <item>8</item>
+      <item>2</item>
+      <item>77</item>
+      <item>17</item>
+      <item>15</item>
+      <item>78</item>
+      <item>6</item>
+    </param.products.id>
+    <param.products.version>
+      <item>8.5</item>
+      <item>6.2</item>
+      <item>7.0</item>
+      <item>8.5</item>
+      <item>2.6.9</item>
+      <item>9.2</item>
+      <item>6.2</item>
+      <item>4.9</item>
+      <item>7.2</item>
+    </param.products.version>
+    <param.platforms />
+    <param.guid>1905a07c-7b82-4abf-acf4-8e9bda584136</param.guid>
+    <param.exclude.filters />
+    <param.examples>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;examples/&gt;</param.examples>
+    <param.demosxml />
+    <param.apps />
+    <param.docs>${PROJECT_ROOT}/toolbox/info.xml</param.docs>
+    <unset>
+      <param.company />
+      <param.output />
+      <param.platforms />
+      <param.exclude.filters />
+      <param.demosxml />
+      <param.apps />
+    </unset>
+    <fileset.rootdir>
+      <file>${PROJECT_ROOT}/toolbox</file>
+    </fileset.rootdir>
+    <fileset.rootfiles>
+      <file>${PROJECT_ROOT}/toolbox/@Camera</file>
+      <file>${PROJECT_ROOT}/toolbox/@CentralCamera</file>
+      <file>${PROJECT_ROOT}/toolbox/@SiftPointFeature</file>
+      <file>${PROJECT_ROOT}/toolbox/@SphericalCamera</file>
+      <file>${PROJECT_ROOT}/toolbox/@SurfPointFeature</file>
+      <file>${PROJECT_ROOT}/toolbox/Animate.m</file>
+      <file>${PROJECT_ROOT}/toolbox/AxisWebCamera.m</file>
+      <file>${PROJECT_ROOT}/toolbox/BagOfWords.m</file>
+      <file>${PROJECT_ROOT}/toolbox/CITATION</file>
+      <file>${PROJECT_ROOT}/toolbox/CatadioptricCamera.m</file>
+      <file>${PROJECT_ROOT}/toolbox/Contents.m</file>
+      <file>${PROJECT_ROOT}/toolbox/EarthView.m</file>
+      <file>${PROJECT_ROOT}/toolbox/FeatureMatch.m</file>
+      <file>${PROJECT_ROOT}/toolbox/FishEyeCamera.m</file>
+      <file>${PROJECT_ROOT}/toolbox/HiddenFigure.m</file>
+      <file>${PROJECT_ROOT}/toolbox/Hough.m</file>
+      <file>${PROJECT_ROOT}/toolbox/IPT</file>
+      <file>${PROJECT_ROOT}/toolbox/ImageSource.m</file>
+      <file>${PROJECT_ROOT}/toolbox/LGPL-LICENCE.txt</file>
+      <file>${PROJECT_ROOT}/toolbox/LineFeature.m</file>
+      <file>${PROJECT_ROOT}/toolbox/Movie.m</file>
+      <file>${PROJECT_ROOT}/toolbox/OrientedScalePointFeature.m</file>
+      <file>${PROJECT_ROOT}/toolbox/PGraph.m</file>
+      <file>${PROJECT_ROOT}/toolbox/Plucker.m</file>
+      <file>${PROJECT_ROOT}/toolbox/PointFeature.m</file>
+      <file>${PROJECT_ROOT}/toolbox/Polygon.m</file>
+      <file>${PROJECT_ROOT}/toolbox/README</file>
+      <file>${PROJECT_ROOT}/toolbox/RELEASE</file>
+      <file>${PROJECT_ROOT}/toolbox/Ray3D.m</file>
+      <file>${PROJECT_ROOT}/toolbox/RegionFeature.m</file>
+      <file>${PROJECT_ROOT}/toolbox/ScalePointFeature.m</file>
+      <file>${PROJECT_ROOT}/toolbox/Tracker.m</file>
+      <file>${PROJECT_ROOT}/toolbox/VideoCamera.m</file>
+      <file>${PROJECT_ROOT}/toolbox/VideoCamera_IAT.m</file>
+      <file>${PROJECT_ROOT}/toolbox/VideoCamera_fg.m</file>
+      <file>${PROJECT_ROOT}/toolbox/YUV.m</file>
+      <file>${PROJECT_ROOT}/toolbox/about.m</file>
+      <file>${PROJECT_ROOT}/toolbox/anaglyph.m</file>
+      <file>${PROJECT_ROOT}/toolbox/angdiff.m</file>
+      <file>${PROJECT_ROOT}/toolbox/arrow3.m</file>
+      <file>${PROJECT_ROOT}/toolbox/blackbody.m</file>
+      <file>${PROJECT_ROOT}/toolbox/boundmatch.m</file>
+      <file>${PROJECT_ROOT}/toolbox/bresenham.m</file>
+      <file>${PROJECT_ROOT}/toolbox/camcald.m</file>
+      <file>${PROJECT_ROOT}/toolbox/ccdresponse.m</file>
+      <file>${PROJECT_ROOT}/toolbox/ccodefunctionstring.m</file>
+      <file>${PROJECT_ROOT}/toolbox/ccxyz.m</file>
+      <file>${PROJECT_ROOT}/toolbox/cie_primaries.m</file>
+      <file>${PROJECT_ROOT}/toolbox/circle.m</file>
+      <file>${PROJECT_ROOT}/toolbox/closest.m</file>
+      <file>${PROJECT_ROOT}/toolbox/closest.mexglx</file>
+      <file>${PROJECT_ROOT}/toolbox/closest.mexmaci64</file>
+      <file>${PROJECT_ROOT}/toolbox/closest.mexw32</file>
+      <file>${PROJECT_ROOT}/toolbox/closest.mexw64</file>
+      <file>${PROJECT_ROOT}/toolbox/cmfrgb.m</file>
+      <file>${PROJECT_ROOT}/toolbox/cmfxyz.m</file>
+      <file>${PROJECT_ROOT}/toolbox/col2im.m</file>
+      <file>${PROJECT_ROOT}/toolbox/colnorm.m</file>
+      <file>${PROJECT_ROOT}/toolbox/colordistance.m</file>
+      <file>${PROJECT_ROOT}/toolbox/colorize.m</file>
+      <file>${PROJECT_ROOT}/toolbox/colorkmeans.m</file>
+      <file>${PROJECT_ROOT}/toolbox/colorname.m</file>
+      <file>${PROJECT_ROOT}/toolbox/colorseg.m</file>
+      <file>${PROJECT_ROOT}/toolbox/colorspace.m</file>
+      <file>${PROJECT_ROOT}/toolbox/count_unique.m</file>
+      <file>${PROJECT_ROOT}/toolbox/diff2.m</file>
+      <file>${PROJECT_ROOT}/toolbox/distance.m</file>
+      <file>${PROJECT_ROOT}/toolbox/distributeblocks.m</file>
+      <file>${PROJECT_ROOT}/toolbox/dockfigs.m</file>
+      <file>${PROJECT_ROOT}/toolbox/doesblockexist.m</file>
+      <file>${PROJECT_ROOT}/toolbox/dtransform.m</file>
+      <file>${PROJECT_ROOT}/toolbox/e2h.m</file>
+      <file>${PROJECT_ROOT}/toolbox/edgelist.m</file>
+      <file>${PROJECT_ROOT}/toolbox/epidist.m</file>
+      <file>${PROJECT_ROOT}/toolbox/epiline.m</file>
+      <file>${PROJECT_ROOT}/toolbox/examples</file>
+      <file>${PROJECT_ROOT}/toolbox/fhist.mexglx</file>
+      <file>${PROJECT_ROOT}/toolbox/fhist.mexw32</file>
+      <file>${PROJECT_ROOT}/toolbox/fhist.mexw64</file>
+      <file>${PROJECT_ROOT}/toolbox/filt1d.m</file>
+      <file>${PROJECT_ROOT}/toolbox/findjobj.m</file>
+      <file>${PROJECT_ROOT}/toolbox/fmatrix.m</file>
+      <file>${PROJECT_ROOT}/toolbox/framegrabber.mexglx</file>
+      <file>${PROJECT_ROOT}/toolbox/framegrabber.mexmaci64</file>
+      <file>${PROJECT_ROOT}/toolbox/frne.mexw64</file>
+      <file>${PROJECT_ROOT}/toolbox/gauss2d.m</file>
+      <file>${PROJECT_ROOT}/toolbox/gaussfunc.m</file>
+      <file>${PROJECT_ROOT}/toolbox/getprofilefunctionstats.m</file>
+      <file>${PROJECT_ROOT}/toolbox/h2e.m</file>
+      <file>${PROJECT_ROOT}/toolbox/hist2d.m</file>
+      <file>${PROJECT_ROOT}/toolbox/hist2d.mexglx</file>
+      <file>${PROJECT_ROOT}/toolbox/hist2d.mexmaci64</file>
+      <file>${PROJECT_ROOT}/toolbox/hist2d.mexw32</file>
+      <file>${PROJECT_ROOT}/toolbox/hist2d.mexw64</file>
+      <file>${PROJECT_ROOT}/toolbox/hitormiss.m</file>
+      <file>${PROJECT_ROOT}/toolbox/homline.m</file>
+      <file>${PROJECT_ROOT}/toolbox/homography.m</file>
+      <file>${PROJECT_ROOT}/toolbox/homtrans.m</file>
+      <file>${PROJECT_ROOT}/toolbox/homwarp.m</file>
+      <file>${PROJECT_ROOT}/toolbox/humoments.m</file>
+      <file>${PROJECT_ROOT}/toolbox/ianimate.m</file>
+      <file>${PROJECT_ROOT}/toolbox/ibbox.m</file>
+      <file>${PROJECT_ROOT}/toolbox/iblobs.m</file>
+      <file>${PROJECT_ROOT}/toolbox/icanny.m</file>
+      <file>${PROJECT_ROOT}/toolbox/iclose.m</file>
+      <file>${PROJECT_ROOT}/toolbox/icolor.m</file>
+      <file>${PROJECT_ROOT}/toolbox/iconcat.m</file>
+      <file>${PROJECT_ROOT}/toolbox/iconv.m</file>
+      <file>${PROJECT_ROOT}/toolbox/icorner.m</file>
+      <file>${PROJECT_ROOT}/toolbox/icp.m</file>
+      <file>${PROJECT_ROOT}/toolbox/idecimate.m</file>
+      <file>${PROJECT_ROOT}/toolbox/idilate.m</file>
+      <file>${PROJECT_ROOT}/toolbox/idisp.m</file>
+      <file>${PROJECT_ROOT}/toolbox/idisplabel.m</file>
+      <file>${PROJECT_ROOT}/toolbox/idouble.m</file>
+      <file>${PROJECT_ROOT}/toolbox/iendpoint.m</file>
+      <file>${PROJECT_ROOT}/toolbox/ierode.m</file>
+      <file>${PROJECT_ROOT}/toolbox/igamm.m</file>
+      <file>${PROJECT_ROOT}/toolbox/igraphseg.m</file>
+      <file>${PROJECT_ROOT}/toolbox/ihist.m</file>
+      <file>${PROJECT_ROOT}/toolbox/iint.m</file>
+      <file>${PROJECT_ROOT}/toolbox/iisum.m</file>
+      <file>${PROJECT_ROOT}/toolbox/ilabel.m</file>
+      <file>${PROJECT_ROOT}/toolbox/ilabel.mexglx</file>
+      <file>${PROJECT_ROOT}/toolbox/ilabel.mexmaci64</file>
+      <file>${PROJECT_ROOT}/toolbox/ilabel.mexw32</file>
+      <file>${PROJECT_ROOT}/toolbox/ilabel.mexw64</file>
+      <file>${PROJECT_ROOT}/toolbox/iline.m</file>
+      <file>${PROJECT_ROOT}/toolbox/im2col.m</file>
+      <file>${PROJECT_ROOT}/toolbox/images</file>
+      <file>${PROJECT_ROOT}/toolbox/imatch.m</file>
+      <file>${PROJECT_ROOT}/toolbox/imatch.mexglx</file>
+      <file>${PROJECT_ROOT}/toolbox/imatch.mexmaci64</file>
+      <file>${PROJECT_ROOT}/toolbox/imatch.mexw32</file>
+      <file>${PROJECT_ROOT}/toolbox/imatch.mexw64</file>
+      <file>${PROJECT_ROOT}/toolbox/imeshgrid.m</file>
+      <file>${PROJECT_ROOT}/toolbox/imoments.m</file>
+      <file>${PROJECT_ROOT}/toolbox/imono.m</file>
+      <file>${PROJECT_ROOT}/toolbox/imorph.mexglx</file>
+      <file>${PROJECT_ROOT}/toolbox/imorph.mexmaci64</file>
+      <file>${PROJECT_ROOT}/toolbox/imorph.mexw32</file>
+      <file>${PROJECT_ROOT}/toolbox/imorph.mexw64</file>
+      <file>${PROJECT_ROOT}/toolbox/imser.m</file>
+      <file>${PROJECT_ROOT}/toolbox/info</file>
+      <file>${PROJECT_ROOT}/toolbox/info.xml</file>
+      <file>${PROJECT_ROOT}/toolbox/inormhist.m</file>
+      <file>${PROJECT_ROOT}/toolbox/intgimage.m</file>
+      <file>${PROJECT_ROOT}/toolbox/invcamcal.m</file>
+      <file>${PROJECT_ROOT}/toolbox/iopen.m</file>
+      <file>${PROJECT_ROOT}/toolbox/ipad.m</file>
+      <file>${PROJECT_ROOT}/toolbox/ipaste.m</file>
+      <file>${PROJECT_ROOT}/toolbox/ipixswitch.m</file>
+      <file>${PROJECT_ROOT}/toolbox/iprofile.m</file>
+      <file>${PROJECT_ROOT}/toolbox/ipyramid.m</file>
+      <file>${PROJECT_ROOT}/toolbox/irank.m</file>
+      <file>${PROJECT_ROOT}/toolbox/irank.mexglx</file>
+      <file>${PROJECT_ROOT}/toolbox/irank.mexmaci64</file>
+      <file>${PROJECT_ROOT}/toolbox/irank.mexw32</file>
+      <file>${PROJECT_ROOT}/toolbox/iread.m</file>
+      <file>${PROJECT_ROOT}/toolbox/irectify.m</file>
+      <file>${PROJECT_ROOT}/toolbox/ireplicate.m</file>
+      <file>${PROJECT_ROOT}/toolbox/iroi.m</file>
+      <file>${PROJECT_ROOT}/toolbox/irotate.m</file>
+      <file>${PROJECT_ROOT}/toolbox/isamesize.m</file>
+      <file>${PROJECT_ROOT}/toolbox/iscale.m</file>
+      <file>${PROJECT_ROOT}/toolbox/iscalemax.m</file>
+      <file>${PROJECT_ROOT}/toolbox/iscalespace.m</file>
+      <file>${PROJECT_ROOT}/toolbox/iscolor.m</file>
+      <file>${PROJECT_ROOT}/toolbox/ishomog.m</file>
+      <file>${PROJECT_ROOT}/toolbox/ishomog2.m</file>
+      <file>${PROJECT_ROOT}/toolbox/isift.m</file>
+      <file>${PROJECT_ROOT}/toolbox/isimilarity.m</file>
+      <file>${PROJECT_ROOT}/toolbox/isize.m</file>
+      <file>${PROJECT_ROOT}/toolbox/ismooth.m</file>
+      <file>${PROJECT_ROOT}/toolbox/isobel.m</file>
+      <file>${PROJECT_ROOT}/toolbox/isrot.m</file>
+      <file>${PROJECT_ROOT}/toolbox/isrot2.m</file>
+      <file>${PROJECT_ROOT}/toolbox/istereo.m</file>
+      <file>${PROJECT_ROOT}/toolbox/istretch.m</file>
+      <file>${PROJECT_ROOT}/toolbox/isurf.m</file>
+      <file>${PROJECT_ROOT}/toolbox/isvec.m</file>
+      <file>${PROJECT_ROOT}/toolbox/ithin.m</file>
+      <file>${PROJECT_ROOT}/toolbox/ithresh.m</file>
+      <file>${PROJECT_ROOT}/toolbox/itrim.m</file>
+      <file>${PROJECT_ROOT}/toolbox/itriplepoint.m</file>
+      <file>${PROJECT_ROOT}/toolbox/ivar.m</file>
+      <file>${PROJECT_ROOT}/toolbox/ivar.mexglx</file>
+      <file>${PROJECT_ROOT}/toolbox/ivar.mexmaci64</file>
+      <file>${PROJECT_ROOT}/toolbox/ivar.mexw32</file>
+      <file>${PROJECT_ROOT}/toolbox/ivar.mexw64</file>
+      <file>${PROJECT_ROOT}/toolbox/iwindow.m</file>
+      <file>${PROJECT_ROOT}/toolbox/iwindow.mexglx</file>
+      <file>${PROJECT_ROOT}/toolbox/iwindow.mexmaci64</file>
+      <file>${PROJECT_ROOT}/toolbox/iwindow.mexw32</file>
+      <file>${PROJECT_ROOT}/toolbox/iwindow.mexw64</file>
+      <file>${PROJECT_ROOT}/toolbox/kcircle.m</file>
+      <file>${PROJECT_ROOT}/toolbox/kdgauss.m</file>
+      <file>${PROJECT_ROOT}/toolbox/kdog.m</file>
+      <file>${PROJECT_ROOT}/toolbox/kgauss.m</file>
+      <file>${PROJECT_ROOT}/toolbox/klaplace.m</file>
+      <file>${PROJECT_ROOT}/toolbox/klog.m</file>
+      <file>${PROJECT_ROOT}/toolbox/kmeans.m</file>
+      <file>${PROJECT_ROOT}/toolbox/ksobel.m</file>
+      <file>${PROJECT_ROOT}/toolbox/ktriangle.m</file>
+      <file>${PROJECT_ROOT}/toolbox/lambda2rg.m</file>
+      <file>${PROJECT_ROOT}/toolbox/lambda2xy.m</file>
+      <file>${PROJECT_ROOT}/toolbox/loadspectrum.m</file>
+      <file>${PROJECT_ROOT}/toolbox/luminos.m</file>
+      <file>${PROJECT_ROOT}/toolbox/mex</file>
+      <file>${PROJECT_ROOT}/toolbox/mkcube.m</file>
+      <file>${PROJECT_ROOT}/toolbox/mkgrid.m</file>
+      <file>${PROJECT_ROOT}/toolbox/mlabel.m</file>
+      <file>${PROJECT_ROOT}/toolbox/morphdemo.m</file>
+      <file>${PROJECT_ROOT}/toolbox/mplot.m</file>
+      <file>${PROJECT_ROOT}/toolbox/mpq.m</file>
+      <file>${PROJECT_ROOT}/toolbox/mpq_poly.m</file>
+      <file>${PROJECT_ROOT}/toolbox/mtools.m</file>
+      <file>${PROJECT_ROOT}/toolbox/multidfprintf.m</file>
+      <file>${PROJECT_ROOT}/toolbox/ncc.m</file>
+      <file>${PROJECT_ROOT}/toolbox/niblack.m</file>
+      <file>${PROJECT_ROOT}/toolbox/npq.m</file>
+      <file>${PROJECT_ROOT}/toolbox/npq_poly.m</file>
+      <file>${PROJECT_ROOT}/toolbox/numcols.m</file>
+      <file>${PROJECT_ROOT}/toolbox/numrows.m</file>
+      <file>${PROJECT_ROOT}/toolbox/otsu.m</file>
+      <file>${PROJECT_ROOT}/toolbox/peak.m</file>
+      <file>${PROJECT_ROOT}/toolbox/peak2.m</file>
+      <file>${PROJECT_ROOT}/toolbox/pickregion.m</file>
+      <file>${PROJECT_ROOT}/toolbox/plot2.m</file>
+      <file>${PROJECT_ROOT}/toolbox/plot_arrow.m</file>
+      <file>${PROJECT_ROOT}/toolbox/plot_box.m</file>
+      <file>${PROJECT_ROOT}/toolbox/plot_circle.m</file>
+      <file>${PROJECT_ROOT}/toolbox/plot_ellipse.m</file>
+      <file>${PROJECT_ROOT}/toolbox/plot_ellipse_inv.m</file>
+      <file>${PROJECT_ROOT}/toolbox/plot_homline.m</file>
+      <file>${PROJECT_ROOT}/toolbox/plot_point.m</file>
+      <file>${PROJECT_ROOT}/toolbox/plot_poly.m</file>
+      <file>${PROJECT_ROOT}/toolbox/plot_sphere.m</file>
+      <file>${PROJECT_ROOT}/toolbox/plotp.m</file>
+      <file>${PROJECT_ROOT}/toolbox/pnmfilt.m</file>
+      <file>${PROJECT_ROOT}/toolbox/polydiff.m</file>
+      <file>${PROJECT_ROOT}/toolbox/private</file>
+      <file>${PROJECT_ROOT}/toolbox/protectfig.m</file>
+      <file>${PROJECT_ROOT}/toolbox/radgrad.m</file>
+      <file>${PROJECT_ROOT}/toolbox/randinit.m</file>
+      <file>${PROJECT_ROOT}/toolbox/ransac.m</file>
+      <file>${PROJECT_ROOT}/toolbox/rg_addticks.m</file>
+      <file>${PROJECT_ROOT}/toolbox/rgb2xyz.m</file>
+      <file>${PROJECT_ROOT}/toolbox/rluminos.m</file>
+      <file>${PROJECT_ROOT}/toolbox/runscript.m</file>
+      <file>${PROJECT_ROOT}/toolbox/rvcpath.m</file>
+      <file>${PROJECT_ROOT}/toolbox/sad.m</file>
+      <file>${PROJECT_ROOT}/toolbox/showpixels.m</file>
+      <file>${PROJECT_ROOT}/toolbox/simulinkext.m</file>
+      <file>${PROJECT_ROOT}/toolbox/ssd.m</file>
+      <file>${PROJECT_ROOT}/toolbox/stdisp.m</file>
+      <file>${PROJECT_ROOT}/toolbox/stereo_match.mexglx</file>
+      <file>${PROJECT_ROOT}/toolbox/stereo_match.mexmaci64</file>
+      <file>${PROJECT_ROOT}/toolbox/stereo_match.mexw32</file>
+      <file>${PROJECT_ROOT}/toolbox/stereo_match.mexw64</file>
+      <file>${PROJECT_ROOT}/toolbox/symexpr2slblock.m</file>
+      <file>${PROJECT_ROOT}/toolbox/tb_optparse.m</file>
+      <file>${PROJECT_ROOT}/toolbox/testpattern.m</file>
+      <file>${PROJECT_ROOT}/toolbox/tristim2cc.m</file>
+      <file>${PROJECT_ROOT}/toolbox/undockfigs.m</file>
+      <file>${PROJECT_ROOT}/toolbox/upq.m</file>
+      <file>${PROJECT_ROOT}/toolbox/upq_poly.m</file>
+      <file>${PROJECT_ROOT}/toolbox/vgg_F_from_7pts_2img.m</file>
+      <file>${PROJECT_ROOT}/toolbox/vgg_H_algebraic_distance.m</file>
+      <file>${PROJECT_ROOT}/toolbox/vgg_H_from_x_lin.m</file>
+      <file>${PROJECT_ROOT}/toolbox/vgg_H_from_x_nonlin.m</file>
+      <file>${PROJECT_ROOT}/toolbox/vgg_H_sampson_distance_sqr.m</file>
+      <file>${PROJECT_ROOT}/toolbox/vgg_condition_2d.m</file>
+      <file>${PROJECT_ROOT}/toolbox/vgg_conditioner_from_pts.m</file>
+      <file>${PROJECT_ROOT}/toolbox/vgg_contreps.m</file>
+      <file>${PROJECT_ROOT}/toolbox/vgg_decondition_2d.m</file>
+      <file>${PROJECT_ROOT}/toolbox/vgg_get_homg.m</file>
+      <file>${PROJECT_ROOT}/toolbox/vgg_get_nonhomg.m</file>
+      <file>${PROJECT_ROOT}/toolbox/vgg_rq.m</file>
+      <file>${PROJECT_ROOT}/toolbox/vgg_singF_from_FF.m</file>
+      <file>${PROJECT_ROOT}/toolbox/vgg_vec_swap.m</file>
+      <file>${PROJECT_ROOT}/toolbox/vision.pdf</file>
+      <file>${PROJECT_ROOT}/toolbox/xaxis.m</file>
+      <file>${PROJECT_ROOT}/toolbox/xycolorspace.m</file>
+      <file>${PROJECT_ROOT}/toolbox/xyzlabel.m</file>
+      <file>${PROJECT_ROOT}/toolbox/yaxis.m</file>
+      <file>${PROJECT_ROOT}/toolbox/zcross.m</file>
+      <file>${PROJECT_ROOT}/toolbox/zncc.m</file>
+      <file>${PROJECT_ROOT}/toolbox/zsad.m</file>
+      <file>${PROJECT_ROOT}/toolbox/zssd.m</file>
+    </fileset.rootfiles>
+    <fileset.depfun.included>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/@Camera/Camera.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/@Camera/plot_camera.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/@CentralCamera/CentralCamera.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/@CentralCamera/estpose.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/@CentralCamera/flowfield.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/@CentralCamera/private/compute_A_and_b_Gauss_Newton.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/@CentralCamera/private/compute_L6_10.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/@CentralCamera/private/compute_M_ver2.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/@CentralCamera/private/compute_alphas.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/@CentralCamera/private/compute_constraint_distance_2param_6eq_3unk.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/@CentralCamera/private/compute_constraint_distance_3param_6eq_6unk.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/@CentralCamera/private/compute_constraint_distance_orthog_4param_9eq_10unk.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/@CentralCamera/private/compute_norm_sign_scaling_factor.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/@CentralCamera/private/compute_permutation_constraint4.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/@CentralCamera/private/compute_rho.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/@CentralCamera/private/define_control_points.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/@CentralCamera/private/define_distances_btw_control_points.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/@CentralCamera/private/dist2.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/@CentralCamera/private/efficient_pnp.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/@CentralCamera/private/efficient_pnp_gauss.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/@CentralCamera/private/gauss_newton.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/@CentralCamera/private/getrotT.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/@CentralCamera/private/invhomog.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/@CentralCamera/private/kernel_noise.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/@CentralCamera/private/optimize_betas_gauss_newton.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/@CentralCamera/private/reprojection_error_usingRT.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/@CentralCamera/private/sign_determinant.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/@CentralCamera/visjac_e.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/@CentralCamera/visjac_l.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/@CentralCamera/visjac_p.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/@CentralCamera/visjac_p_polar.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/@SiftPointFeature/SiftPointFeature.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/@SiftPointFeature/isiftmatch.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/@SiftPointFeature/support.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/@SphericalCamera/SphericalCamera.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/@SphericalCamera/plot_camera.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/@SphericalCamera/scamera.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/@SphericalCamera/showpose.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/@SphericalCamera/sph.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/@SphericalCamera/sph2.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/@SphericalCamera/visjac_p.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/@SurfPointFeature/SurfPointFeature.m</file>
+      <file>/Users/corkep/Documents/MATLAB/Toolboxes/Machine Vision Toolbox (MOOC build)/@SurfPointFeature/support.m</file>
+      <file>/Users/corkep/code/RVC/machinevision-toolbox-matlab/@Camera/Camera.m</file>
+      <file>/Users/corkep/code/RVC/machinevision-toolbox-matlab/@Camera/plot_camera.m</file>
+      <file>/Users/corkep/code/RVC/machinevision-toolbox-matlab/@CentralCamera/CentralCamera.m</file>
+      <file>/Users/corkep/code/RVC/machinevision-toolbox-matlab/@CentralCamera/estpose.m</file>
+      <file>/Users/corkep/code/RVC/machinevision-toolbox-matlab/@CentralCamera/flowfield.m</file>
+      <file>/Users/corkep/code/RVC/machinevision-toolbox-matlab/@CentralCamera/private/compute_A_and_b_Gauss_Newton.m</file>
+      <file>/Users/corkep/code/RVC/machinevision-toolbox-matlab/@CentralCamera/private/compute_L6_10.m</file>
+      <file>/Users/corkep/code/RVC/machinevision-toolbox-matlab/@CentralCamera/private/compute_M_ver2.m</file>
+      <file>/Users/corkep/code/RVC/machinevision-toolbox-matlab/@CentralCamera/private/compute_alphas.m</file>
+      <file>/Users/corkep/code/RVC/machinevision-toolbox-matlab/@CentralCamera/private/compute_constraint_distance_2param_6eq_3unk.m</file>
+      <file>/Users/corkep/code/RVC/machinevision-toolbox-matlab/@CentralCamera/private/compute_constraint_distance_3param_6eq_6unk.m</file>
+      <file>/Users/corkep/code/RVC/machinevision-toolbox-matlab/@CentralCamera/private/compute_constraint_distance_orthog_4param_9eq_10unk.m</file>
+      <file>/Users/corkep/code/RVC/machinevision-toolbox-matlab/@CentralCamera/private/compute_norm_sign_scaling_factor.m</file>
+      <file>/Users/corkep/code/RVC/machinevision-toolbox-matlab/@CentralCamera/private/compute_permutation_constraint4.m</file>
+      <file>/Users/corkep/code/RVC/machinevision-toolbox-matlab/@CentralCamera/private/compute_rho.m</file>
+      <file>/Users/corkep/code/RVC/machinevision-toolbox-matlab/@CentralCamera/private/define_control_points.m</file>
+      <file>/Users/corkep/code/RVC/machinevision-toolbox-matlab/@CentralCamera/private/define_distances_btw_control_points.m</file>
+      <file>/Users/corkep/code/RVC/machinevision-toolbox-matlab/@CentralCamera/private/dist2.m</file>
+      <file>/Users/corkep/code/RVC/machinevision-toolbox-matlab/@CentralCamera/private/efficient_pnp.m</file>
+      <file>/Users/corkep/code/RVC/machinevision-toolbox-matlab/@CentralCamera/private/efficient_pnp_gauss.m</file>
+      <file>/Users/corkep/code/RVC/machinevision-toolbox-matlab/@CentralCamera/private/gauss_newton.m</file>
+      <file>/Users/corkep/code/RVC/machinevision-toolbox-matlab/@CentralCamera/private/getrotT.m</file>
+      <file>/Users/corkep/code/RVC/machinevision-toolbox-matlab/@CentralCamera/private/invhomog.m</file>
+      <file>/Users/corkep/code/RVC/machinevision-toolbox-matlab/@CentralCamera/private/kernel_noise.m</file>
+      <file>/Users/corkep/code/RVC/machinevision-toolbox-matlab/@CentralCamera/private/optimize_betas_gauss_newton.m</file>
+      <file>/Users/corkep/code/RVC/machinevision-toolbox-matlab/@CentralCamera/private/reprojection_error_usingRT.m</file>
+      <file>/Users/corkep/code/RVC/machinevision-toolbox-matlab/@CentralCamera/private/sign_determinant.m</file>
+      <file>/Users/corkep/code/RVC/machinevision-toolbox-matlab/@CentralCamera/visjac_e.m</file>
+      <file>/Users/corkep/code/RVC/machinevision-toolbox-matlab/@CentralCamera/visjac_l.m</file>
+      <file>/Users/corkep/code/RVC/machinevision-toolbox-matlab/@CentralCamera/visjac_p.m</file>
+      <file>/Users/corkep/code/RVC/machinevision-toolbox-matlab/@CentralCamera/visjac_p_polar.m</file>
+      <file>/Users/corkep/code/RVC/machinevision-toolbox-matlab/@SiftPointFeature/SiftPointFeature.m</file>
+      <file>/Users/corkep/code/RVC/machinevision-toolbox-matlab/@SiftPointFeature/isiftmatch.m</file>
+      <file>/Users/corkep/code/RVC/machinevision-toolbox-matlab/@SiftPointFeature/support.m</file>
+      <file>/Users/corkep/code/RVC/machinevision-toolbox-matlab/@SphericalCamera/SphericalCamera.m</file>
+      <file>/Users/corkep/code/RVC/machinevision-toolbox-matlab/@SphericalCamera/plot_camera.m</file>
+      <file>/Users/corkep/code/RVC/machinevision-toolbox-matlab/@SphericalCamera/scamera.m</file>
+      <file>/Users/corkep/code/RVC/machinevision-toolbox-matlab/@SphericalCamera/showpose.m</file>
+      <file>/Users/corkep/code/RVC/machinevision-toolbox-matlab/@SphericalCamera/sph.m</file>
+      <file>/Users/corkep/code/RVC/machinevision-toolbox-matlab/@SphericalCamera/sph2.m</file>
+      <file>/Users/corkep/code/RVC/machinevision-toolbox-matlab/@SphericalCamera/visjac_p.m</file>
+      <file>/Users/corkep/code/RVC/machinevision-toolbox-matlab/@SurfPointFeature/SurfPointFeature.m</file>
+      <file>/Users/corkep/code/RVC/machinevision-toolbox-matlab/@SurfPointFeature/support.m</file>
+      <file>/Users/corkep/rvc/contrib/graphseg/graphseg.mexmaci64</file>
+      <file>/Users/corkep/rvc/contrib/sift/diffss.m</file>
+      <file>/Users/corkep/rvc/contrib/sift/gaussianss.m</file>
+      <file>/Users/corkep/rvc/contrib/sift/imsmooth.mexmaci64</file>
+      <file>/Users/corkep/rvc/contrib/sift/sift.m</file>
+      <file>/Users/corkep/rvc/contrib/sift/siftdescriptor.m</file>
+      <file>/Users/corkep/rvc/contrib/sift/siftdescriptor.mexmaci64</file>
+      <file>/Users/corkep/rvc/contrib/sift/siftlocalmax.m</file>
+      <file>/Users/corkep/rvc/contrib/sift/siftlocalmax.mexmaci64</file>
+      <file>/Users/corkep/rvc/contrib/sift/siftmatch.m</file>
+      <file>/Users/corkep/rvc/contrib/sift/siftmatch.mexmaci64</file>
+      <file>/Users/corkep/rvc/contrib/sift/siftormx.mexmaci64</file>
+      <file>/Users/corkep/rvc/contrib/sift/siftrefinemx.m</file>
+      <file>/Users/corkep/rvc/contrib/sift/siftrefinemx.mexmaci64</file>
+      <file>/Users/corkep/rvc/contrib/surf/FastHessian_ResponseLayer.m</file>
+      <file>/Users/corkep/rvc/contrib/surf/FastHessian_buildResponseLayer.m</file>
+      <file>/Users/corkep/rvc/contrib/surf/FastHessian_buildResponseMap.m</file>
+      <file>/Users/corkep/rvc/contrib/surf/FastHessian_getIpoints.m</file>
+      <file>/Users/corkep/rvc/contrib/surf/FastHessian_getLaplacian.m</file>
+      <file>/Users/corkep/rvc/contrib/surf/FastHessian_getResponse.m</file>
+      <file>/Users/corkep/rvc/contrib/surf/FastHessian_interpolateExtremum.m</file>
+      <file>/Users/corkep/rvc/contrib/surf/FastHessian_isExtremum.m</file>
+      <file>/Users/corkep/rvc/contrib/surf/IntegralImage_BoxIntegral.m</file>
+      <file>/Users/corkep/rvc/contrib/surf/IntegralImage_HaarX.m</file>
+      <file>/Users/corkep/rvc/contrib/surf/IntegralImage_HaarY.m</file>
+      <file>/Users/corkep/rvc/contrib/surf/IntegralImage_IntegralImage.m</file>
+      <file>/Users/corkep/rvc/contrib/surf/OpenSurf.m</file>
+      <file>/Users/corkep/rvc/contrib/surf/SurfDescriptor_DecribeInterestPoints.m</file>
+      <file>/Users/corkep/rvc/contrib/surf/SurfDescriptor_GetDescriptor.m</file>
+      <file>/Users/corkep/rvc/contrib/surf/SurfDescriptor_GetOrientation.m</file>
+      <file>/Users/corkep/rvc/contrib/vlfeat-0.9.9/toolbox/mex/mexmaci64/vl_kmeans.mexmaci64</file>
+      <file>/Users/corkep/rvc/contrib/vlfeat-0.9.9/toolbox/mex/mexmaci64/vl_mser.mexmaci64</file>
+      <file>/Users/corkep/rvc/robot/Quaternion.m</file>
+      <file>/Users/corkep/rvc/robot/angvec2r.m</file>
+      <file>/Users/corkep/rvc/robot/delta2tr.m</file>
+      <file>/Users/corkep/rvc/robot/r2t.m</file>
+      <file>/Users/corkep/rvc/robot/rotx.m</file>
+      <file>/Users/corkep/rvc/robot/roty.m</file>
+      <file>/Users/corkep/rvc/robot/rotz.m</file>
+      <file>/Users/corkep/rvc/robot/rt2tr.m</file>
+      <file>/Users/corkep/rvc/robot/se2.m</file>
+      <file>/Users/corkep/rvc/robot/skew.m</file>
+      <file>/Users/corkep/rvc/robot/t2r.m</file>
+      <file>/Users/corkep/rvc/robot/tpoly.m</file>
+      <file>/Users/corkep/rvc/robot/tr2angvec.m</file>
+      <file>/Users/corkep/rvc/robot/tr2delta.m</file>
+      <file>/Users/corkep/rvc/robot/tr2eul.m</file>
+      <file>/Users/corkep/rvc/robot/tr2rpy.m</file>
+      <file>/Users/corkep/rvc/robot/tr2rt.m</file>
+      <file>/Users/corkep/rvc/robot/transl.m</file>
+      <file>/Users/corkep/rvc/robot/trinterp.m</file>
+      <file>/Users/corkep/rvc/robot/trnorm.m</file>
+      <file>/Users/corkep/rvc/robot/trotx.m</file>
+      <file>/Users/corkep/rvc/robot/trotz.m</file>
+      <file>/Users/corkep/rvc/robot/trplot.m</file>
+      <file>/Users/corkep/rvc/robot/trprint.m</file>
+      <file>/Users/corkep/rvc/robot/unit.m</file>
+      <file>/Users/corkep/rvc/robot/vex.m</file>
+      <file>/Users/corkep/rvc/vision/examples/VisualServo.m</file>
+      <file>/Users/corkep/rvc/vision/examples/eg_morph1.m</file>
+      <file>/Users/corkep/rvc/vision/yuv2rgb.m</file>
+      <file>/Users/corkep/rvc/vision/yuv2rgb2.m</file>
+    </fileset.depfun.included>
+    <fileset.depfun.excluded />
+    <fileset.package />
+    <build-deliverables>
+      <file location="/Users/corkep/code/RVC/machinevision-toolbox-matlab/distrib" name="Machine Vision Toolbox (MOOC build).mltbx" optional="false">/Users/corkep/code/RVC/machinevision-toolbox-matlab/distrib/Machine Vision Toolbox (MOOC build).mltbx</file>
+    </build-deliverables>
+    <workflow />
+    <matlab>
+      <root>/Applications/MATLAB_R2015a.app</root>
+      <toolboxes>
+        <toolbox name="embeddedcoder" />
+        <toolbox name="matlabcoder" />
+      </toolboxes>
+      <toolbox>
+        <embeddedcoder>
+          <enabled>true</enabled>
+        </embeddedcoder>
+      </toolbox>
+      <toolbox>
+        <matlabcoder>
+          <enabled>true</enabled>
+        </matlabcoder>
+      </toolbox>
+    </matlab>
+    <platform>
+      <unix>true</unix>
+      <mac>true</mac>
+      <windows>false</windows>
+      <win2k>false</win2k>
+      <winxp>false</winxp>
+      <vista>false</vista>
+      <linux>false</linux>
+      <solaris>false</solaris>
+      <osver>10.10.3</osver>
+      <os32>false</os32>
+      <os64>true</os64>
+      <arch>maci64</arch>
+      <matlab>true</matlab>
+    </platform>
+  </configuration>
+</deployment-project>

@@ -1,0 +1,110 @@
+<deployment-project plugin="plugin.toolbox" plugin-version="1.0">
+  <configuration build-checksum="164933536" file="/Users/corkep/code/rvc/machinevision-toolbox-matlab/distrib/MVTB.prj" location="/Users/corkep/code/rvc/machinevision-toolbox-matlab/distrib" name="MVTB" target="target.toolbox" target-name="Package Toolbox">
+    <param.appname>Machine Vision Toolbox for MATLAB</param.appname>
+    <param.authnamewatermark>Peter Corke</param.authnamewatermark>
+    <param.email>rvc@petercorke.com</param.email>
+    <param.company />
+    <param.summary>MATLAB support for computer vision and feature extraction</param.summary>
+    <param.description>MATLAB support for computer vision and feature extraction</param.description>
+    <param.screenshot>/Users/corkep/code/rvc/machinevision-toolbox-matlab/doc/manual/figs/mvtb-montage.png</param.screenshot>
+    <param.version>4.1</param.version>
+    <param.output>${PROJECT_ROOT}/Machine Vision Toolbox for MATLAB.mltbx</param.output>
+    <param.products.name>
+      <item>MATLAB</item>
+      <item>Simulink</item>
+    </param.products.name>
+    <param.products.id>
+      <item>1</item>
+      <item>2</item>
+    </param.products.id>
+    <param.products.version>
+      <item>9.1</item>
+      <item>8.8</item>
+    </param.products.version>
+    <param.platforms />
+    <param.guid>5456c90d-db69-4f01-b199-f3e351cfc928</param.guid>
+    <param.exclude.filters />
+    <param.examples />
+    <param.demosxml />
+    <param.apps />
+    <param.docs>${PROJECT_ROOT}/tmp/rvctools/info.xml</param.docs>
+    <param.matlabpath.excludes>
+      <item>//Users/corkep/code/rvc/robot</item>
+    </param.matlabpath.excludes>
+    <param.javaclasspath.excludes />
+    <unset>
+      <param.company />
+      <param.output />
+      <param.platforms />
+      <param.exclude.filters />
+      <param.examples />
+      <param.demosxml />
+      <param.apps />
+      <param.javaclasspath.excludes />
+    </unset>
+    <fileset.rootdir>
+      <file>${PROJECT_ROOT}/tmp/rvctools</file>
+    </fileset.rootdir>
+    <fileset.rootfiles>
+      <file>${PROJECT_ROOT}/tmp/rvctools/common</file>
+      <file>${PROJECT_ROOT}/tmp/rvctools/contrib</file>
+      <file>${PROJECT_ROOT}/tmp/rvctools/info</file>
+      <file>${PROJECT_ROOT}/tmp/rvctools/info.xml</file>
+      <file>${PROJECT_ROOT}/tmp/rvctools/robot</file>
+      <file>${PROJECT_ROOT}/tmp/rvctools/simulink</file>
+      <file>${PROJECT_ROOT}/tmp/rvctools/startup_rvc.m</file>
+      <file>${PROJECT_ROOT}/tmp/rvctools/vision</file>
+    </fileset.rootfiles>
+    <fileset.depfun.included />
+    <fileset.depfun.excluded />
+    <fileset.package />
+    <build-deliverables>
+      <file location="/Users/corkep/code/rvc/machinevision-toolbox-matlab/distrib" name="Machine Vision Toolbox for MATLAB.mltbx" optional="false">/Users/corkep/code/rvc/machinevision-toolbox-matlab/distrib/Machine Vision Toolbox for MATLAB.mltbx</file>
+    </build-deliverables>
+    <workflow />
+    <matlab>
+      <root>/Applications/MATLAB_R2016b.app</root>
+      <toolboxes>
+        <toolbox name="fixedpoint" />
+        <toolbox name="matlabcoder" />
+        <toolbox name="matlabhdlcoder" />
+        <toolbox name="embeddedcoder" />
+      </toolboxes>
+      <toolbox>
+        <fixedpoint>
+          <enabled>true</enabled>
+        </fixedpoint>
+      </toolbox>
+      <toolbox>
+        <matlabcoder>
+          <enabled>true</enabled>
+        </matlabcoder>
+      </toolbox>
+      <toolbox>
+        <matlabhdlcoder>
+          <enabled>true</enabled>
+        </matlabhdlcoder>
+      </toolbox>
+      <toolbox>
+        <embeddedcoder>
+          <enabled>true</enabled>
+        </embeddedcoder>
+      </toolbox>
+    </matlab>
+    <platform>
+      <unix>true</unix>
+      <mac>true</mac>
+      <windows>false</windows>
+      <win2k>false</win2k>
+      <winxp>false</winxp>
+      <vista>false</vista>
+      <linux>false</linux>
+      <solaris>false</solaris>
+      <osver>10.12.3</osver>
+      <os32>false</os32>
+      <os64>true</os64>
+      <arch>maci64</arch>
+      <matlab>true</matlab>
+    </platform>
+  </configuration>
+</deployment-project>

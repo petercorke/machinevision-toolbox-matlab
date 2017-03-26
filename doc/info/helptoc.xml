@@ -10,14 +10,16 @@
   <!-- Help -->
 
   <!-- MATLAB Functions -->
-  <tocreference image="$toolbox/matlab/icons/help_fx.gif" target="helpfuncbycat.xml">
-  </tocreference>
+  <tocitem target="contents.html" image="$toolbox/matlab/icons/help_fx.gif" >Functions
+    <tocitem target="contents.html" image="$toolbox/matlab/icons/reficon.gif">Functions by category</tocitem>
+    <tocitem target="contents_alpha.html" image="$toolbox/matlab/icons/reficon.gif">Functions alphabetic order</tocitem>
+  </tocitem>
 
   <!-- Simulink -->
   <tocitem target="simulink.html" image="$toolbox/matlab/icons/reficon.gif">Simulink</tocitem>
 
   <!-- Manual -->
-  <tocitem target="../vision.pdf" image="$toolbox/matlab/icons/reficon.gif">Manual</tocitem>
+  <tocitem target="../vision/vision.pdf" image="$toolbox/matlab/icons/reficon.gif">Manual</tocitem>
 
   <!-- Examples -->
   <tocitem target="./examples/examples.html" image="$toolbox/matlab/icons/demoicon.gif">Examples</tocitem>
@@ -36,7 +38,7 @@
   
   <!-- Web Pages -->
   <tocitem target="vision_product_page.html" image="$toolbox/matlab/icons/webicon.gif">Web Pages
-    <tocitem target="http://www.petercorke.com/vision" image="$toolbox/matlab/icons/webicon.gif">Machine Vision Toolbox web page</tocitem>
+    <tocitem target="http://petercorke.com/wordpress/toolboxes/machine-vision-toolbox" image="$toolbox/matlab/icons/webicon.gif">Machine Vision Toolbox web page</tocitem>
     <tocitem target="http://groups.google.com/group/robotics-tool-box?hl=en" image="$toolbox/matlab/icons/webicon.gif">Robotics Toolbox discussion group</tocitem>
     <tocitem target="http://www.petercorke.com/RVC" image="$toolbox/matlab/icons/webicon.gif">Robotics, Vision &amp; Control (the book)</tocitem>
   </tocitem>

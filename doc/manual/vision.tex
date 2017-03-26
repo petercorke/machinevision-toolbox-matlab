@@ -1,40 +1,21 @@
-\documentclass[a4paper]{report}
+\documentclass[a4paper,twoside]{report}
 
 \usepackage{times}
 \usepackage{graphicx}
 \usepackage{wrapfig}
 \usepackage{pdfpages}
 \usepackage{hyperref}
-%\usepackage{fancyheadings}
 \usepackage{fancyhdr}
-\usepackage{multicol}
-
-\usepackage{filecontents}
-\usepackage{tabularx}
+\usepackage[overlay]{textpos}
+\usepackage{mathptmx}
+\usepackage{anyfontsize}
 \usepackage{longtable}
-\usepackage{ltxtable}
-
+\usepackage{t1enc}
 \hypersetup{
   colorlinks=true,
   linkcolor=black
   }
   
-% printindex stuff
-\makeatletter
-\def\printindex#1#2{\subsection*{#2}
-  \@input{#1.ind}}
-  
-\def\theindex{\parindent\z@
-\parskip\z@ plus .3pt\relax\let\item\@idxitem}
-\def\@idxitem{\par\hangindent 40pt}
-\def\subitem{\par\hangindent 40pt \hspace*{20pt}}
-\def\subsubitem{\par\hangindent 40pt \hspace*{30pt}}
-\def\endtheindex{}
-\def\indexspace{\par \vskip 10pt plus 5pt minus 3pt\relax}
-\makeatother
-
-
-%%
 \def\topfraction{.9}
 \def\bottomfraction{.9}
 \def\textfraction{.1}
@@ -55,18 +36,51 @@
 
 \input{release.tex}
 
+%\usepackage{multind}
+\usepackage{multicol}
+
+% printindex stuff
+
+\makeatletter
+\def\printindex#1#2{\subsection*{#2}
+  \@input{#1.ind}}
+  
+\def\theindex{\parindent\z@
+\parskip\z@ plus .3pt\relax\let\item\@idxitem}
+\def\@idxitem{\par\hangindent 40pt}
+\def\subitem{\par\hangindent 40pt \hspace*{20pt}}
+\def\subsubitem{\par\hangindent 40pt \hspace*{30pt}}
+\def\endtheindex{}
+\def\indexspace{\par \vskip 10pt plus 5pt minus 3pt\relax}
+\makeatother
+
 \usepackage{fancyvrb}
 \fvset{formatcom=\color{blue},fontseries=c,fontfamily=courier,xleftmargin=4mm,commentchar=!}
 \DefineVerbatimEnvironment{Code}{Verbatim}{formatcom=\color{blue},fontseries=c,fontfamily=courier,fontsize=\footnotesize,xleftmargin=4mm,commentchar=!}
 
 \pagestyle{empty}
 
-\def\Mlab{MATLAB$^{\textsuperscript{\textregistered}}$}
+\def\Mlab{MATLAB}
 
 \begin{document}
+\setlength{\TPHorizModule}{1cm}
+\setlength{\TPVertModule}{1cm}
+
+\begin{textblock}{19}(-3.0,-4.5)
 \includepdf{titlepage}
+\fontsize{75}{80}\selectfont
+\textbf{Machine Vision}\\[5pt]
+\textbf{Toolbox}\\[5pt]
+\fontsize{40}{45}\selectfont
+for MATLAB\\[5pt]
+Release 4
+
+\vspace*{18cm}
+\hfill\textbf{Peter Corke}\\[5pt]
+\end{textblock}
 \thispagestyle{empty}
 \newpage
+% inside front cover
 \vspace*{\fill}
 \begin{tabular}{ll}
 Release & \release \\
@@ -77,31 +91,27 @@ Discussion group & \url{http://groups.google.com.au/group/robotics-tool-box}
 \end{tabular}
 \vspace*{\fill}
 \hrule
-Copyright \textcopyright 2015 Peter Corke\\
+Copyright \textcopyright 2017 Peter Corke\\
 peter.i.corke$@$gmail.com\\
 \url{http://www.petercorke.com}
-\newpage
 \vspace*{\fill}
 \setlength{\fboxsep}{10pt}%
 
+
 \pagestyle{headings}        % Gives page headings at top of page
-\lfoot{Machine Vision Toolbox for \Mlab}
-\rfoot{Copyright \copyright Peter Corke 2015}
+\lfoot{Machine Vision Toolbox \release\ for \Mlab}
+\rfoot{Copyright \copyright Peter Corke 2017}
 
-\newpage
 \setcounter{section}{0}
-\addcontentsline{toc}{section}{Introduction}
-
+\addcontentsline{toc}{section}{Preface}
 \chapter*{Preface}
 \pagestyle{fancyplain}
-\begin{wrapfigure}{l}{4.5cm}
-\vspace{-2ex}\includegraphics[width=4cm]{frontcover.pdf}
+\begin{wrapfigure}{l}{4cm}
+\vspace{-2ex}\includegraphics[width=3.5cm]{figs/frontcover.pdf}
 \end{wrapfigure}
-This, the third release of the Toolbox, represents a decade of %% CHANGE
+This, the fourth major release of the Toolbox, representing nearly twenty years of continuous
 development.
-The last release was in 2005 and this version captures a large number of changes over that period but with extensive work
-over  the last two years
-to support my new book ``\textit{Robotics, Vision \& Control}'' shown to the left.
+This version corresponds to the \textbf{second edition} of the book ``\textit{Robotics, Vision \& Control, second edition}'' published in 2017.
 
 The Machine Vision Toolbox (MVTB) provides many 
 functions that 
@@ -113,55 +123,42 @@ image file reading and writing, acquisition, display, filtering,
 blob, point and line feature extraction,  mathematical morphology, 
 homographies, visual Jacobians,
 camera calibration and color space conversion.
-The Toolbox, combined with \Mlab\ and a modern workstation computer,
+The Toolbox, combined with \Mlab\ and a modern PC
 is a useful and convenient environment for investigation of machine
 vision algorithms.  For modest image sizes the processing rate can
-be sufficiently ``real-time'' to allow for closed-loop control.  Focus of
-attention methods such as dynamic windowing (not provided) can be
-used to increase the processing rate.
-With input from a firewire or web camera (support provided) and 
-output to a robot
-(not provided) it would be possible to implement a visual servo system
-entirely in \Mlab.
+be sufficiently ``real-time'' to allow for closed-loop control.  
+%Focus of
+%attention methods such as dynamic windowing (not provided) can be
+%used to increase the processing rate.
+%With input from a firewire or web camera (support provided) and 
+%output to a robot
+%(not provided) it would be possible to implement a visual servo system
+%entirely in \Mlab.
 
-An image is usually treated as a rectangular array of scalar values representing
+An image is usually treated as a rectangular array of pixel values -- the natural datatype for \Mlab -- representing
 intensity or perhaps range.
-The matrix is the natural datatype for \Mlab\ and thus makes the manipulation
-of images easily expressible in terms of arithmetic statements in \Mlab
-language.
 Many image operations such as thresholding, filtering and statistics can
 be achieved with existing \Mlab\ functions.
 The Toolbox extends this core functionality with M-files that
 implement functions and classes, and mex-files for some compute
 intensive operations.
-It is possible to use mex-files to interface with image acquisition
-hardware ranging from simple framegrabbers to robots.
-Examples for firewire cameras under Linux are provided.
+%It is possible to use mex-files to interface with image acquisition
+%hardware ranging from simple framegrabbers to robots.
+%Examples for firewire cameras under Linux are provided.
+This toolbox predates all of the relevant Mathwork's Toolboxes including Image Processing 
+Toolbox\textsuperscript{\textregistered} (IPT) and Computer Vision System Toolbox\textsuperscript{\textregistered} (CVST).
+MVTB is less complete than these products but  is open-source.
 
-The routines are written in a straightforward manner which allows
-for easy understanding.  \Mlab\ vectorization has been used as much as
-possible to improve efficiency, however some algorithms are not amenable
-to vectorization.
-If you have the \Mlab\ compiler available then this can be used to compile
-bottleneck functions.
-Some particularly compute intensive functions are provided as mex-files and
-may need to be compiled for the particular platform.
-This toolbox considers images generally as arrays of double precision
-numbers.  This is extravagant on storage, though this is much less
-significant today than it was in the past.
+The code is written in a straightforward manner which allows
+for easy understanding, perhaps at the expense of computational efficiency.
+If you feel strongly about computational efficiency then you can always
+rewrite the function to be more efficient,
+compile the M-file using the \Mlab\   compiler, or
+create a MEX version.
 
-This toolbox is not a clone of the Mathwork's own Image Processing 
-Toolbox (IPT) although there are many functions in common.
-This toolbox predated IPT by many years, is open-source, contains many 
-functions that are useful for image feature extraction and control.
-It was developed under Unix and Linux systems and some functions
-rely on tools and utilities that exist only in that environment.
-
-The manual is now auto-generated from the comments in the \Mlab\ code itself which reduces the effort
-in maintaining code and a separate manual as I used to --- the downside is that there are no worked examples and figures in the manual.
-However the book ``\textit{Robotics, Vision \& Control}''  provides a detailed discussion (over 600 pages, nearly 400 figures and 1000 code examples)
-of how to use the Toolbox functions to
-solve many types of problems in robotics and machine vision.
+The bulk of this manual is auto-generated from the comments in the \Mlab\ code itself.
+For elaboration on the underlying principles, extensive illustrations and worked examples please consult
+ ``\textit{Robotics, Vision \& Control, second edition}''  which provides a detailed discussion (720 pages, nearly 500 figures and over 1000 code examples) of how to use the Toolbox functions to solve many types of problems in robotics.
 
 
 \newpage
@@ -174,26 +171,17 @@ solve many types of problems in robotics and machine vision.
 \end{multicols}
 \newpage
 \chapter{Introduction}
-\section{What's changed}
+\section{Changes in MVTB 4}
+MVTB 4 is largely backward compatible with MVTB 3.
 
-\subsection{New features and changes to MVTB 3.4}
+\subsection{Incompatible changes}
 
-This release represents continued evolution and refinement of the Toolbox, rather than a significant number of new features.  There's been a
-shameful lack of releases, the last was October 2012.  Points of note in this dot release include:
-\begin{itemize}
-\item The \texttt{mex} folder contains prebuilt MEX files for many platforms including 32- and 64-bit Windows, MacOS and Linux.
-\item Pl\"{u}cker coordinate class \texttt{Plucker} for describing lines in 3D.
-\item \texttt{idisp} has a more polished display and works with the major changes to graphics in \Mlab\ 14b.
-\item The gamma correction function \texttt{igamma} has been renamed \texttt{igamm} since \texttt{igamma} is now a method of floating point numbers
-which cannot be overridden.
-\item \texttt{iconv} now performs correlation, not convolution.  This was neccessary to ensure consistency with example in the book, but means
-that the function is very badly/confusingly named.
-\item The distance transform function \texttt{dxform} has been renamed \texttt{dtransform}.
-\item All Simulink models have been updated to work with the latest version of \texttt{roblocks.slx}.
-\end{itemize}
+xycolorspace replaced with showcolorspace('xy')
+iconv -> iconvolve
 
-For those with access to the Image Processing Toolbox (IPT) there are some alternative versions of a few MVTB functions that use IPT rather
-than provided MEX files.  These are provided in the folder \texttt{vision/IPT} and can be copied into the \texttt{vision} folder to access that functionality.
+\subsection{New features}
+
+\subsection{Enhancements}
 
 \section{How to obtain the Toolbox}
 The Machine Vision Toolbox is freely available from the Toolbox home
@@ -202,25 +190,43 @@ page at
 \url{http://www.petercorke.com}
 \end{quote}
 
-The web page requests some information from you
-regarding such as your country, type of organization and application.
-This is just a means for me to gauge interest and to remind myself
-that this is a worthwhile activity.
+%The web page requests some information from you
+%regarding such as your country, type of organization and application.
+%This is just a means for me to gauge interest and to remind myself
+%that this is a worthwhile activity.
 
-The files are available in zip format (.zip).  Download them all to
-the same directory and then unzip them.  They
-all unpack to the correct parts of a hiearchy of directories (folders)
-headed by \texttt{rvctools}.
+The file is available in \Mlab toolbox format (\texttt{.mltbx}) or zip format (\texttt{.zip}). 
 
-You may require one or more files, please read the descriptions carefully
-before downloading.
+\subsection{From .mltbx file}
+Since MATLAB R2014b toolboxes can be packaged as, and installed from, files with the extension \texttt{.mltbx}. Download the most recent version of \texttt{robot.mltbx} or \texttt{vision.mltbx} to your computer. Using MATLAB navigate to the folder where you downloaded the file and double-click it (or right-click then select Install). The Toolbox will be installed within the local MATLAB file structure, and the paths will be appropriately configured for this, and future MATLAB sessions.
+
+\subsection{From .zip file}
+Download the most recent version of robot.zip or vision.zip to your computer. Use your favourite unarchiving tool to unzip the files that you downloaded.
+To add the Toolboxes to your MATLAB path execute the command
+\begin{verbatim}
+  >> addpath RVCDIR ;
+  >> startup_rvc
+\end{verbatim}
+where \texttt{RVCDIR} is the full pathname of the folder where the folder \texttt{rvctools} was created when you unzipped the Toolbox files. The script \texttt{startup\_rvc} adds various subfolders to your path and displays the version of the Toolboxes.
+After installation the files for both Toolboxes reside in a top-level folder called \texttt{rvctools} and beneath this are a number of folders:
+
+\begin{tabular}{ll}
+\texttt{robot} & The Robotics Toolbox \\
+\texttt{vision} & The Machine Vision Toolbox\\
+\texttt{common} & Utility functions common to the Robotics and Machine Vision Toolboxes\\
+\texttt{simulink}  & Simulink blocks for robotics and vision, as well as examples \\
+\texttt{contrib} & Code written by third-parties\\
+\end{tabular}
+
+
+A menu-driven demonstration can be invoked by 
+\begin{verbatim}
+  >> mvtbdemo
+\end{verbatim}
+
+The MVTB distribution includes the code and example images necessary to do almost all the examples in the Robotics, Vision \& Control
+book.  Additional files are available:
 \begin{itemize}
-\item \texttt{vision-3.X.zip} This file is essential, it is the core Toolbox and contains
-all the functions, classes, mex-files and Simulink models required 
-for most of the RVC book.
-\item \texttt{images.zip} These are the images that are used for
-many examples in the RVC book.  These images are all found automatically
-by the \texttt{iread()} function.
 \item \texttt{contrib.zip} A small number of Toolbox functions depend on third party code which is included in this file. Please note and respect the licence conditions associated with these packages.
 Those functions are: 
 \texttt{igraphseg},
@@ -249,45 +255,75 @@ automate this by setting up environment variables, editing your
 \texttt{startup.m} script by pressing the ``Update Toolbox Path
 Cache" button under \Mlab\ General preferences.
 
-\subsection{Documentation}
+\subsection{MATLAB Online\textsuperscript{TM}}
+The Toolbox works well with MATLAB Online\textsuperscript{TM} which lets you access a \Mlab\ session from a web browser, tablet 
+or even a phone.
+The key is to get the MVTB files into the filesystem associated with your Online account.  The easiest way to do this is to install
+MATLAB Drive\textsuperscript{TM} from MATLAB File Exchange or using the Get Add-Ons option from the MATLAB GUI.  This functions
+just like Google Drive or Dropbox, a local filesystem on your computer is synchronized with your MATLAB Online account.  Copy the MVTB
+files into the local MATLAB Drive cache and they will soon be synchronized, invoke \texttt{startup\_rvc} to setup the paths and you are ready to machine vision on your mobile device or in a web browser.
 
-This document {\tt vision.pdf} is a manual that describes all functions in the Toolbox.
+\subsection{Simulink\textsuperscript{\textregistered}}
+Simulink\textsuperscript{\textregistered} is the block diagram simulation environment for MATLAB.
+The following Simulink models are included with the Toolbox, but rely on having RTB installed.
+
+\begin{center}
+\begin{tabular}{|l|l|}\hline
+\multicolumn{2}{|l|}{General} \\\hline
+\texttt{sl\_ibvs} & Classical IBVS \\
+\texttt{sl\_partitioned} &  XY/Z partioned IBVS \\\hline\hline
+\multicolumn{2}{|l|}{Robot manipulator arm} \\\hline
+\texttt{sl\_arm\_ibvs} &  Servo a 6DOF robot arm\\\hline\hline
+\multicolumn{2}{|l|}{Mobile ground robot} \\\hline
+\texttt{sl\_drivepose\_vs} &  Drive nonholonomic robot to a pose\\
+\texttt{sl\_mobile\_vs} &  Drive a holonomic vehicle to a pose\\\hline\hline
+\multicolumn{2}{|l|}{Flying robot} \\\hline
+\texttt{sl\_quadrotor\_vs} &  Control visual servoing to a target\\ \hline
+\end{tabular}
+\end{center}
+
+
+
+
+\subsection{Documentation}
+This document {\tt vision.pdf} is a comprehensive manual that describes all functions in the Toolbox.
 It is auto-generated from the comments in the \Mlab\ code and is fully hyperlinked:
 to external web sites, the table of content to functions, and the ``See also'' functions
 to each other.
 
 The same documentation is available online in
-alphabetical order at \url{http://www.petercorke.com/MVTB/r3/html/index_alpha.html}
-or by category at \url{http://www.petercorke.com/MVTB/r3/html/index.html}.
+alphabetical order at \url{http://www.petercorke.com/MVTB/r4/html/index_alpha.html}
+or by category at \url{http://www.petercorke.com/MVTB/r4/html/index.html}.
+Documentation is also available via the \Mlab\ help browser,  under supplemental software, as ``Machine Vision
+Toolbox".
 
-Documentation is also available via the \Mlab\ help browser, ``Machine
-Vision Toolbox" appears under the Contents.
 
-\section{MATLAB version issues}
-The Toolbox has been tested under R2014b.
+\section{Compatible MATLAB versions}
+The Toolbox has been tested under R2016b and R2017aPRE.  Compatibility problems are increasingly likely the older your version of \Mlab\ is.
 
 \section{Use in teaching}
 This is definitely encouraged!
-You are free to put the PDF manual (\texttt{vision.pdf} or the web-based documentation {\texttt{html/*.html} on a server for class
+You are free to put the PDF manual (\texttt{robot.pdf} or the web-based documentation {\texttt{html/*.html} on a server for class
 use.
 If you plan to distribute paper copies of the PDF manual then every copy must include the first two pages (cover and licence).
 
+Link to other resources such as MOOCs or the Robot Academy can be found at \url{www.petercorke.com/moocs}.
+
 \section{Use in research}
 If the Toolbox helps you in your endeavours then I'd appreciate you citing the Toolbox when you publish.
-The details are
+The details are:
 \begin{verbatim}
-@book{Corke11a,
+@book{Corke17a,
     Author = {Peter I. Corke},
-    Date-Added = {2011-01-12 08:19:32 +1000},
-    Date-Modified = {2012-07-29 20:07:27 +1000},
-    Note = {ISBN 978-3-642-20143-1},
+    Note = {ISBN 978-3-319-54413-7},
+    Edition = {Second},
     Publisher = {Springer},
     Title = {Robotics, Vision \& Control: Fundamental Algorithms in {MATLAB}},
-    Year = {2011}}
+    Year = {2017}}
 \end{verbatim}
 or
 \begin{quote}
-P.I. Corke, Robotics, Vision \& Control: Fundamental Algorithms in MATLAB. Springer, 2011. ISBN 978-3-642-20143-1.
+P.I. Corke, Robotics, Vision \& Control: Fundamental Algorithms in MATLAB. Second edition. Springer, 2017. ISBN 978-3-319-54413-7.
 \end{quote}
 which is also given in electronic form in the CITATION file.
 
@@ -303,16 +339,29 @@ how urgent or important they might be to you.  That's what your teachers, tutors
 You might instead like to communicate with other users via 
 the Google Group called ``Robotics and Machine Vision Toolbox'' 
 \begin{quote}
-\url{http://groups.google.com.au/group/robotics-tool-box}
+\url{http://tiny.cc/rvcforum}
 \end{quote}
 which is a forum for discussion.
 You need to signup in order to post, and the signup process is moderated by me so allow a few
 days for this to happen.  I need you to write a few words about why you want to join the list
 so I can distinguish you from a spammer or a web-bot.
 
-\subsection{Related software}
-Matlab Central \url{http://www.mathworks.com/matlabcentral} is a great resource for user contributed MATLAB code, and there are hundreds of modules available.
-VLFeat \url{http://www.vlfeat.org} is a great collection of advanced computer vision algorithms for MATLAB.
+\section{Related software}
+\subsection{Image Processing Toolbox}
+The Image Processing Toolbox\textsuperscript{TM} (IPT) from MathWorks is an official and supported product. 
+This toolbox includes a comprehensive set of image processing operations.
+
+\subsection{Computer Vision System Toolbox}
+The Computer Vision System Toolbox\textsuperscript{TM} (CVST) from MathWorks is an official and supported product.  System toolboxes (see also the Computer Vision System Toolbox) are aimed at developers of systems. 
+This toolbox includes a comprehensive set of feature detectors and descriptors, and be used with Simulink to conveniently generate machine vision
+pipelines that can run in target hardware.
+
+\subsection{Octave}
+GNU Octave (www.octave.org) is an impressive piece of free software that implements a language that is close to, but not the same as, \Mlab. 
+
+\subsection{Robotics Toolbox}
+Robotics toolbox (RTB) for {\Mlab} provides a very wide range of useful robotics functions and is used to illustrate principals in the Robotics, Vision \& Control book.  You can obtain this from \url{http://www.petercorke.com/robot}.
+
 
 \section{Acknowledgements}
 This release includes functions for computing image plane homographies and
@@ -323,13 +372,12 @@ pose estimation by
 Francesco Moreno-Noguer, Vincent Lepetit, Pascal Fua at the CVLab-EPFL;
 color space conversions by Pascal Getreuer;
 numerical routines for geometric vision by various members of the Visual Geometry Group at Oxford (from the web site of
-the Hartley and Zisserman book;
+the Hartley and Zisserman book\footnote{\url{http://www.robots.ox.ac.uk/~vgg/hzbook}};
 the k-means and MSER algorithms by Andrea Vedaldi and Brian Fulkerson;the graph-based image segmentation software by Pedro Felzenszwalb;
 and the SURF feature detector by Dirk-Jan Kroon at U. Twente.
 The Camera Calibration Toolbox by Jean-Yves Bouguet is used unmodified.Functions such as SURF, MSER, graph-based segmentation and pose estimation are based on great code 
 Some of the MEX file use some really neat macros that were part of the package VISTA Copyright 1993, 1994 University of British Columbia.
 See the file \texttt{CONTRIB} for details.
-
 
 
 

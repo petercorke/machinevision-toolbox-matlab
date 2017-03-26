@@ -15,8 +15,9 @@ luminos
 rg_addticks
 rgb2xyz
 rluminos
+showcolorspace
 tristim2cc
-xycolorspace
+
 
 h1. Camera models
 Camera
@@ -61,9 +62,9 @@ ipixswitch
 
 h1. Spatial operators
 
-h2. Linear convolution
+h2. Linear operators
 icanny
-iconv
+iconvolve
 ismooth
 isobel
 radgrad
@@ -78,7 +79,7 @@ klog
 ksobel
 ktriangle
 
-h2. Non-linear
+h2. Non-linear operators
 dtransform
 irank
 ivar
@@ -128,6 +129,7 @@ LineFeature
 
 h3. Point features
 PointFeature
+OrientedScalePointFeature
 ScalePointFeature
 SiftPointFeature
 SurfPointFeature
@@ -152,7 +154,7 @@ epiline
 fmatrix
 homography
 
-h1. Stereo
+h2. Stereo
 istereo
 anaglyph
 stdisp
@@ -214,8 +216,35 @@ e2h       : Euclidean coordinates to homogeneous
 h2e       : homogeneous coordinates to Euclidean
 homline:  : homogeneous line from two points
 homtrans  : apply homogeneous transform to points
+skew
 
-h2. 3D
+h2. Homogeneous coordinates in 2D
+ishomog2
+rot2
+transl2
+trexp2
+SE2
+
+h2. Homogeneous coordinates in 3D
+angvec2r
+delta2tr
+ishomog
+isrot
+rotz
+rt2tr
+tr2angvec
+tr2delta
+tr2rpy
+transl
+trexp
+trinterp
+trlog
+trnorm
+Twist
+SE3
+vex
+
+h2. 3D geometry
 icp
 Plucker
 Ray3D
@@ -224,26 +253,33 @@ h2. Integral image
 iisum
 intgimage
 
-h2. Edge representation
+h2. Edges and lines
+bresenham
 edgelist
-boundmatch
 
 h2. General
 about
-bresenham
+chi2inv_rtb
 closest
-colnorm
 col2im
+colnorm
 distance
 filt1d
 im2col
 imeshgrid
 iscolor
 isize
+isvec
 kmeans
+numcols
+numrows
+pickregion
 polydiff
 ransac
-zcross
+tb_optparse
+unit
+usefig
 xaxis
 yaxis
 xyzlabel
+zcross

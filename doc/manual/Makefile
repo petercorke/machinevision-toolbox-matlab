@@ -5,5 +5,8 @@ vision.pdf: titlepage.pdf vision.tex all.tex
 	sh funcidx_make.sh
 	pdflatex vision
 
-titlepage.pdf: mvtb-montage.png
+titlepage.pdf: figs/mvtb-montage.png
 	convert $< $@
+
+clean:
+	-rm titlepage.pdf *.idx *.ind *.ilg *.aux *.log *.out *.toc

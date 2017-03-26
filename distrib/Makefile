@@ -1,39 +1,77 @@
-ROOT = ~/rvc
+ROOT = ~/code/rvc
+BUILD = tmp
+MANUAL = $(BUILD)/manual/vision.pdf
+SRC = $(ROOT)/vision
+ROBOT = rvctools/robot
+VISION = rvctools/vision
+COMMON = rvctools/common
+CONTRIB = rvctools/contrib
+LIB = ~/lib/matlab
 
-release:  build doco 
+release:  build doco zipit
 
-build: 
-	# clean up
-	-\rm -rf rvctools tmpdoc vision.zip vision.tgz 
+release-ipt: build-ipt doco zipit
 
+doco:	pdf markup
+
+build:  tmp allfuncs.txt
+
+build-ipt: build ipt
+
+tmp:
 	# make a temp directory to hold the files
-	mkdir -p rvctools/vision rvctools/simulink rvctools/common
+	mkdir tmp
+
+	# recurse
+	$(MAKE) -C tmp -f ../Makefile $(MFLAGS) _build
+
+_build: 
+	# runs in tmp
+	mkdir -p rvctools/vision rvctools/robot rvctools/simulink rvctools/common rvctools/vision/images rvctools/contrib
 
 	# create the Manifest
-	buildcontent -r `cat ../RELEASE` --mvtb $<
+	buildcontent -r `cat ../../RELEASE` --mvtb ../allfuncs.txt
 
 	# copy all m-files and classes listed in the Manifest
-	mancp Manifest .. rvctools/vision
-	mancp Manifest $(ROOT)/common rvctools/common
+	mancp --verbose Manifest $(SRC) $(VISION)
+	mancp --verbose Manifest $(ROOT)/robot $(ROBOT)
+	mancp --verbose Manifest $(ROOT)/common $(COMMON)
 
-	# copy simulink models
-	cp -r ../simulink/*.mdl rvctools/simulink
-	cp -r ../examples rvctools/vision
-	cp -r ../mex rvctools/vision
-	cp -r ../private rvctools/vision
-	cp -r ../IPT rvctools/vision
+	# copy any contrib files that will be included
+	cp -r $(ROOT)/contrib/vgg $(CONTRIB)
+	cp -r $(ROOT)/contrib/vlfeat-0.9.20 $(CONTRIB)
+
+	cp -r $(ROOT)/contrib/graphseg $(CONTRIB)
+	cp -r $(ROOT)/contrib/OpenSURF $(CONTRIB)
+
+	cp $(LIB)/deg2utm.m $(CONTRIB)
+	cp $(LIB)/arrow3.m $(CONTRIB)
+	mv rvctools/vision/colorspace.m $(CONTRIB)
+	cp $(ROOT)/common/count_unique.m $(CONTRIB)
+
+	# install images for MOOC
+	# -mkdir rvctools/vision/images
+	cp $(ROOT)/images1/*.png rvctools/vision/images
+	cp $(ROOT)/images1/*.jpg rvctools/vision/images
+	cp $(ROOT)/images1/*.mpg rvctools/vision/images
+
+	# copy other bits and bobs
+	cp -r $(SRC)/simulink/*.slx rvctools/simulink
+	cp -r $(SRC)/examples rvctools/vision
+	cp -r $(SRC)/mex rvctools/vision
+	cp -r $(SRC)/private rvctools/vision
+	cp -r $(SRC)/IPT rvctools/vision
 	#cp -r ../images rvctools/vision
-	mkdir rvctools/vision/images
-
+	-mkdir rvctools/vision/images
+	
 	# copy misc documentation files
-	cp ../README rvctools/vision
-	-cp ../CHANGES rvctools/vision
-	cp ../RELEASE rvctools/vision
-	cp ../CITATION rvctools/vision
-	cp ../LGPL-LICENCE.txt rvctools/vision
-	cp ../startup_mvtb.m rvctools/vision
+	cp $(SRC)/README rvctools/vision
+	-cp $(SRC)/CHANGES rvctools/vision
+	cp $(SRC)/RELEASE rvctools/vision
+	cp $(SRC)/CITATION rvctools/vision
+	cp $(SRC)/LGPL-LICENCE.txt rvctools/vision
+	cp $(SRC)/startup_mvtb.m rvctools/vision
 
-	cp $(ROOT)/common/*.m rvctools/common
 	cp $(ROOT)/startup_rvc.m rvctools
 
 	# remove all SVN files
@@ -44,38 +82,70 @@ r helpfuncbycat.xml\
 d\
 }'
 
-doco:
+pdf:	tmp $(MANUAL)
+
+$(MANUAL):
+	# recurse
+	$(MAKE) -C tmp -f ../Makefile $(MFLAGS) _pdf
+
+_pdf:
+	-echo "---------build the manual"
 	-\rm -rf tmpdoc
-	-mkdir tmpdoc
-	-mkdir -p rvctools/vision/info/html
+	-mkdir tmpdoc 
 	-cp -r rvctools/vision/* tmpdoc
 	-cp rvctools/common/* tmpdoc
-	-rm tmpdoc/HiddenFigure.m
+
+	# copy over the manual skeleton, we will work here
+	cp -r $(ROOT)/vision/doc/manual .
+	
+	# generate LaTeX code for all functions in there
+	(cd tmpdoc; help3.py -v -l --include @* *.m; mv all.tex ../manual)
+
+	# copy over the index generator support
+	-mv funcidx* manual
 
 	# build the PDF manual
-	(cd tmpdoc; help3.py -l --include @* *.m; mv all.tex ../../doc/manual)
-	-cp funcidx* ../doc/manual
-	(cd ../doc/manual; make)
-	mv ../doc/manual/vision.pdf rvctools/vision
+	(cd manual; make)
 
+	cp manual/vision.pdf rvctools/vision
+
+	# and let's take a look
+	open manual/vision.pdf 
+
+
+CMD = '/INSERT_HERE/ {\
+r helpfuncbycat.xml\
+d\
+}'
+
+markup: $(MANUAL)
+	# rely on pdf code to build all the temp files
+	# recurse
+	$(MAKE) -C tmp -f ../Makefile $(MFLAGS) _markup
+
+_markup:
 	# build the XML/info stuff for matlab help browser system
-	-mkdir -p rvctools/vision/info/html
-	cp -r ../info/vision_product_page.html rvctools/vision/info
-	(cd tmpdoc; help3.py --mvtb -m @* *.m; mv *.html ../rvctools/vision/info/html)
-	cp contents.html rvctools/vision/info
-	cp contents_alpha.html rvctools/vision/info
-	cp contents_toc.html rvctools/vision/info
-
-	# create the helptoc.xml file
-	cp ../info.xml rvctools/vision
-	sed '/<!--INSERT_HERE-->/r helpfuncbycat.xml' < ../info/helptoc.xml > rvctools/vision/info/helptoc.xml 
-	cp ../info/*.html rvctools/vision/info
-	cp -r ../info/icons rvctools/vision/info
-	cp -r ../doc/mvtb-montage-notext.png rvctools/vision/info
+	# build it in info, info/html
+	-mkdir -p info/html
+	cp -r $(SRC)/doc/info/vision_product_page.html info
+	(cd tmpdoc; help3.py --mvtb -m @* *.m; mv *.html ../info/html)
 
 	# copy over the autogen files
-	cp contents_toc.html rvctools/vision/info
+	cp contents.html info
+	cp contents_alpha.html info
+	cp contents_toc.html info
 
+	# create the helptoc.xml file
+	cp $(SRC)/doc/info/helptoc.xml info
+	#sed '/<!--INSERT_HERE-->/r helpfuncbycat.xml' < $(SRC)/info/helptoc.xml > info/helptoc.xml
+
+	# copy invariant files from the distro
+	cp $(SRC)/doc/info/*.html info
+	cp $(SRC)/doc/info/*.css info
+	#cp -r $(SRC)/info/icons info
+	#cp manual/figs/rtb-montage.png info
+
+	
 	# build the web/HTML doco
 	-mkdir html
 	(cd tmpdoc; help3.py --mvtb -w @* *.m; mv *.html ../html)
@@ -85,21 +155,19 @@ doco:
 	# classical matlab toolbox index
 	cp Contents.m rvctools/vision
 
+	# install it all
+	cp -r info rvctools
+	cp $(SRC)/doc/info.xml rvctools
+
 
 zipit:
 	# build the distrib archives
-	zip -rq vision-`cat ../RELEASE`.zip ./rvctools
+	(cd tmp; zip -rq ../vision-`cat ../../RELEASE`.zip ./rvctools)
 	#tar zcf vision.tgz ./rvctools
 
-toolbox:
-	# build the .mltbx file
-	mkdir flat
-	cp -r rvctools/vision/* flat
-	cp rvctools/common/* flat
-	cp ~/rvc/vision/images/*.png flat/images
-	cp ~/rvc/vision/images/*.jpg flat/images
-	cp ~/rvc/vision/images/*.mpg flat/images
-	rm flat/vision/startup_mvtb.m
+ipt:
+	mv tmp/rvctools/vision/IPT/* tmp/rvctools/vision
+	rm -rf tmp/rvctools/vision/mex
 
 dropbox:
 	cp -r ./{vision,simulink,common} $(HOME)/Dropbox
@@ -115,8 +183,4 @@ stage:
 	ssh geek mv www/MVTB/vision-*.zip www/MVTB/r3
 
 clean:
-	@-\rm -rf vision.zip vision.tgz
-	@-\rm -rf simulink common tmpdoc vision vision.zip vision.tgz
-	@-\rm -rf info tmpdoc html
-	@-\rm *.m *.xml *.html *.png Manifest funcid*
-	-\rm -rf rvctools tmpdoc vision.zip vision.tgz
+	@-\rm -rf tmp
