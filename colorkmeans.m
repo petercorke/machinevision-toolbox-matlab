@@ -58,12 +58,12 @@
 function [labels,C,resid] = colorkmeans(im, k, varargin)
 
     opt.initial = {'random', 'spread', 'pick'};
-    opt.colorspace = {'xyz', 'lab', 'Lab'};
+    opt.colorspace = {'xyz', 'xy', 'lab', 'Lab', 'ab'};
     
     opt = tb_optparse(opt, varargin);
     
     switch opt.colorspace
-        case 'xyz'
+        case {'xyz', 'xy'}
             
             % convert RGB to xy space
             im = colorspace('RGB->XYZ', im);
@@ -78,7 +78,7 @@ function [labels,C,resid] = colorkmeans(im, k, varargin)
 %                 sXYZ = sum(XYZcol')';
 %                 x = XYZcol(:,1) ./ sXYZ;
 %                 y = XYZcol(:,2) ./ sXYZ;
-        case {'lab', 'Lab'}
+        case {'lab', 'Lab', 'ab'}
             im = colorspace('RGB->Lab', im);
             x = reshape( im(:,:,2), [], 1);
             y = reshape( im(:,:,3), [], 1);
