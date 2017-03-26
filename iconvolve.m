@@ -1,26 +1,27 @@
-%ICONV Image cross-correlation
+%ICONVOLVE Image convolution
 %
-% C = ICONV(IM1, IM2, OPTIONS) is the cross-correlation of images IM1 and IM2.  The 
-% smaller image is taken as the kernel and correlated with the larger image. 
+% C = ICONVOLVE(IM, K, OPTIONS) is the convolution of image IM with the kernel K. 
+%
+% ICONVOLVE(IM, K, OPTIONS) as above but display the result.
 %
 % Options::
-%  'same'    output image is same size as largest input image (default)
+%  'same'    output image is same size as input image (default)
 %  'full'    output image is larger than the input image
 %  'valid'   output image is smaller than the input image, and contains only
 %            valid pixels
 %
 % Notes::
-% - This function is deprecated, use iconvolve instead.
-% - If the larger image is color (has multiple planes) the kernel is applied to 
+% - If the image is color (has multiple planes) the kernel is applied to 
 %   each plane, resulting in an output image with the same number of planes.
-% - The kernel must be greyscale.
+% - If the kernel has multiple planes, the image is convolved with each
+%   plane of the kernel, resulting in an output image with the same number of
+%   planes.
 % - This function is a convenience wrapper for the MATLAB function CONV2.
 % - Works for double, uint8 or uint16 images.  Image and kernel must be of
 %   the same type and the result is of the same type.
-% - This function is badly named, it peforms cross-correlation not
-%   convolution.
+% - This function replaces iconv().
 %
-% See also ICONVOLVE, CONV2.
+% See also CONV2.
 
 
 % Copyright (C) 1993-2011, by Peter I. Corke
@@ -39,25 +40,39 @@
 % 
 % You should have received a copy of the GNU Leser General Public License
 % along with MVTB.  If not, see <http://www.gnu.org/licenses/>.
-function C = iconv(A, B, opt)
+function out = iconvolve(im, K, opt)
 
-    warning('MVTB:deprecated', 'Please use iconvolve instead');
-        
     if nargin < 3
         opt = 'same';
     end
 
-    if numcols(A) < numcols(B)
-        % B is the image
-        %A = fliplr(flipud(A));
-        for k=1:size(B,3)
-            C(:,:,k) = conv2(B(:,:,k), A, opt);
+    if ~isfloat(im)
+        im = double(im);
+    end
+    if ~isfloat(K)
+        K = double(K);
+    end
+    if size(im,3) == 1 && size(K,3) == 1
+        % simple case, convolve image with kernel
+        C = conv2(im, K, opt);
+    elseif size(im,3) > 1 && size(K,3) == 1
+        for k=1:size(im,3)
+            % image has multiple planes
+            C(:,:,k) = conv2(im(:,:,k), K, opt);
+        end
+    elseif size(im,3) == 1 && size(K,3) > 1
+        for k=1:size(K,3)
+            % kernel has multiple planes
+            C(:,:,k) = conv2(im, K(:,:,k), opt);
         end
     else
-        % A is the image
-        %B = fliplr(flipud(B));
-        for k=1:size(A,3)
-            C(:,:,k) = conv2(A(:,:,k), B, opt);
-        end
+        error('MVTB:iconvolve:badarg', 'image and kernel cannot both have multiple planes');
     end
+    
+    if nargout == 0
+        idisp(C);
+    else
+        out = C;
+    end
+end
 
