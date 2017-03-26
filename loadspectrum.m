@@ -34,13 +34,24 @@
 % You should have received a copy of the GNU Leser General Public License
 % along with MVTB.  If not, see <http://www.gnu.org/licenses/>.
 
-function [s,lam] = loadspectrum(lambda, filename)
+function [s,lam] = loadspectrum(lambda, filename, varargin)
 
+    opt.verbose = true;
+    opt.interp = {'spline', 'linear'};
+    
+    opt = tb_optparse(opt, varargin);
+    
+    if isempty(strfind(filename, '.'))
+        filename = [filename '.dat'];
+    end
+    
     lambda = lambda(:);
     tab = load(filename);
+    assert(~isempty(tab), 'Spectral file %s not found', filename);
 
-    s = interp1(tab(:,1), tab(:,2:end), lambda, 'linear', 0);
+    s = interp1(tab(:,1), tab(:,2:end), lambda, opt.interp, 0);
 
+    
     if nargout == 2
         lam = lambda;
     end
