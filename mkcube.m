@@ -84,9 +84,9 @@ function [o1,o2,o3] = mkcube(s, varargin)
 
     if opt.edge == false
         % point model, return the vertices
-        if nargout <= 1,
+        if nargout <= 1
             o1 = cube;
-        elseif nargout == 3,
+        elseif nargout == 3
             o1 = cube(1,:);
             o2 = cube(2,:);
             o3 = cube(3,:);
