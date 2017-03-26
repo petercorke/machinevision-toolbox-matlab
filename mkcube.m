@@ -13,8 +13,8 @@
 % 'facepoint'    Add an extra point in the middle of each face, in this case
 %                the returned value is 3x14 (8 vertices + 6 face centres).
 % 'centre',C     The cube is centred at C (3x1) not the origin
-% 'T',T          The cube is arbitrarily transformed by the homogeneous 
-%                transform T
+% 'pose',T       The pose of the cube coordinate frame is defined by the homogeneous transform T,
+%                allowing all points in the cube to be translated or rotated.
 % 'edge'         Return a set of cube edges in MATLAB mesh format rather
 %                than points.
 %

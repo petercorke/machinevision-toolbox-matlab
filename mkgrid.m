@@ -8,9 +8,8 @@
 % By default the grid lies in the XY plane, symmetric about the origin.
 %
 % Options::
-% 'T',T   the homogeneous transform T is applied to all points, allowing the 
-%         plane to be translated or rotated.
-
+% 'pose',T   The pose of the grid coordinate frame is defined by the homogeneous transform T,
+%            allowing all points in the plane to be translated or rotated.
 
 
 % Copyright (C) 1993-2011, by Peter I. Corke
