@@ -32,7 +32,7 @@
 %  a              major axis length of equivalent ellipse
 %  b              minor axis length of equivalent ellipse
 %  theta*         angle of major ellipse axis to horizontal axis
-%  shape*         aspect ratio b/a (always <= 1.0)
+%  aspect*        aspect ratio b/a (always <= 1.0)
 %  circularity*   1 for a circle, less for other shapes
 %  moments        a structure containing moments of order 0 to 2
 %  bbox*          the bounding box, 2x2 matrix [umin umax; vmin vmax]
@@ -93,7 +93,7 @@ classdef RegionFeature < handle
         a           % the major axis length
         b           % the minor axis length  b<a
         theta_       % angle of major axis with respect to horizontal
-        shape_       % b/a  < 1.0
+        aspect_       % b/a  < 1.0
         circularity_
 
         moments     % moments, a struct of: m00, m01, m10, m02, m20, m11
@@ -158,14 +158,14 @@ classdef RegionFeature < handle
                     s = '[]';
                 elseif isempty(bi.label)
                     s = sprintf('area=%d, cent=(%.1f,%.1f), theta=%.2f, b/a=%.3f', ...
-                        bi.area_, bi.uc_, bi.vc_, bi.theta_, bi.shape_);
+                        bi.area_, bi.uc_, bi.vc_, bi.theta_, bi.aspect_);
                 elseif ~isempty(bi.edge)
                     s = sprintf('(%d) area=%d, cent=(%.1f,%.1f), theta=%.2f, b/a=%.3f, class=%d, label=%d, touch=%d, parent=%d, perim=%.1f, circ=%.3f', ... 
-                        i, bi.area_, bi.uc_, bi.vc_, bi.theta_, bi.shape_, bi.class_, bi.label_, ...
+                        i, bi.area_, bi.uc_, bi.vc_, bi.theta_, bi.aspect_, bi.class_, bi.label_, ...
                         bi.touch_, bi.parent, bi.perimeter_, bi.circularity_);
                 else
                     s = sprintf('(%d) area=%d, cent=(%.1f,%.1f), theta=%.2f, b/a=%.3f, color=%d, label=%d, touch=%d, parent=%d', ... 
-                        i, bi.area_, bi.uc_, bi.vc_, bi.theta_, bi.shape_, bi.class_, bi.label_, ...
+                        i, bi.area_, bi.uc_, bi.vc_, bi.theta_, bi.aspect_, bi.class_, bi.label_, ...
                         bi.touch_, bi.parent);
 
                 end
@@ -267,9 +267,9 @@ classdef RegionFeature < handle
             
             if nargin == 1
             
-            plot_points(bb.p,'ko'); plot_points(bb.p, 'kx');
+            plot_point(bb.p,'ko'); plot_point(bb.p, 'kx');
             else
-                plot_points(bb.p, ls{:});
+                plot_point(bb.p, ls);
             end
         end
         
@@ -360,7 +360,11 @@ classdef RegionFeature < handle
         function val = p(f)
             val = [[f.uc_]; [f.vc_]];
         end
-
+        
+        function val = theta(f)
+            val = [f.theta_];
+        end
+        
         function val = class(f)
             val = [f.class_];
         end
@@ -373,8 +377,8 @@ classdef RegionFeature < handle
             val = [f.touch_];
         end
 
-        function val = shape(f)
-            val = [f.shape_];
+        function val = aspect(f)
+            val = [f.aspect_];
         end
         
         function val = area(f)
