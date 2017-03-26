@@ -13,8 +13,6 @@
 %
 % See also KGAUSS, KDOG, KLOG, ISOBEL, ICONV.
 
-
-
 % Copyright (C) 1993-2011, by Peter I. Corke
 %
 % This file is part of The Machine Vision Toolbox for Matlab (MVTB).
@@ -32,7 +30,7 @@
 % You should have received a copy of the GNU Leser General Public License
 % along with MVTB.  If not, see <http://www.gnu.org/licenses/>.
 
-function m = dgauss(sigma, w)
+function m = kdgauss(sigma, w)
 
 
     if nargin == 1,
@@ -42,7 +40,12 @@ function m = dgauss(sigma, w)
 
     [x,y] = meshgrid(-w:w, -w:w);
 
-    m = -x/sigma^4 /(2*pi) .*  exp( -(x.^2 + y.^2)/2/sigma^2);
+    % This should properly be
+    %   m = -x/sigma^4 /(2*pi) .*  exp( -(x.^2 + y.^2)/2/sigma^2);
+    % but the effect of the error is simply to scale the result by sigma^2.
+    %
+    % Too many results in the book depend on this...
+    
+    m = -x/sigma^2 /(2*pi) .*  exp( -(x.^2 + y.^2)/2/sigma^2);
 
-    %m = m / sum(sum(m));
 
