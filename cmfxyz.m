@@ -243,6 +243,8 @@ function XYZ = cmfxyz(lambda, spect)
     end
 
         XYZ = interp1(ciedat(:,1)*1e-9, ciedat(:,2:4), lambda, 'pchip', 0);
-        if nargin == 2,
-            XYZ = spect(:)' * XYZ;
+        if nargin == 2
+            % approximate rectangular integration
+            dlambda = lambda(2) - lambda(1);
+            XYZ = spect(:)' * XYZ * dlambda;
         end
