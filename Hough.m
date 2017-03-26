@@ -285,6 +285,11 @@ classdef Hough < handle
                     ri = sum(rr(:)) / sum(Wh(:)) + rp;
                     ci = sum(cc(:)) / sum(Wh(:)) + cp;
               
+                    % Make sure points are inside (RSA fix of original!):
+                    ri = max(1,ri);
+                    ri = min(size(A,1),ri);
+                    ci = max(1,ci);
+                    ci = min(size(A,2),ci);
                     
                     %fprintf('refined %f %f\n', ci, ri);
 
