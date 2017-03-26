@@ -159,7 +159,7 @@ function [I,info] = iread(filename, varargin)
             folderonpath = pth;
             if ~(isempty(pth) || pth(1) == '.' || pth(1) == '/')
                 
-                for p=path2cell(path)'  % was userpath
+                for p=path2cell(path)  % was userpath
                     if exist( fullfile(p{1}, pth) ) == 7
                         folderonpath = fullfile(p{1}, pth);
                         if opt.verbose
