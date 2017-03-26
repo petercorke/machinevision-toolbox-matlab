@@ -36,6 +36,7 @@
 % 'wide'           make figure full screen width, useful for displaying stereo pair
 % 'flatten'        display image planes (colors or sequence) as horizontally 
 %                  adjacent images
+% 'black',B        change black to grey level B (range 0 to 1)
 % 'ynormal'        y-axis increases upward, image is inverted
 % 'histeq'         apply histogram equalization
 % 'cscale',C       C is a 2-vector that specifies the grey value range that
@@ -443,10 +444,11 @@ end
 
 function display_update(ud)
     if ~isempty(ud)
-        cp = get(ud.axis, 'CurrentPoint');
-        x = round(cp(1,1));
-        y = round(cp(1,2));
         try
+            
+            cp = get(ud.axis, 'CurrentPoint');
+            x = round(cp(1,1));
+            y = round(cp(1,2));
             imdata = get(ud.image, 'CData');
             set(ud.text, 'String', sprintf(' (%d, %d) = %s', x, y, num2str(imdata(y,x,:), 4)));
             drawnow
