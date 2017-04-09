@@ -81,7 +81,7 @@ function out = morphdemo(input, se, varargin)
                     color = red;
                     result(r,c) = 0;
                 end
-                case {'erode', 'max'}
+                case {'dilate', 'max'}
                 if any(rr(find(se)))
                     color = blue;
                     result(r,c) = 1;
