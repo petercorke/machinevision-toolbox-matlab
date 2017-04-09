@@ -1,11 +1,11 @@
 %ISOBEL Sobel edge detector
 %
 % OUT = ISOBEL(IM) is an edge image computed using the Sobel edge operator
-% applied to the image IM.  This is the norm of the vertical and horizontal 
+% convolved with the image IM.  This is the norm of the vertical and horizontal 
 % gradients at each pixel.  The Sobel horizontal gradient kernel is:
-%        | -1  0  1|
-%        | -2  0  2|
-%        | -1  0  1|
+%        1   |1  0  -1|
+%       ---  |2  0  -2|
+%        8   |1  0  -1|
 %
 % and the vertical gradient kernel is the transpose.
 %
@@ -60,9 +60,7 @@ function [o1,o2] = isobel(im, varargin)
         error('MVTB:isobel:badarg', 'not defined for multiplane image');
     end
     if length(args) == 0
-        Dx = [ -1 -2 -1
-            0 0 0
-            1 2 1];
+        Dx = ksobel();
     else
         % use the passed horizontal gradient kernel
         Dx = args{1};
@@ -71,8 +69,8 @@ function [o1,o2] = isobel(im, varargin)
         Dx = kdgauss(opt.smooth);
     end
 
-    ih = iconv(im, Dx, opt.size);
-    iv = iconv(im, Dx', opt.size);
+    ih = iconvolve(im, Dx,  opt.size);
+    iv = iconvolve(im, Dx', opt.size);
 
     % return grandient components or magnitude
     if nargout == 1,
