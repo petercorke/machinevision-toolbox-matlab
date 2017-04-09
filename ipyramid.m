@@ -39,6 +39,7 @@ function p = ipyramid(im, sigma, N)
     if iscolor(im)
         error('greyscale images only');
     end
+    im = idouble(im);
     if nargin < 2,
         sigma = 1;
     end
