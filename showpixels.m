@@ -1,6 +1,6 @@
 %SHOWPIXELS Show low resolution image
 %
-% Displays a low resolution image in detail as a grid with colored lines 
+% Displays a low resolution image in detail as a grid with colored lines
 % between pixels and numeric display of pixel values at each pixel.  Useful
 % for illustrating principles in teaching.
 %
@@ -13,21 +13,23 @@
 % 'tick'          Display axis tick marks (default true)
 % 'cscale',C      Color map scaling [min max] (defaults [0 1] or [0 255])
 % 'uv',UV         UV={u,v} vectors of u and v coordinates
+% 'infcolor'      show Inf values as red
+% 'nancolor'      show NaN values as red
+% 'hideinf'       don't display value if Inf
+% 'hidenan'       don't display value if Nan
+% 'contrast'      display text as white against dark squares
 %
 % Notes::
 % - This is meant for small images, say 10x10 pixels.
 
-function h = showpixels(im, varargin)
+function hout = showpixels(im, varargin)
     
-    if size(im,1)>20 || size(im,2)>20
-        warning('showpixels is meant for small images');
-    end
-    
-        nr = size(im,1); nc = size(im,2);
+    assert( size(im,1)<=20 && size(im,2)<=20, 'showpixels is meant for small images');
+
+    nr = size(im,1); nc = size(im,2);
     if isinteger(im)
         opt.fmt = '%d';
         opt.cscale = [0 255];
-        
     else
         opt.fmt = '%.2f';
         opt.cscale = [0 1];
@@ -38,34 +40,56 @@ function h = showpixels(im, varargin)
     opt.fontsize = 12;
     opt.pixval = true;
     opt.uv = [];
+    opt.nancolor = false;
+    opt.infcolor = false;
+    opt.contrast = NaN;
+    opt.hidenan = true;
+    opt.hideinf = true;
     
     [opt,args] = tb_optparse(opt, varargin);
     
-    im0 = im;
-    im(isnan(im)) = 0.5;
+    imv = im;   % use this to display values
+    imc = im;   % use this to display colors/grey
     
     if ~isempty(opt.uv)
         args = ['xydata', {opt.uv}, args];
-                ulab = opt.uv{1};
+        ulab = opt.uv{1};
         vlab = opt.uv{2};
     else
-
+        
         ulab = 1:nc;
         vlab = 1:nr;
     end
-    idisp(im, 'nogui', 'square', 'cscale', opt.cscale, args{:})
+    
+    % display the image
+    if opt.nancolor
+        imc(isnan(im)) = Inf;  % all Nans -> Inf
+    end
+    if ~opt.infcolor
+        imc(isinf(im)) = 0;
+    end
+    
+    idisp(imc, 'nogui', 'square', 'cscale', opt.cscale, args{:})
     if ~opt.label
         xlabel('');
         ylabel('');
     end
     
+    if opt.nancolor || opt.infcolor
+            colormap([colormap; 1 0 0]);
+    else
+        im(isnan(im)) = 0.5;  % ???
+    end
+
+ 
     axis equal
     hold on
-
+    
     umin = min(ulab); vmin = min(vlab);
     umax = max(ulab); vmax = max(vlab);
     
-        % draw horizontal lines
+    
+    % draw horizontal lines
     for row=vlab
         plot([umin-1 umax]+0.5, [row row]+0.5, '-y');
     end
@@ -73,13 +97,20 @@ function h = showpixels(im, varargin)
     for col=ulab
         plot([col col]+0.5, [vmin-1 vmax]+0.5, '-y');
     end
+    
+    % write pixel values in the squares
     if opt.pixval
-        
         for row=1:nr
             for col=1:nc
-                if ~isnan(im0(row,col))
-                    h = text(ulab(col), vlab(row), sprintf(opt.fmt, im(row,col)) );
-                    set(h, 'Color', opt.color, 'HorizontalAlignment', 'center', 'VerticalAlignment', 'middle', 'FontSize', opt.fontsize );
+                val = imv(row,col);
+                if ~( (isnan(val) && opt.hidenan) || (isinf(val) && opt.hideinf) )
+                    h = text(ulab(col), vlab(row), sprintf(opt.fmt, val) );
+                    if isnan(opt.contrast)
+                        color = opt.color;
+                    else
+                        color = [1 1 1]*(val<=opt.contrast);
+                    end
+                    set(h, 'Color', color, 'HorizontalAlignment', 'center', 'VerticalAlignment', 'middle', 'FontSize', opt.fontsize );
                 end
             end
         end
@@ -96,7 +127,6 @@ function h = showpixels(im, varargin)
     end
     
     if nargout > 0
-        h = findall(gca, 'type', 'image');
+        hout = findall(gca, 'type', 'image');
     end
-    
-    
+end
