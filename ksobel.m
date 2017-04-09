@@ -1,9 +1,9 @@
 %KSOBEL Sobel edge detector
 %
 % K = KSOBEL() is the Sobel x-derivative kernel:
-%           |-1  0  1|
-%           |-2  0  2|
-%           |-1  0  1|
+%        1   |1  0  -1|
+%       ---  |2  0  -2|
+%        8   |1  0  -1|
 %
 % Notes::
 % - This kernel is an effective horizontal edge detector
@@ -32,6 +32,6 @@
 
 function k = ksobel
 
-    k = [   -1 0 1
-            -2 0 2
-            -1 0 1];
+    k = [   1 0 -1
+            2 0 -2
+            1 0 -1] / 8;
