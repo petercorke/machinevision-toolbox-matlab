@@ -4,15 +4,15 @@
 % describe each connected region in the image IM.
 %
 % Options::
-%  'aspect',A        set pixel aspect ratio, default 1.0
-%  'connect',C	     set connectivity, 4 (default) or 8
-%  'greyscale'	     compute greyscale moments 0 (default) or 1
-%  'boundary'        compute boundary (default off)
-%  'area',[A1,A2]    accept only blobs with area in the interval A1 to A2
-%  'shape',[S1,S2]   accept only blobs with shape in the interval S1 to S2
-%  'touch',T         accept only blobs that touch (1) or do not touch (0)
-%                    the edge (default accept all)
-%  'class',C         accept only blobs of pixel value C (default all)
+%  'pixelaspect',A      set pixel aspect ratio, default 1.0
+%  'connect',C	        set connectivity, 4 (default) or 8
+%  'greyscale'	        compute greyscale moments 0 (default) or 1
+%  'boundary'           compute boundary (default off)
+%  'area',[A1,A2]       accept only blobs with area in the interval A1 to A2
+%  'aspect',[S1,S2]     accept only blobs with aspect ratio in the interval S1 to S2
+%  'touch',T            accept only blobs that touch (1) or do not touch (0)
+%                       the edge (default accept all)
+%  'class',C            accept only blobs of pixel value C (default all)
 %
 % The RegionFeature object has many properties including:
 %
@@ -34,7 +34,7 @@
 %  a             major axis length of equivalent ellipse
 %  b             minor axis length of equivalent ellipse
 %  theta         angle of major ellipse axis to horizontal axis
-%  shape         aspect ratio b/a (always <= 1.0)
+%  aspect        aspect ratio b/a (always <= 1.0)
 %  circularity   1 for a circle, less for other shapes
 %  moments       a structure containing moments of order 0 to 2
 %
@@ -79,10 +79,10 @@ function [features,labimg] = iblobs(im, varargin)
 	[nr,nc] = size(im);
 
     opt.area = [0 Inf];
-    opt.shape = [0 Inf];
+    opt.aspect = [0 Inf];
     opt.class = NaN;
     opt.touch = NaN;
-    opt.aspect = 1;
+    opt.pixelaspect = 1;
     opt.connect = 4;
     opt.greyscale = false;
     opt.moments = false;
@@ -94,7 +94,7 @@ function [features,labimg] = iblobs(im, varargin)
 	[li,nl,parent,color,edge] = ilabel(im, opt.connect);
 
 	blob = 0;
-	for i=1:nl,
+	for i=1:nl
 		binimage = (li == i);
 
 		% determine the blob extent
@@ -107,16 +107,16 @@ function [features,labimg] = iblobs(im, varargin)
 
         % compute the moments
 		if opt.greyscale
-			F = imoments(binimage .* im, 'aspect', opt.aspect);
+			F = imoments(binimage .* im, 'aspect', opt.pixelaspect);
 		else
-			F = imoments(binimage, 'aspect', opt.aspect);
+			F = imoments(binimage, 'aspect', opt.pixelaspect);
 		end
 
         % compute shape property, accounting for degenerate case
-		if F.a == 0,
-			shape = NaN;
+		if F.a == 0
+			aspect = NaN;
 		else
-			shape = F.b / F.a;
+			aspect = F.b / F.a;
 		end
 
 		% apply various filters
@@ -125,10 +125,10 @@ function [features,labimg] = iblobs(im, varargin)
 			(F.area_ >= opt.area(1)) && ...
 			(F.area_ <= opt.area(2)) && ...
 			(					...
-				isnan(shape) ||			...
+				isnan(aspect) ||			...
 				(               ...
-					(shape >= opt.shape(1)) &&	...
-					(shape <= opt.shape(2))	...
+					(aspect >= opt.aspect(1)) &&	...
+					(aspect <= opt.aspect(2))	...
 				)				...
 			)
 
@@ -164,7 +164,7 @@ function [features,labimg] = iblobs(im, varargin)
 			F.touch_ = t;
             F.parent = parent(i);
 
-			F.shape_ = shape;
+			F.aspect_ = aspect;
             F.label_ = i;
             F.class_ = color(i);
 
