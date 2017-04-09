@@ -42,20 +42,20 @@ function [a,b] = tristim2cc(tri)
         s = sum(tri')';
 
         cc = tri(:,1:2) ./ [s s];
-        if nargout == 1
-            a = cc;
-        else
+        if nargout == 2
             a = cc(:,1);
             b = cc(:,2);
+        else
+            a = cc;
         end
     else
 
         s = sum(tri, 3);
 
-        if nargout == 1
-            a = tri(:,:,1:2) ./ cat(3, s, s);
-        else
+        if nargout == 2
             a = tri(:,:,1) ./ s;
             b = tri(:,:,2) ./ s;
+        else
+            a = tri(:,:,1:2) ./ cat(3, s, s);
         end
     end
