@@ -68,7 +68,7 @@ end
 [w1,w2] = itrim(w1, w2);
 
 if nargout == 0
-    stview(w1, w2)
+    stdisp(w1, w2)
 else
     Img1_new = w1;
     Img2_new = w2;
