@@ -92,7 +92,7 @@ function F = imoments(varargin)
         a = 2*sqrt(max(diag(e))/m00);
         b = 2*sqrt(min(diag(e))/m00);
         v = x(:,end);
-        th = atan2(v(2),v(1));
+        th = atan(v(2)/v(1));
 
         %th = 0.5*atan2(2*u11, u20-u02);
     else
@@ -117,7 +117,7 @@ function F = imoments(varargin)
     end
     F.a = a;
     F.b = b;
-    F.shape_ = b/a;
+    F.aspect_ = b/a;
     F.theta_ = th;
     F.moments.m00 = m00;
     F.moments.m01 = m01;
