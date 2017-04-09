@@ -24,8 +24,16 @@
 %
 % See also IBLOBS, ICOLORIZE, COLORSEG.
 
-function idisplabel(im, label, select, bg)
+function idisplabel(im, label, select, varargin)
 
+        if isfloat(im)
+            opt.bg = 1;
+        else
+            opt.bg = 255;
+        end
+
+    [opt,args] = tb_optparse(opt, varargin);
+    
     if isscalar(select)
         mask = label == select;
     else
@@ -35,18 +43,12 @@ function idisplabel(im, label, select, bg)
         end
     end
     
-    if nargin < 4
-        if isfloat(im)
-            bg = 1;
-        else
-            bg = 255;
-        end
-    end
+
     
     if ndims(im) == 3
         mask = cat(3, mask, mask, mask);
     end
     
-    im(~mask) = bg;
-    idisp(im, 'nogui');
+    im(~mask) = opt.bg;
+    idisp(im, args{:});
     shg
