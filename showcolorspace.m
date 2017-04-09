@@ -82,8 +82,8 @@ function im = showcolorspace(varargin)
             
         case {'ab', 'Lab'}
             % Generate colors in the Lab color space
-            ax = linspace(-128, 128, opt.N);
-            ay = linspace(-128, 128, opt.N);
+            ax = linspace(-100, 100, opt.N);
+            ay = linspace(-100, 100, opt.N);
             [aa,bb] = meshgrid(ax, ay);
             
             % Convert from Lab to R'G'B'
@@ -113,7 +113,7 @@ function im = showcolorspace(varargin)
                 xlabel('x');
                 ylabel('y');
             case {'ab', 'Lab'}
-                xaxis(-128, 128); yaxis(-128, 128)
+                xaxis(-100, 100); yaxis(-100, 100)
                 xlabel('a*'); ylabel('b*')
         end
         grid
