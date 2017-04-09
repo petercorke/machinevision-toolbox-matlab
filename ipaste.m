@@ -83,6 +83,6 @@ function out = ipaste(canvas, pattern, topleft, varargin)
     case 'mean'
         old = out(top:top+ph-1,left:left+pw-1,:);
         k = ~isnan(pattern);
-        old(k) = 0.5 * (old + pattern);
+        old(k) = 0.5 * (old(k) + pattern(k));
         out(top:top+ph-1,left:left+pw-1,:) = old;
     end
