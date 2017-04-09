@@ -93,14 +93,13 @@ function [M, inliers, resid] = ransac(fittingfn, x, t, varargin);
 
     opt.maxTrials = 2000;
     opt.maxDataTrials = 100;
+    opt.probability = 0.99;  % Desired probability of choosing at least one sample
+                             % free from outliers
 
     opt = tb_optparse(opt, varargin);
     
     [rows, npts] = size(x);                 
     
-    p = 0.99;         % Desired probability of choosing at least one sample
-                      % free from outliers
-
     bestM = NaN;      % Sentinel value allowing detection of solution failure.
     trialcount = 0;
     bestscore =  0;    
@@ -117,7 +116,7 @@ function [M, inliers, resid] = ransac(fittingfn, x, t, varargin);
     
 
 
-    while N > trialcount
+    while trialcount < N   % NOTE: N is a function of opt.probability and the data
         
         % Select at random s datapoints to form a trial model, M.
         % In selecting these points we have to check that they are not in
@@ -126,17 +125,8 @@ function [M, inliers, resid] = ransac(fittingfn, x, t, varargin);
         count = 1;
         while degenerate
             % Generate s random indicies in the range 1..npts
-            % (If you do not have the statistics toolbox, or are using Octave,
-            % use the function RANDOMSAMPLE from my webpage)
-        if 0
-	    if useRandomsample
-            ind = randomsample(npts, s);
-	    else
-            ind = randsample(npts, s);
-	    end
-        else
+
             ind = randi(npts, 1, s);
-        end
 
             % Test that these points are not a degenerate configuration.
 
@@ -198,9 +188,13 @@ function [M, inliers, resid] = ransac(fittingfn, x, t, varargin);
             pNoOutliers = 1 -  fracinliers^s;
             pNoOutliers = max(eps, pNoOutliers);  % Avoid division by -Inf
             pNoOutliers = min(1-eps, pNoOutliers);% Avoid division by 0.
-            N = log(1-p)/log(pNoOutliers);
+            
+            % compute number of trials to achieve desired probability of
+            % inlier set is free of outliers
+            N = log(1-opt.probability)/log(pNoOutliers);
         end
         
+        % increment trialcount and test if we should quit yet
         trialcount = trialcount+1;
         if opt.verbose > 1
             fprintf('trial %d out of %d         \r',trialcount, ceil(N));
@@ -208,9 +202,11 @@ function [M, inliers, resid] = ransac(fittingfn, x, t, varargin);
 
         % Safeguard against being stuck in this loop forever
         if trialcount > opt.maxTrials
-            warning( ...
-            sprintf('ransac reached the maximum number of %d trials',...
-                    opt.maxTrials));
+            % compute the probability of being outlier free
+            p = exp(trialcount * log(pNoOutliers));
+
+            warning('ransac reached the maximum number of %d trials; probability of including an outlier is %f\ntry running ransac again', ...
+                opt.maxTrials, p);
             break
         end     
     end
