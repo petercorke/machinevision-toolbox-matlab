@@ -1,51 +1,90 @@
-%COLORSPACE  Color space conversion of image
+function varargout = colorspace(Conversion,varargin)
+%COLORSPACE  Transform a color image between color representations.
+%   B = COLORSPACE(S,A) transforms the color representation of image A
+%   where S is a string specifying the conversion.  The input array A 
+%   should be a real full double array of size Mx3 or MxNx3.  The output B 
+%   is the same size as A.
 %
-% OUT = COLORSPACE(S, IM) converts the image IM to a different color
-% space according to the string S which specifies the source and destination 
-% color spaces, S = 'dest<-src', or alternatively, S = 'src->dest'.  Input
-% and output images have 3 planes.
+%   S tells the source and destination color spaces, S = 'dest<-src', or 
+%   alternatively, S = 'src->dest'.  Supported color spaces are
 %
-% [O1,O2,O3] = COLORSPACE(S, IM) as above but specifies separate output 
-% channels or planes.
+%     'RGB'              sRGB IEC 61966-2-1
+%     'YCbCr'            Luma + Chroma ("digitized" version of Y'PbPr)
+%     'JPEG-YCbCr'       Luma + Chroma space used in JFIF JPEG
+%     'YDbDr'            SECAM Y'DbDr Luma + Chroma
+%     'YPbPr'            Luma (ITU-R BT.601) + Chroma 
+%     'YUV'              NTSC PAL Y'UV Luma + Chroma
+%     'YIQ'              NTSC Y'IQ Luma + Chroma
+%     'HSV' or 'HSB'     Hue Saturation Value/Brightness
+%     'HSL' or 'HLS'     Hue Saturation Luminance
+%     'HSI'              Hue Saturation Intensity
+%     'XYZ'              CIE 1931 XYZ
+%     'Lab'              CIE 1976 L*a*b* (CIELAB)
+%     'Luv'              CIE L*u*v* (CIELUV)
+%     'LCH'              CIE L*C*H* (CIELCH)
+%     'CAT02 LMS'        CIE CAT02 LMS
 %
-% COLORSPACE(S, I1,I2,I3) as above but specifies separate input channels.
+%  All conversions assume 2 degree observer and D65 illuminant.
 %
-% Supported color spaces are:
+%  Color space names are case insensitive and spaces are ignored.  When 
+%  sRGB is the source or destination, it can be omitted. For example 
+%  'yuv<-' is short for 'yuv<-rgb'.
 %
-% 'RGB'               R'G'B' Red Green Blue (ITU-R BT.709 gamma-corrected)
-% 'YPbPr'             Luma (ITU-R BT.601) + Chroma 
-% 'YCbCr'/'YCC'       Luma + Chroma ("digitized" version of Y'PbPr)
-% 'YUV'               NTSC PAL Y'UV Luma + Chroma
-% 'YIQ'               NTSC Y'IQ Luma + Chroma
-% 'YDbDr'             SECAM Y'DbDr Luma + Chroma
-% 'JPEGYCbCr'         JPEG-Y'CbCr Luma + Chroma
-% 'HSV'/'HSB'         Hue Saturation Value/Brightness
-% 'HSL'/'HLS'/'HSI'   Hue Saturation Luminance/Intensity
-% 'XYZ'               CIE XYZ
-% 'Lab'               CIE L*a*b* (CIELAB)
-% 'Luv'               CIE L*u*v* (CIELUV)
-% 'Lch'               CIE L*ch (CIELCH)
+%  For sRGB, the values should be scaled between 0 and 1.  Beware that 
+%  transformations generally do not constrain colors to be "in gamut."  
+%  Particularly, transforming from another space to sRGB may obtain 
+%  R'G'B' values outside of the [0,1] range.  So the result should be 
+%  clamped to [0,1] before displaying:
+%     image(min(max(B,0),1));  % Clamp B to [0,1] and display
 %
-% Notes::
-% - RGB input is assumed to be gamma encoded
-% - RGB output is gamma encoded
-% - All conversions assume 2 degree observer and D65 illuminant.
-% - Color space names are case insensitive.  
-% - When R'G'B' is the source or destination, it can be omitted. For 
-%   example 'yuv<-' is short for 'yuv<-rgb'.
-% - MATLAB uses two standard data formats for R'G'B': double data with
-%   intensities in the range 0 to 1, and uint8 data with integer-valued
-%   intensities from 0 to 255.  As MATLAB's native datatype, double data is
-%   the natural choice, and the R'G'B' format used by colorspace.  However,
-%   for memory and computational performance, some functions also operate
-%   with uint8 R'G'B'.  Given uint8 R'G'B' color data, colorspace will
-%   first cast it to double R'G'B' before processing.
-% - If IM is an Mx3 array, like a colormap, OUT will also have size Mx3.
+%  sRGB (Red Green Blue) is the (ITU-R BT.709 gamma-corrected) standard
+%  red-green-blue representation of colors used in digital imaging.  The 
+%  components should be scaled between 0 and 1.  The space can be 
+%  visualized geometrically as a cube.
+%  
+%  Y'PbPr, Y'CbCr, Y'DbDr, Y'UV, and Y'IQ are related to sRGB by linear
+%  transformations.  These spaces separate a color into a grayscale
+%  luminance component Y and two chroma components.  The valid ranges of
+%  the components depends on the space.
+%
+%  HSV (Hue Saturation Value) is related to sRGB by
+%     H = hexagonal hue angle   (0 <= H < 360),
+%     S = C/V                   (0 <= S <= 1),
+%     V = max(R',G',B')         (0 <= V <= 1),
+%  where C = max(R',G',B') - min(R',G',B').  The hue angle H is computed on
+%  a hexagon.  The space is geometrically a hexagonal cone.
+%
+%  HSL (Hue Saturation Lightness) is related to sRGB by
+%     H = hexagonal hue angle                (0 <= H < 360),
+%     S = C/(1 - |2L-1|)                     (0 <= S <= 1),
+%     L = (max(R',G',B') + min(R',G',B'))/2  (0 <= L <= 1),
+%  where H and C are the same as in HSV.  Geometrically, the space is a
+%  double hexagonal cone.
+%
+%  HSI (Hue Saturation Intensity) is related to sRGB by
+%     H = polar hue angle        (0 <= H < 360),
+%     S = 1 - min(R',G',B')/I    (0 <= S <= 1),
+%     I = (R'+G'+B')/3           (0 <= I <= 1).
+%  Unlike HSV and HSL, the hue angle H is computed on a circle rather than
+%  a hexagon. 
+%
+%  CIE XYZ is related to sRGB by inverse gamma correction followed by a
+%  linear transform.  Other CIE color spaces are defined relative to XYZ.
+%
+%  CIE L*a*b*, L*u*v*, and L*C*H* are nonlinear functions of XYZ.  The L*
+%  component is designed to match closely with human perception of
+%  lightness.  The other two components describe the chroma.
+%
+%  CIE CAT02 LMS is the linear transformation of XYZ using the MCAT02 
+%  chromatic adaptation matrix.  The space is designed to model the 
+%  response of the three types of cones in the human eye, where L, M, S,
+%  correspond respectively to red ("long"), green ("medium"), and blue
+%  ("short").
 %
 % Author::
-% Pascal Getreuer 2005-2006
+% Pascal Getreuer 2005-2010
 
-function varargout = colorspace(Conversion,varargin)
+
 %%% Input parsing %%%
 if nargin < 2, error('Not enough input arguments.'); end
 [SrcSpace,DestSpace] = parse(Conversion);
@@ -67,7 +106,7 @@ if size(Image,3) ~= 3, error('Invalid input size.'); end
 SrcT = gettransform(SrcSpace);
 DestT = gettransform(DestSpace);
 
-if ~ischar(SrcT) & ~ischar(DestT)
+if ~ischar(SrcT) && ~ischar(DestT)
    % Both source and destination transforms are affine, so they
    % can be composed into one affine operation
    T = [DestT(:,1:3)*SrcT(:,1:3),DestT(:,1:3)*SrcT(:,4)+DestT(:,4)];      
@@ -101,8 +140,8 @@ return;
 function [SrcSpace,DestSpace] = parse(Str)
 % Parse conversion argument
 
-if isstr(Str)
-   Str = lower(strrep(strrep(Str,'-',''),' ',''));
+if ischar(Str)
+   Str = lower(strrep(strrep(Str,'-',''),'=',''));
    k = find(Str == '>');
    
    if length(k) == 1         % Interpret the form 'src->dest'
@@ -130,7 +169,7 @@ return;
 
 
 function Space = alias(Space)
-Space = strrep(Space,'cie','');
+Space = strrep(strrep(Space,'cie',''),' ','');
 
 if isempty(Space)
    Space = 'rgb';
@@ -156,26 +195,26 @@ switch Space
 case 'ypbpr'
    T = [0.299,0.587,0.114,0;-0.1687367,-0.331264,0.5,0;0.5,-0.418688,-0.081312,0];
 case 'yuv'
-   % R'G'B' to NTSC/PAL YUV
+   % sRGB to NTSC/PAL YUV
    % Wikipedia: http://en.wikipedia.org/wiki/YUV
    T = [0.299,0.587,0.114,0;-0.147,-0.289,0.436,0;0.615,-0.515,-0.100,0];
 case 'ydbdr'
-   % R'G'B' to SECAM YDbDr
+   % sRGB to SECAM YDbDr
    % Wikipedia: http://en.wikipedia.org/wiki/YDbDr
    T = [0.299,0.587,0.114,0;-0.450,-0.883,1.333,0;-1.333,1.116,0.217,0];
 case 'yiq'
-   % R'G'B' in [0,1] to NTSC YIQ in [0,1];[-0.595716,0.595716];[-0.522591,0.522591];
+   % sRGB in [0,1] to NTSC YIQ in [0,1];[-0.595716,0.595716];[-0.522591,0.522591];
    % Wikipedia: http://en.wikipedia.org/wiki/YIQ
    T = [0.299,0.587,0.114,0;0.595716,-0.274453,-0.321263,0;0.211456,-0.522591,0.311135,0];
 case 'ycbcr'
-   % R'G'B' (range [0,1]) to ITU-R BRT.601 (CCIR 601) Y'CbCr
+   % sRGB (range [0,1]) to ITU-R BRT.601 (CCIR 601) Y'CbCr
    % Wikipedia: http://en.wikipedia.org/wiki/YCbCr
    % Poynton, Equation 3, scaling of R'G'B to Y'PbPr conversion
    T = [65.481,128.553,24.966,16;-37.797,-74.203,112.0,128;112.0,-93.786,-18.214,128];
 case 'jpegycbcr'
    % Wikipedia: http://en.wikipedia.org/wiki/YCbCr
    T = [0.299,0.587,0.114,0;-0.168736,-0.331264,0.5,0.5;0.5,-0.418688,-0.081312,0.5]*255;
-case {'rgb','xyz','hsv','hsl','lab','luv','lch'}
+case {'rgb','xyz','hsv','hsl','lab','luv','lch','cat02lms'}
    T = Space;
 otherwise
    error(['Unknown color space, ''',Space,'''.']);
@@ -184,33 +223,32 @@ return;
 
 
 function Image = rgb(Image,SrcSpace)
-% Convert to Rec. 709 R'G'B' from 'SrcSpace'
+% Convert to sRGB from 'SrcSpace'
 switch SrcSpace
 case 'rgb'
    return;
 case 'hsv'
-   % Convert HSV to R'G'B'
+   % Convert HSV to sRGB
    Image = huetorgb((1 - Image(:,:,2)).*Image(:,:,3),Image(:,:,3),Image(:,:,1));
 case 'hsl'
-   % Convert HSL to R'G'B'
+   % Convert HSL to sRGB
    L = Image(:,:,3);
    Delta = Image(:,:,2).*min(L,1-L);
    Image = huetorgb(L-Delta,L+Delta,Image(:,:,1));
-case {'xyz','lab','luv','lch'}
+case {'xyz','lab','luv','lch','cat02lms'}
    % Convert to CIE XYZ
    Image = xyz(Image,SrcSpace);
    % Convert XYZ to RGB
-   T = [3.240479,-1.53715,-0.498535;-0.969256,1.875992,0.041556;0.055648,-0.204043,1.057311];
+   T = [3.2406, -1.5372, -0.4986; -0.9689, 1.8758, 0.0415; 0.0557, -0.2040, 1.057];
    R = T(1)*Image(:,:,1) + T(4)*Image(:,:,2) + T(7)*Image(:,:,3);  % R
    G = T(2)*Image(:,:,1) + T(5)*Image(:,:,2) + T(8)*Image(:,:,3);  % G
    B = T(3)*Image(:,:,1) + T(6)*Image(:,:,2) + T(9)*Image(:,:,3);  % B
    % Desaturate and rescale to constrain resulting RGB values to [0,1]   
    AddWhite = -min(min(min(R,G),B),0);
-   Scale = max(max(max(R,G),B)+AddWhite,1);
-   R = (R + AddWhite)./Scale;
-   G = (G + AddWhite)./Scale;
-   B = (B + AddWhite)./Scale;   
-   % Apply gamma correction to convert RGB to Rec. 709 R'G'B'
+   R = R + AddWhite;
+   G = G + AddWhite;
+   B = B + AddWhite;
+   % Apply gamma correction to convert linear RGB to sRGB
    Image(:,:,1) = gammacorrection(R);  % R'
    Image(:,:,2) = gammacorrection(G);  % G'
    Image(:,:,3) = gammacorrection(B);  % B'
@@ -221,11 +259,6 @@ otherwise  % Conversion is through an affine transform
    R = T(1)*Image(:,:,1) + T(4)*Image(:,:,2) + T(7)*Image(:,:,3) + T(10);
    G = T(2)*Image(:,:,1) + T(5)*Image(:,:,2) + T(8)*Image(:,:,3) + T(11);
    B = T(3)*Image(:,:,1) + T(6)*Image(:,:,2) + T(9)*Image(:,:,3) + T(12);
-   AddWhite = -min(min(min(R,G),B),0);
-   Scale = max(max(max(R,G),B)+AddWhite,1);
-   R = (R + AddWhite)./Scale;
-   G = (G + AddWhite)./Scale;
-   B = (B + AddWhite)./Scale;
    Image(:,:,1) = R;
    Image(:,:,2) = G;
    Image(:,:,3) = B;
@@ -264,15 +297,24 @@ case {'lab','lch'}
    Image(:,:,1) = WhitePoint(1)*invf(fX);  % X
    Image(:,:,2) = WhitePoint(2)*invf(fY);  % Y
    Image(:,:,3) = WhitePoint(3)*invf(fZ);  % Z
+case 'cat02lms'
+    % Convert CAT02 LMS to XYZ
+   T = inv([0.7328, 0.4296, -0.1624;-0.7036, 1.6975, 0.0061; 0.0030, 0.0136, 0.9834]);
+   L = Image(:,:,1);
+   M = Image(:,:,2);
+   S = Image(:,:,3);
+   Image(:,:,1) = T(1)*L + T(4)*M + T(7)*S;  % X 
+   Image(:,:,2) = T(2)*L + T(5)*M + T(8)*S;  % Y
+   Image(:,:,3) = T(3)*L + T(6)*M + T(9)*S;  % Z
 otherwise   % Convert from some gamma-corrected space
-   % Convert to Rec. 701 R'G'B'
+   % Convert to sRGB
    Image = rgb(Image,SrcSpace);
    % Undo gamma correction
    R = invgammacorrection(Image(:,:,1));
    G = invgammacorrection(Image(:,:,2));
    B = invgammacorrection(Image(:,:,3));
    % Convert RGB to XYZ
-   T = inv([3.240479,-1.53715,-0.498535;-0.969256,1.875992,0.041556;0.055648,-0.204043,1.057311]);
+   T = inv([3.2406, -1.5372, -0.4986; -0.9689, 1.8758, 0.0415; 0.0557, -0.2040, 1.057]);
    Image(:,:,1) = T(1)*R + T(4)*G + T(7)*B;  % X 
    Image(:,:,2) = T(2)*R + T(5)*G + T(8)*B;  % Y
    Image(:,:,3) = T(3)*R + T(6)*G + T(9)*B;  % Z
@@ -303,8 +345,8 @@ case 'hsv'
    Image(:,:,2) = 0.5*(MaxVal - MinVal)./(temp + (temp == 0));
    Image(:,:,3) = L;
 otherwise
-   Image = rgb(Image,SrcSpace);  % Convert to Rec. 701 R'G'B'
-   % Convert R'G'B' to HSL
+   Image = rgb(Image,SrcSpace);  % Convert to sRGB
+   % Convert sRGB to HSL
    MinVal = min(Image,[],3);
    MaxVal = max(Image,[],3);
    L = 0.5*(MaxVal + MinVal);
@@ -352,8 +394,9 @@ WhitePointU = (4*WhitePoint(1))./(WhitePoint(1) + 15*WhitePoint(2) + 3*WhitePoin
 WhitePointV = (9*WhitePoint(2))./(WhitePoint(1) + 15*WhitePoint(2) + 3*WhitePoint(3));
 
 Image = xyz(Image,SrcSpace); % Convert to XYZ
-U = (4*Image(:,:,1))./(Image(:,:,1) + 15*Image(:,:,2) + 3*Image(:,:,3));
-V = (9*Image(:,:,2))./(Image(:,:,1) + 15*Image(:,:,2) + 3*Image(:,:,3));
+Denom = Image(:,:,1) + 15*Image(:,:,2) + 3*Image(:,:,3);
+U = (4*Image(:,:,1))./(Denom + (Denom == 0));
+V = (9*Image(:,:,2))./(Denom + (Denom == 0));
 Y = Image(:,:,2)/WhitePoint(2);
 L = 116*f(Y) - 16;
 Image(:,:,1) = L;                        % L*
@@ -369,6 +412,19 @@ H = atan2(Image(:,:,3),Image(:,:,2));
 H = H*180/pi + 360*(H < 0);
 Image(:,:,2) = sqrt(Image(:,:,2).^2 + Image(:,:,3).^2);  % C
 Image(:,:,3) = H;                                        % H
+return;
+
+
+function Image = cat02lms(Image,SrcSpace)
+% Convert to CAT02 LMS
+Image = xyz(Image,SrcSpace);
+T = [0.7328, 0.4296, -0.1624;-0.7036, 1.6975, 0.0061; 0.0030, 0.0136, 0.9834];
+X = Image(:,:,1);
+Y = Image(:,:,2);
+Z = Image(:,:,3);
+Image(:,:,1) = T(1)*X + T(4)*Y + T(7)*Z;  % L
+Image(:,:,2) = T(2)*X + T(5)*Y + T(8)*Z;  % M
+Image(:,:,3) = T(3)*X + T(6)*Y + T(9)*Z;  % S
 return;
 
 
@@ -409,16 +465,18 @@ return;
 
 
 function Rp = gammacorrection(R)
-Rp = real(1.099*R.^0.45 - 0.099);
-i = (R < 0.018);
-Rp(i) = 4.5138*R(i);
+Rp = zeros(size(R));
+i = (R <= 0.0031306684425005883);
+Rp(i) = 12.92*R(i);
+Rp(~i) = real(1.055*R(~i).^0.416666666666666667 - 0.055);
 return;
 
 
 function R = invgammacorrection(Rp)
-R = real(((Rp + 0.099)/1.099).^(1/0.45));
-i = (R < 0.018);
-R(i) = Rp(i)/4.5138;
+R = zeros(size(Rp));
+i = (Rp <= 0.0404482362771076);
+R(i) = Rp(i)/12.92;
+R(~i) = real(((Rp(~i) + 0.055)/1.055).^2.4);
 return;
 
 
