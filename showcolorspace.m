@@ -40,7 +40,7 @@
 % Based on code by Pascal Getreuer 2006
 % Demo for colorspace.m - the CIE xyY "tongue"
 
-function im = showcolorspace(varargin)
+function [im,ax_,ay_] = showcolorspace(varargin)
     opt.N = 501;
     opt.L = 90; % luminance 0 to 100
     opt.colorspace = {'', 'xy', 'ab', 'Lab'};
@@ -119,9 +119,12 @@ function im = showcolorspace(varargin)
         grid
         shg;
     else
-        ax = a;
-        ay = b;
         im = color;
+        if nargout > 1
+            ax_ = ax;
+        end
+        if nargout > 2
+            ay_ = ay;
+        end
     end
 end
-
