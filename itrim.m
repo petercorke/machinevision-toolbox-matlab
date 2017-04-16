@@ -99,9 +99,7 @@ end % itrim
     function out = trim(in, thresh)
 
         out = trimx(in, thresh);
-
-
-        out = trimy(out, t);
+        out = trimy(out, thresh);
     end
 
     
