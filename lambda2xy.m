@@ -35,8 +35,8 @@ function [x,y] = lambda2xy(lambda, varargin)
 
     xy = tristim2cc(cmf);
     if nargout == 2
-        x = xy(1);
-        y = xy(2);
+        x = xy(:,1);
+        y = xy(:,2);
     else
         x = xy;
     end
