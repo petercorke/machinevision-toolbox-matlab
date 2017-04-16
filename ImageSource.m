@@ -119,7 +119,7 @@ classdef ImageSource < handle
             end
 
             if ~isempty(imsource.gamma)
-                im = igamma(im, imsource.gamma);
+                im = igamm(im, imsource.gamma);
             end
 
             if isempty(im2)
