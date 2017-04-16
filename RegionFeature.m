@@ -75,10 +75,10 @@ classdef RegionFeature < handle
         uc_          % centroid
         vc_
         
-        umin        % the bounding box
-        umax
-        vmin
-        vmax
+        umin_        % the bounding box
+        umax_
+        vmin_
+        vmax_
 
         class_       % the class of the pixel in the original image
         label_       % the label assigned to this region
@@ -90,10 +90,10 @@ classdef RegionFeature < handle
         touch_       % 0 if it doesnt touch the edge, 1 if it does
 
         % equivalent ellipse parameters
-        a           % the major axis length
-        b           % the minor axis length  b<a
+        a_           % the major axis length
+        b_           % the minor axis length  b<a
         theta_       % angle of major axis with respect to horizontal
-        aspect_       % b/a  < 1.0
+        aspect_      % b/a  < 1.0
         circularity_
 
         moments     % moments, a struct of: m00, m01, m10, m02, m20, m11
@@ -167,7 +167,6 @@ classdef RegionFeature < handle
                     s = sprintf('(%d) area=%d, cent=(%.1f,%.1f), theta=%.2f, b/a=%.3f, color=%d, label=%d, touch=%d, parent=%d', ... 
                         i, bi.area_, bi.uc_, bi.vc_, bi.theta_, bi.aspect_, bi.class_, bi.label_, ...
                         bi.touch_, bi.parent);
-
                 end
                 ss = strvcat(ss, s);
             end
@@ -177,7 +176,7 @@ classdef RegionFeature < handle
         %RegionFeature.box Return bounding box
         %
         % B = R.box() is the bounding box in standard Toolbox form [xmin,xmax; ymin, ymax].
-            b = [bb.umin bb.umax; bb.vmin bb.vmax];
+            b = [bb.umin_ bb.umax_; bb.vmin_ bb.vmax_];
         end
 
         function plot_boundary(bb, varargin)
@@ -244,7 +243,7 @@ classdef RegionFeature < handle
         %
         % If R is a vector then each element is plotted.
             for b=bb
-                plot_box(b.umin, b.vmin, b.umax, b.vmax, varargin{:});
+                plot_box(b.umin_, b.vmin_, b.umax_, b.vmax_, varargin{:});
             end
         end
 
@@ -341,11 +340,11 @@ classdef RegionFeature < handle
         end
 
         function bb = get.bbox_(f)
-            bb = [f.umin f.umax; f.vmin f.vmax];
+            bb = [f.umin_ f.umax_; f.vmin_ f.vmax_];
         end
         
         function a = get.bboxarea_(f)
-            a = (f.umax-f.umin)*(f.vmax-f.vmin);
+            a = (f.umax_-f.umin_)*(f.vmax_-f.vmin_);
         end
 
         % methods to provide convenient access to properties of object vectors
@@ -355,6 +354,30 @@ classdef RegionFeature < handle
 
         function val = vc(f)
             val = [f.vc_];
+        end
+
+        function val = umin(f)
+            val = [f.umin_];
+        end
+
+        function val = vmin(f)
+            val = [f.vmin_];
+        end
+
+        function val = umax(f)
+            val = [f.umax_];
+        end
+
+        function val = vmax(f)
+            val = [f.vmax_];
+        end
+
+        function val = a(f)
+            val = [f.a_];
+        end
+
+        function val = b(f)
+            val = [f.b_];
         end
 
         function val = p(f)

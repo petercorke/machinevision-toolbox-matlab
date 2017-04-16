@@ -113,10 +113,10 @@ function [features,labimg] = iblobs(im, varargin)
 		end
 
         % compute shape property, accounting for degenerate case
-		if F.a == 0
+		if F.a_ == 0
 			aspect = NaN;
 		else
-			aspect = F.b / F.a;
+			aspect = F.b_ / F.a_;
 		end
 
 		% apply various filters
@@ -157,10 +157,10 @@ function [features,labimg] = iblobs(im, varargin)
             end
 
             % set object properties
-			F.umin = umin;
-			F.umax = umax;
-			F.vmin = vmin;
-			F.vmax = vmax;
+			F.umin_ = umin;
+			F.umax_ = umax;
+			F.vmin_ = vmin;
+			F.vmax_ = vmax;
 			F.touch_ = t;
             F.parent = parent(i);
 

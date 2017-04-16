@@ -115,8 +115,8 @@ function F = imoments(varargin)
         F.uc_ = NaN;
         F.vc_ = NaN;
     end
-    F.a = a;
-    F.b = b;
+    F.a_ = a;
+    F.b_ = b;
     F.aspect_ = b/a;
     F.theta_ = th;
     F.moments.m00 = m00;
