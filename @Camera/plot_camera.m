@@ -7,7 +7,7 @@
 % 'pose',T     Camera displayed in pose T (homogeneous transformation 4x4)
 % 'scale',S    Overall scale factor (default 0.2 x maximum axis dimension)
 % 'color',C    Camera body color (default blue)
-% 'frustrum'   Draw the camera as a frustrum (pyramid mesh)
+% 'frustum'    Draw the camera as a frustrum (pyramid mesh)
 % 'solid'      Draw a non-frustrum camera as a solid (default)
 % 'mesh'       Draw a non-frustrum camera as a mesh
 % 'label'      Show the camera's name next to the camera
@@ -21,8 +21,9 @@ function h = plot_camera(c, varargin)
     
     opt.pose = c.T;
     opt.scale = [];
-    opt.frustrum = false;
+    opt.frustum = false;
     opt.label = false;
+    opt.persist = false;
     
     [opt,arglist] = tb_optparse(opt, varargin);
     
@@ -40,7 +41,7 @@ function h = plot_camera(c, varargin)
     else
         % otherwise draw the graphical object from scratch in this figure
         
-        if opt.frustrum
+        if opt.frustum
             
             % old representation as a colored pyramid
             % define pyramid dimensions from the size parameter
@@ -103,8 +104,12 @@ function h = plot_camera(c, varargin)
         end
         set(c.h_visualize, 'Matrix', opt.pose.T);
 
+        if opt.persist
+            c.h_visualize = [];
+        end
         set(gcf, 'name', sprintf('%s(%s) - camera view', class(c), c.name));
 
         xlabel('X'); ylabel('Y'); zlabel('Z');
+        rotate3d on
     end
 end
