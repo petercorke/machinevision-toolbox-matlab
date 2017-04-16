@@ -31,4 +31,4 @@ function T = estpose(c, XYZ, uv)
 
     [R, t] = efficient_pnp(XYZ', uv', c.K);
 
-    T = [R t; 0 0 0 1];
+    T = SE3(R, t);
