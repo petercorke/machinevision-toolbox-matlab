@@ -141,11 +141,7 @@ classdef Camera < handle
             c.holdon = false;
             c.color = [1 1 0.8];
 
-            if nargin == 0
-                % default camera parameters
-                c.name = 'canonic';
-                c.pp = [0 0];
-            elseif nargin == 1 && isa(varargin{1}, 'Camera')
+            if nargin == 1 && isa(varargin{1}, 'Camera')
                 return;
             else
                 opt.name = 'noname';
