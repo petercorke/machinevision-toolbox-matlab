@@ -4,7 +4,7 @@
 % figure.
 %
 % Options::
-% 'Tcam',T     Camera displayed in pose T (homogeneous transformation 4x4)
+% 'pose',T     Camera displayed in pose T (homogeneous transformation 4x4)
 % 'scale',S    Overall scale factor (default 0.2 x maximum axis dimension)
 % 'color',C    Camera body color (default blue)
 % 'frustrum'   Draw the camera as a frustrum (pyramid mesh)
@@ -19,7 +19,7 @@
 
 function h = plot_camera(c, varargin)
     
-    opt.Tcam = c.T;
+    opt.pose = c.T;
     opt.scale = [];
     opt.frustrum = false;
     opt.label = false;
@@ -35,7 +35,7 @@ function h = plot_camera(c, varargin)
     
     if ishandle(c.h_visualize)
         % if a handle already exists just update the transform
-        set(c.h_visualize, 'Matrix', opt.Tcam);
+        set(c.h_visualize, 'Matrix', opt.pose.T);
 
     else
         % otherwise draw the graphical object from scratch in this figure
@@ -58,7 +58,7 @@ function h = plot_camera(c, varargin)
             ud.vertices = vertices;
             
             % create the camera
-            %vertices = homtrans(opt.Tcam, vertices);
+            %vertices = homtrans(opt.pose, vertices);
             
             % the first index for each face controls the face color
             faces = [
@@ -81,17 +81,18 @@ function h = plot_camera(c, varargin)
             patch('Vertices', vertices', ...
                 'Faces', faces, ...
                 'FaceVertexCData', colors, ...
-                'FaceColor','flat', ...
+                'FaceColor', 'none', ... %'flat', ...
                 'UserData', ud, ...
                 'Parent', hg);
             %set(h, 'FaceAlpha', 0.5);
             if opt.label
                 text(0, 0, 0, c.name, 'Parent', hg);
             end
+
             c.h_visualize = hg;  % save handle for later
             
         else
-            % draw a somewhat detail camera-looking object specific to the
+            % draw a somewhat detailed camera-looking object specific to the
             % camera subclass
             args = {'scale', opt.scale};
             if opt.label
@@ -100,8 +101,10 @@ function h = plot_camera(c, varargin)
             args = [args arglist{:}];
             c.h_visualize = c.drawCamera(args{:});
         end
-        set(c.h_visualize, 'Matrix', opt.Tcam);
-        
+        set(c.h_visualize, 'Matrix', opt.pose.T);
+
+        set(gcf, 'name', sprintf('%s(%s) - camera view', class(c), c.name));
+
         xlabel('X'); ylabel('Y'); zlabel('Z');
     end
 end

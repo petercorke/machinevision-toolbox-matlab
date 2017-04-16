@@ -75,7 +75,7 @@ classdef Camera < handle
         rho     % pixel dimensions 1x2
         pp      % principal point 1x2
         npix    % number of pixel 1x2
-        T       % camera pose
+        T       % camera pose SE3 object
         noise   % pixel noise 1x2
         image
     end
@@ -157,7 +157,8 @@ classdef Camera < handle
                 opt.noise = [];
                 opt.pose = [];
                 opt.color = [];
-                opt.noise = [];
+                c.pp = [0 0];
+
 
                 [opt,args] = tb_optparse(opt, varargin);
 
@@ -190,7 +191,9 @@ classdef Camera < handle
                         error('noise must be a 1- or 2-vector');
                     end
                 end
-                c.T = opt.pose;
+                if ~isempty(opt.pose)
+                    c.T = SE3(opt.pose);
+                end
                 if ~isempty(opt.sensor)
                     c.rho = opt.sensor ./ c.npix;
                 end
@@ -210,11 +213,11 @@ classdef Camera < handle
         %
         % C.delete() destroys all figures associated with the Camera object and
         % removes the object.
-            disp('delete camera object');
-            if ~isempty(c.h_image)
+            %disp('delete camera object');
+            if ~isempty(c.h_image) && ishandle(c.h_image)
                 delete(get(c.h_image, 'Parent'));
             end
-            if ~isempty(c.h_visualize)
+            if ~isempty(c.h_visualize) && ishandle(c.h_visualize)
                 delete(get(c.h_visualize, 'Parent'));
             end
         end
@@ -261,10 +264,10 @@ classdef Camera < handle
                 s = strvcat(s, sprintf('  number pixels:  %d x %d', c.nu, c.nv));
             end
             if ~isempty(c.noise)
-                s = strvcat(s, sprintf('  noise: %.4g,%.4g pix', c.noise));
+                s = strvcat(s, sprintf('  noise:          %.4g,%.4g pix', c.noise));
             end
-            s = strvcat(s, sprintf('  T:'));
-            s = strvcat(s, [repmat('      ', 4,1) num2str(c.T)]);
+            s = strvcat(s,     sprintf('  pose:           %s', print(c.T, 'camera')));
+            % = strvcat(s, [repmat('      ', 4,1) num2str(c.T)]);
         end
 
         function rpy(c, roll, pitch, yaw)
@@ -278,7 +281,7 @@ classdef Camera < handle
                 yaw = roll(3);
                 roll = roll(1);
             end
-            c.T = r2t( rotz(roll) * roty(pitch) * rotx(yaw) );
+            c.T = SE3.Ry(yaw) * SE3.Rx(pitch) * SE3.Rz(roll);
         end
 
         function c = centre(c)
@@ -286,7 +289,7 @@ classdef Camera < handle
         %
         % P = C.centre() is the 3-dimensional position of the camera centre (3x1).
 
-            c = transl(c.T);
+            c = c.T.t;
         end
 
         function ishold = hold(c, flag)
@@ -296,23 +299,23 @@ classdef Camera < handle
         %
         % C.hold(H) hold mode is set on if H is true (or > 0), and off if
         % H is false (or 0).
-            if nargout > 0
-                % i = cam.ishold(); test hold condition
-                ishold = c.holdon;
-                return;
-            else
-                % cam.ishold(); set hold
-                % cam.ishold(flag); set hold
-                if nargin < 2
-                    flag = true;
-                end
-                c.holdon = flag;
-                if flag
-                    set(c.h_image, 'NextPlot', 'add');
-                else
-                    set(c.h_image, 'NextPlot', 'replacechildren');
-                end
-            end
+        
+        % cam.ishold(); set hold
+        % cam.ishold(flag); set hold
+        if nargin < 2
+            flag = true;
+        end
+        c.holdon = flag;
+        if flag
+            set(c.h_image, 'NextPlot', 'add');
+        else
+            set(c.h_image, 'NextPlot', 'replacechildren');
+        end
+        if nargout > 0
+            % i = cam.ishold(); test hold condition
+            ishold = c.holdon;
+
+        end
         end
 
         function v = ishold(c)
@@ -366,11 +369,11 @@ classdef Camera < handle
 
                 if isempty(c.h_image) || ~ishandle(c.h_image)
                     idisp(c.image, 'nogui');
-                    set(gcf, 'name', [class(c) ':' c.name]);
+                    set(gcf, 'name', sprintf('%s(%s) - image plane', class(c), c.name));
                     set(gcf, 'MenuBar', 'none');
                     hold on
                     h = gca;
-                    title(h, c.name);
+                    %title(h, ['CentralCamera image plane:' c.name);
                     c.h_image = h;
                     set(gcf, 'HandleVisibility', 'off');
                     set(h, 'HandleVisibility', 'off');
@@ -400,7 +403,7 @@ classdef Camera < handle
                 set(fig, 'Tag', 'camera');
                 set(h, 'Color', c.color);
                 set(fig, 'HandleVisibility', 'off');
-                set(fig, 'name', [class(c) ':' c.name]);
+                set(fig, 'name', sprintf('%s(%s) - image plane', class(c), c.name));
             end
             % create an axis for camera view
             set(h, 'XLim', c.limits(1:2), 'YLim', c.limits(3:4), ...
@@ -448,9 +451,9 @@ classdef Camera < handle
         % image plane lines in homogeneous form.
         %
         % Options::
-        % 'Tobj',T         Transform all points by the homogeneous transformation T before
+        % 'objpose',T     Transform all points by the homogeneous transformation T before
         %                  projecting them to the camera image plane.
-        % 'Tcam',T         Set the camera pose to the homogeneous transformation T before
+        % 'pose',T         Set the camera pose to the homogeneous transformation T before
         %                  projecting points to the camera image plane.  Overrides the current
         %                  camera pose C.T.
         % 'fps',N          Number of frames per second for point sequence display
@@ -464,8 +467,8 @@ classdef Camera < handle
         %
         % See also Camera.mesh, Camera.hold, Camera.clf, Plucker.
 
-            opt.Tobj = [];
-            opt.Tcam = [];
+            opt.objpose = [];
+            opt.pose = [];
             opt.fps = 5;
             opt.sequence = false;
             opt.textcolor = 'k';
@@ -499,7 +502,7 @@ classdef Camera < handle
                 if isempty(arglist)
                     % set default style if none given
                     %disp('set default plot args');
-                    arglist = {'Marker', 'o', 'MarkerFaceColor', 'k', 'LineStyle', 'none'};
+                    arglist = {'Marker', 'o', 'MarkerFaceColor', 'k', 'MarkerEdgeColor', 'k', 'LineStyle', 'none'};
                 end
                 
                 for i=1:size(uv,3)
@@ -540,36 +543,39 @@ classdef Camera < handle
         % and the corresponding elements of the matrices define 3D points.
         %
         % Options::
-        % 'Tobj',T   Transform all points by the homogeneous transformation T before
-        %            projecting them to the camera image plane.
-        % 'Tcam',T   Set the camera pose to the homogeneous transformation T before
-        %            projecting points to the camera image plane.  Temporarily overrides
-        %            the current camera pose C.T.
+        % 'objpose',T   Transform all points by the homogeneous transformation T before
+        %               projecting them to the camera image plane.
+        % 'pose',T      Set the camera pose to the homogeneous transformation T before
+        %               projecting points to the camera image plane.  Temporarily overrides
+        %               the current camera pose C.T.
         %
         % Additional arguments are passed to plot as line style parameters.
         %
         % See also MESH, CYLINDER, SPHERE, MKCUBE, Camera.plot, Camera.hold, Camera.clf.
 
             % check that mesh matrices conform
-            if ~(all(size(X) == size(Y)) && all(size(X) == size(Z)))
-                error('matrices must be the same size');
+            assert( all(size(X) == size(Y)) && all(size(X) == size(Z)), 'matrices must be the same size');
+
+            opt.objpose = [];
+            opt.pose = [];
+
+            [opt,arglist,ls] = tb_optparse(opt, varargin);
+            if isempty(opt.pose)
+                opt.pose = c.T;
             end
 
-            opt.Tobj = [];
-            opt.Tcam = [];
-
-            [opt,arglist] = tb_optparse(opt, varargin);
-            if isempty(opt.Tcam)
-                opt.Tcam = c.T;
+            if isempty(ls)
+                ls = {'k'};
             end
-
+            
             % get handle for this camera image plane
             h = c.plot_create();
 
             % draw 3D line segments
             nsteps = 21;
 
-            c.hold(1);
+            c.clf
+            holdon = c.hold(1);
             s = linspace(0, 1, nsteps);
 
             for i=1:numrows(X)-1
@@ -586,7 +592,7 @@ classdef Camera < handle
                         P = bsxfun(@times, (1-s), P0) + bsxfun(@times, s, P1);
                         uv = c.project(P, 'setopt', opt);
                     end
-                    plot(uv(1,:)', uv(2,:)', arglist{:}, 'Parent', c.h_image);
+                    plot(uv(1,:)', uv(2,:)', ls{:}, arglist{:}, 'Parent', c.h_image);
 
                     if c.perspective
                         % straight world lines are straight on the image plane
@@ -596,7 +602,7 @@ classdef Camera < handle
                         P = bsxfun(@times, (1-s), P0) + bsxfun(@times, s, P2);
                         uv = c.project(P, 'setopt', opt);
                     end
-                    plot(uv(1,:)', uv(2,:)', arglist{:}, 'Parent', c.h_image);
+                    plot(uv(1,:)', uv(2,:)', ls{:}, arglist{:}, 'Parent', c.h_image);
                 end
             end
 
@@ -612,9 +618,9 @@ classdef Camera < handle
                     P = bsxfun(@times, (1-s), P0) + bsxfun(@times, s, P1);
                     uv = c.project(P, 'setopt', opt);
                 end
-                plot(uv(1,:)', uv(2,:)', arglist{:}, 'Parent', c.h_image);
+                plot(uv(1,:)', uv(2,:)', ls{:}, arglist{:}, 'Parent', c.h_image);
             end
-            c.hold(0);
+            c.hold(holdon); % turn hold off if it was initially off
 
         end % mesh
 
@@ -638,7 +644,7 @@ classdef Camera < handle
         % of L (3xN) considered as lines in homogeneous form: a.u + b.v + c = 0.
 
             % get handle for this camera image plane
-            h = c.plot_create
+            h = c.plot_create;
             xlim = get(h, 'XLim');
             ylim = get(h, 'YLim');
 
@@ -654,8 +660,7 @@ classdef Camera < handle
                 else
                     % less than 45deg
                     y = (-l(3) - l(1)*xlim) / l(2);
-                    xlim
-                    y
+
                     h = plot(xlim, y, varargin{:}, 'Parent', c.h_image);
                 end
             end
@@ -710,15 +715,11 @@ classdef Camera < handle
         end
 
         function c = set.T(c, Tc)
-            if isempty(Tc)
-                c.T = eye(4,4);       
-            elseif ~ishomog(Tc)
-                error('camera pose must be a homogeneous transform');
-            else
-                c.T = Tc;
-            end
+            c.T = SE3(Tc);
+
+
             if ~isempty(c.h_visualize) && ishandle(c.h_visualize)
-                set(c.h_camera3D, 'Matrix', c.T);
+                set(c.h_visualize, 'Matrix', c.T.T);
             end
         end
 

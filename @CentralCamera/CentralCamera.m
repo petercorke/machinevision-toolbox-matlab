@@ -80,13 +80,11 @@
 %
 % See also Camera.
 
-
-
 % Copyright (C) 1993-2011, by Peter I. Corke
 %
-% This file is part of The Robotics Toolbox for Matlab (RTB).
+% This file is part of The Machine Vision Toolbox for Matlab (MVTB).
 % 
-% RTB is free software: you can redistribute it and/or modify
+% MVTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
@@ -97,7 +95,11 @@
 % GNU Lesser General Public License for more details.
 % 
 % You should have received a copy of the GNU Leser General Public License
-% along with RTB.  If not, see <http://www.gnu.org/licenses/>.
+% along with MVTB.  If not, see <http://www.gnu.org/licenses/>.
+
+%TODO
+% method to undo lens distortion
+
 
 classdef CentralCamera < Camera
 
@@ -247,9 +249,12 @@ classdef CentralCamera < Camera
         %
         % C = C.C() is the 3x4 camera matrix, also known as the camera 
         % calibration or projection matrix.
-            if nargin == 1,
+        %
+        % C = C.C(T) as above but for the camera at pose T (SE3).
+            if nargin == 1
                 Tcam = c.T;
             end
+            Tcam = SE3(Tcam);
 
             if isempty(c.rho)
                 rho = [1 1];
@@ -260,7 +265,7 @@ classdef CentralCamera < Camera
             v = [   c.f/rho(1)     0           c.pp(1)   0
                     0            c.f/rho(2)    c.pp(2)   0
                     0            0           1         0
-                ] * inv(Tcam);
+                ] * Tcam.inv().T;
         end
 
         function HH = H(c, T, n, d)
@@ -393,7 +398,7 @@ classdef CentralCamera < Camera
                 return;
             elseif isa(X, 'Camera')
                 T21 = inv(X.T) * c.T;
-            elseif ishomog(X)
+            elseif isa(X, 'SE3')
                 T21 = inv(X);
             else
                 error('unknown argument type');
@@ -434,28 +439,27 @@ classdef CentralCamera < Camera
             [U,S,V] = svd(E);
             % singular values are (sigma, sigma, 0)
             
-            if 0
-                % H&Z solution
-                W = [0 -1 0; 1 0 0; 0 0 1];   % rotz(pi/2)
+% %                 % H&Z solution
+% %                 W = [0 -1 0; 1 0 0; 0 0 1];   % rotz(pi/2)
+% % 
+% %                 t = U(:,3);
+% %                 R1 = U*W*V';
+% %                 if det(R1) < 0,
+% %                     disp('flip');
+% %                     V = -V;
+% %                     R1 = U*W*V';
+% %                     det(R1)
+% %                 end
+% %                 R2 = U*W'*V';
+% % 
+% %                 % we need to invert the solutions since our definition of pose is
+% %                 % from initial camera to the final camera
+% %                 s(:,:,1) = inv([R1 t; 0 0 0 1]);
+% %                 s(:,:,2) = inv([R1 -t; 0 0 0 1]);
+% %                 s(:,:,3) = inv([R2 t; 0 0 0 1]);
+% %                 s(:,:,4) = inv([R2 -t; 0 0 0 1]);
 
-                t = U(:,3);
-                R1 = U*W*V';
-                if det(R1) < 0,
-                    disp('flip');
-                    V = -V;
-                    R1 = U*W*V';
-                    det(R1)
-                end
-                R2 = U*W'*V';
-
-                % we need to invert the solutions since our definition of pose is
-                % from initial camera to the final camera
-                s(:,:,1) = inv([R1 t; 0 0 0 1]);
-                s(:,:,2) = inv([R1 -t; 0 0 0 1]);
-                s(:,:,3) = inv([R2 t; 0 0 0 1]);
-                s(:,:,4) = inv([R2 -t; 0 0 0 1]);
-            else
-                % Ma etal solution, p116, p120-122
+% Ma etal solution, p116, p120-122
                 % Fig 5.2 (p113), is wrong, (R,t) is from camera 2 to 1
                 if det(V) < 0
                     V = -V;
@@ -470,19 +474,19 @@ classdef CentralCamera < Camera
                 t1 = vex(U*rotz(pi/2)*S*U');
                 t2 = vex(U*rotz(-pi/2)*S*U');
                 % invert (R,t) so its from camera 1 to 2
-                s(:,:,1) = inv( [R1 t1; 0 0 0 1] );
-                s(:,:,2) = inv( [R2 t2; 0 0 0 1] );
-            end
+                s(1) = SE3( inv( [R1 t1; 0 0 0 1] ) );
+                s(2) = SE3( inv( [R2 t2; 0 0 0 1] ) );
             
             if nargin > 2
-                for i=1:size(s,3)
-                    if ~any(isnan(c.project(P, 'Tcam', s(:,:,i))))
-                        s = s(:,:,i);
+                % we're given a test point
+                for i=1:length(s)
+                    if ~any(isnan(c.project(P, 'pose', s(i))))
+                        s = s(i);
                         fprintf('solution %d is good\n', i);
                         return;
                     end
                 end
-                warning('no solution has given point in front of camera');
+                warning('no solution has given a point in front of camera');
             end
         end
         
@@ -549,95 +553,90 @@ classdef CentralCamera < Camera
         % UV = C.project(P, OPTIONS) are the image plane coordinates (2xN) corresponding
         % to the world points P (3xN).
         %
-        % - If Tcam (4x4xS) is a transform sequence then UV (2xNxS) represents the sequence 
-        %   of projected points as the camera moves in the world.
-        % - If Tobj (4x4xS) is a transform sequence then UV (2xNxS) represents the sequence 
-        %   of projected points as the object moves in the world.
-        %
         % [UV,VIS] = C.project(P, OPTIONS) as above but VIS (SxN) is a logical matrix with
         % elements true (1) if the point is visible, that is, it lies within the bounds of
         % the image plane and is in front of the camera.
         %
-        % L = C.project(L, OPTIONS) are the image plane homogeneous lines (3xN) corresponding
-        % to the world lines represented by a vector of Plucker coordinates (1xN).
+        % L = C.project(PL, OPTIONS) are the image plane homogeneous lines (3xN) corresponding
+        % to the world lines represented by a vector of Plucker objects (1xN).
         %
         % Options::
-        % 'Tobj',T   Transform all points by the homogeneous transformation T before
-        %            projecting them to the camera image plane.
-        % 'Tcam',T   Set the camera pose to the homogeneous transformation T before
-        %            projecting points to the camera image plane.  Temporarily overrides 
-        %            the current camera pose C.T.
+        % 'pose',T      Set the camera pose to the homogeneous transformation T before
+        %               projecting points to the camera image plane.  Temporarily overrides 
+        %               the current camera pose C.T.
+        % 'objpose',T   Transform all points by the homogeneous transformation T before
+        %               projecting them to the camera image plane.
         %
         % Notes::
-        % - Currently a camera or object pose sequence is not supported for
-        %   the case of line projection.
+        % - If camera pose is a vector (1xN), a camera trajectory, then UV (2xNxS) represents 
+        %   the sequence of projected points as the camera moves in the world.
+        % - If object pose is a vector (1xN), an object trajectory, then UV (2xNxS) represents 
+        %   the sequence of projected points as the object moves in the world.
+        % - Moving camera and object is not supported
+        % - A camera or object pose sequence is not supported for the case of line projection.
         % - (u,v) values are set to NaN if the corresponding point is behind the camera.
         %
-        % See also Camera.plot, Plucker.
+        % See also Camera.plot, CentralCamera.normalized, Plucker.
 
-            opt.Tobj = [];
-            opt.Tcam = [];
+        % - TODO Currently a camera or object pose sequence is not supported for
+        %   the case of line projection.
+
+
+            opt.objpose = [];
+            opt.pose = [];
 
             [opt,arglist] = tb_optparse(opt, varargin);
 
             np = numcols(P);
-                
-            if isempty(opt.Tcam)
-                opt.Tcam = c.T;
+            
+            if ~isempty(opt.objpose)
+                opt.objpose = SE3(opt.objpose);
+            end
+            if ~isempty(opt.pose)
+                opt.pose = SE3(opt.pose);
+            end
+                        
+            if isempty(opt.pose)
+                opt.pose = c.T;
             end
 
-            if ndims(opt.Tobj) == 3 && ndims(opt.Tcam) == 3
+            if length(opt.objpose) > 1 && length(opt.pose) > 1
                 error('cannot animate object and camera simultaneously');
             end
 
             if isa(P, 'Plucker')
                 % project lines
                 % get camera matrix for this camera pose
-                C = c.C(opt.Tcam);
+                C = c.C(opt.pose);
                 for i=1:length(P)
-                    uv(:,i) = vex( C * P(i).L * C');
+                    l = vex( C * P(i).L * C');
+                    uv(:,i) = l / max(abs(l));
                 end
             else
                 % project points
-                if ndims(opt.Tobj) == 3
+                if length(opt.objpose) > 1
                     % animate object motion, static camera
                     
                     % get camera matrix for this camera pose
-                    C = c.C(opt.Tcam);
+                    C = c.C(opt.pose);
                     
                     % make the world points homogeneous
                     if numrows(P) == 3
                         P = e2h(P);
                     end
                     
-                    for frame=1:size(opt.Tobj,3)
+                    for frame=1:length(opt.objpose)
                         
                         % transform all the points to camera frame
-                        X = C * opt.Tobj(:,:,frame) * P;     % project them
+                        X = C * opt.objpose(frame).T * P;     % project them
                         
                         X(3,X(3,:)<0) = NaN;    % points behind the camera are set to NaN
 
+                        X = h2e(X);            % convert to Euclidean coordinates
                         
                         if ~isempty(c.distortion)
-                            % add lens distortion
-                            
-                            X = inv(c.K) * X;   % convert to normalized image coordinates
-                            u = X(1,:); v = X(2,:); % unpack coordinates
-                            k = c.distortion(1:3); p = c.distortion(4:5); % unpack distortion vector
-                            r = sqrt( u.^2 + v.^2 ); % distance from princ point
-                            
-                            % compute the shift due to distortion
-                            delta_u = u .* (k(1)*r.^2 + k(2)*r.^4 + k(3)*r.^6) + ...
-                                2*p(1)*u.*v + p(2)*(r.^2 + 2*u.^2);
-                            delta_v = v .* (k(1)*r.^2 + k(2)*r.^4 + k(3)*r.^6) + ...
-                                p(1)*(r.^2 + 2*v.^2) + 2*p(1)*u.*v;
-                            
-                            ud = u + delta_u;  vd = v + delta_v; % distorted coordinates
-                            X = c.K * e2h( [ud; vd] ); % convert to pixel coords
+                            X = distort(c, X);
                         end
-                        
-
-                        X = h2e(X);            % convert to Euclidean coordinates
                         
                         if c.noise
                             % add Gaussian noise with specified standard deviation
@@ -660,8 +659,8 @@ classdef CentralCamera < Camera
                     % animate camera, static object
                     
                     % transform the object
-                    if ~isempty(opt.Tobj)
-                        P = homtrans(opt.Tobj, P);
+                    if ~isempty(opt.objpose)
+                        P = homtrans(opt.objpose, P);
                     end
                     
                     % make the world points homogeneous
@@ -669,35 +668,18 @@ classdef CentralCamera < Camera
                         P = e2h(P);
                     end
                     
-                    for frame=1:size(opt.Tcam,3)
-                        C = c.C(opt.Tcam(:,:,frame));
+                    for frame=1:length(opt.pose)
+                        C = c.C(opt.pose(frame));
                         
                         % transform all the points to camera frame
                         X = C * P;              % project them
                         X(3,X(3,:)<0) = NaN;    % points behind the camera are set to NaN
-
                         
-                        if ~isempty(c.distortion)
-                            % add lens distortion
-                            
-                           X = inv(c.K) * X;   % convert to normalized image coordinates
-                            u = X(1,:); v = X(2,:); % unpack coordinates
-                            k = c.distortion(1:3); p = c.distortion(4:5); % unpack distortion vector
-                            r = sqrt( u.^2 + v.^2 ); % distance from princ point
-                            
-                            % compute the shift due to distortion
-                            delta_u = u .* (k(1)*r.^2 + k(2)*r.^4 + k(3)*r.^6) + ...
-                                2*p(1)*u.*v + p(2)*(r.^2 + 2*u.^2);
-                            delta_v = v .* (k(1)*r.^2 + k(2)*r.^4 + k(3)*r.^6) + ...
-                                p(1)*(r.^2 + 2*v.^2) + 2*p(1)*u.*v;
-                            
-                            ud = u + delta_u;  vd = v + delta_v; % distorted coordinates
-                            X = c.K * e2h( [ud; vd] ); % convert to pixel coords
-                            
-
-                        
-                        end
                         X = h2e(X);            % convert to Euclidean coordinates
+                                        
+                        if ~isempty(c.distortion)
+                            X = distort(c, X);
+                        end
                         
                         if c.noise
                             % add Gaussian noise with specified standard deviation
@@ -713,13 +695,30 @@ classdef CentralCamera < Camera
                                 uv(1,:,:) >= 0 & uv(2,:,:) >= 0 & ...
                                 uv(1,:,:) <= c.npix(1) & uv(2,:,:) <= c.npix(2);
                             visible = squeeze(visible)';
-                        end
-                        
-                        
+                        end                              
                     end
-                end
+                end               
+            end
+            
+            function Xd = distort(c, X)
+                %CentralCamera.distort Compute distorted coordinate
+                %
+                % Xd = cam.distort(X) is the projected image plane point X (2x1) after 
+                % lens distortion has been applied.
                 
-
+                X = inv(c.K) * X;   % convert to normalized image coordinates
+                u = X(1,:); v = X(2,:); % unpack coordinates
+                k = c.distortion(1:3); p = c.distortion(4:5); % unpack distortion vector
+                r = sqrt( u.^2 + v.^2 ); % distance from princ point
+                
+                % compute the shift due to distortion
+                delta_u = u .* (k(1)*r.^2 + k(2)*r.^4 + k(3)*r.^6) + ...
+                    2*p(1)*u.*v + p(2)*(r.^2 + 2*u.^2);
+                delta_v = v .* (k(1)*r.^2 + k(2)*r.^4 + k(3)*r.^6) + ...
+                    p(1)*(r.^2 + 2*v.^2) + 2*p(1)*u.*v;
+                
+                ud = u + delta_u;  vd = v + delta_v; % distorted coordinates
+                Xd = c.K * e2h( [ud; vd] ); % convert to pixel coords
             end
         end
 
@@ -739,9 +738,9 @@ classdef CentralCamera < Camera
 
             C = cam.C();
             Mi = inv(C(1:3,1:3));
-            p4 = C(:,4);
+            v = C(:,4);
             for i=1:numcols(p)
-                r(i) = Ray3D(-Mi*p4, Mi*e2h(p(:,i)));
+                r(i) = Ray3D(-Mi*v, Mi*e2h(p(:,i)));
             end
         end
         
@@ -760,9 +759,9 @@ classdef CentralCamera < Camera
 
           C = cam.C(); 
           Mi = inv(C(1:3,1:3)); 
-          p4 = C(:,4);
+          v = C(:,4);
           
-          p = -Mi*p4;
+          p = -Mi*v;
         end
 
         function hg = drawCamera(cam, varargin)
