@@ -82,7 +82,8 @@
 %
 % See also Camera.
 
-% Copyright (C) 1993-2011, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Machine Vision Toolbox for Matlab (MVTB).
 % 
@@ -91,13 +92,15 @@
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
 % 
-% RTB is distributed in the hope that it will be useful,
+% MVTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
 % 
 % You should have received a copy of the GNU Leser General Public License
 % along with MVTB.  If not, see <http://www.gnu.org/licenses/>.
+%
+% http://www.petercorke.com
 
 %TODO
 % method to undo lens distortion
