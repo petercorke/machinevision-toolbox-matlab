@@ -13,7 +13,7 @@
 % 'plot'           show the points P1 and P2 at each iteration, with a
 %                  delay of 0.5 [sec].
 % 'maxtheta',T     limit the change in rotation at each step 
-%                  to T (default 0.05 rad)
+%                  to T
 % 'maxiter',N      stop after N iterations (default 100)
 % 'mindelta',T     stop when the relative change in error norm is less 
 %                  than T (default 0.001)
@@ -61,15 +61,11 @@
 % 
 % You should have received a copy of the GNU Leser General Public License
 % along with MVTB.  If not, see <http://www.gnu.org/licenses/>.
-function [T,d] = icp(set1, set2, varargin)
+function [T,d] = icp(M, D, varargin)
 
-    if numrows(set1) ~= numrows(set2)
-        error('point clouds must have matching point dimensions');
-    end
-    ndims = numrows(set1);
-    if ndims < 2 || ndims > 3
-        error('ICP only for 2 or 3 dimensional points');
-    end
+    assert(numrows(M) == numrows(D), 'point clouds must have matching point dimensions');
+    ndims = numrows(M);
+    assert( ndims ==2 || ndims == 3, 'ICP only for 2 or 3 dimensional points');
 
     % T is the transform from set1 to set2    
     opt.maxtheta = []; %0.05;
@@ -78,100 +74,105 @@ function [T,d] = icp(set1, set2, varargin)
     opt.plot = false;
     opt.dplot = 0;
     opt.distthresh = [];
+    opt.T0 = [];
     opt = tb_optparse(opt, varargin);
     
     if opt.plot
         opt.dplot = 0.5;
     end
     
-    
-	N1 = numcols(set1);	% number of model points
-	N2 = numcols(set2);
-
-	p1 = mean(set1');
-	p2 = mean(set2');
-	t = p2 - p1;
-    if ndims == 2
-        T = transl2(t);
+    if isempty(opt.T0)
+        Mbar = mean(M');
+        Dbar = mean(D');
+        t = Dbar - Mbar;
+        if ndims == 2
+            T = transl2(t);
+        else
+            T = transl(t);
+        end
     else
-        T = transl(t);
+        T = opt.T0;
     end
     
 	dnorm = 0;
     dnorm_p = NaN;
     
-	for count=1:opt.maxiter
+    %% iterate
+	for k=1:opt.maxiter
         
 		% transform the model
-        set1_tr = homtrans(T, set1);
+        Mk = homtrans(T, M);
 
-		% for each point in set 2 find the nearest point in set 1       
-        [corresp,distance] = closest(set2, set1_tr);
+		% for each point in D find the nearest point in M       
+        [corresp,distance] = closest(D, Mk);
         
         % optionally break correspondences if their distance is above some
         % multiple of the median distance
         if isempty(opt.distthresh)
-            set2_tr = set2;
+            Dp = D;
         else
-            k = find(distance > opt.distthresh*median(distance));
+            j = find(distance > opt.distthresh*median(distance));
 
             % now remove them
-            if ~isempty(k),
-                %fprintf('breaking %d corespondences ', length(k));
-                distance(k) = [];
-                corresp(k) = [];
+            if ~isempty(j)
+                %fprintf('breaking %d correspondences ', length(k));
+                distance(j) = [];
+                corresp(j) = [];
             end
-            set2_tr = set2;
-            set2_tr(:,k) = [];
+            Dp = D;
+            Dp(:,j) = [];
         end
         
-		% display the model points and correspondences
+		%% display the model points and correspondences
         if opt.dplot > 0
             usefig('ICP');
             clf
             if ndims == 2
-                plot(set1_tr(1,:),set1_tr(2,:),'bx');
+                plot(Mk(1,:),Mk(2,:),'bx');
                 grid
                 hold on
-                plot(set2_tr(1,:),set2_tr(2,:),'ro');
+                plot(Dp(1,:),Dp(2,:),'ro');
                 
-                for i=1:numcols(set2_tr),
+                for i=1:numcols(Dp),
                     ic = corresp(i);
-                    plot( [set1_tr(1,ic) set2_tr(1,i)], [set1_tr(2,ic) set2_tr(2,i)], 'g');
+                    plot( [Mk(1,ic) Dp(1,i)], [Mk(2,ic) Dp(2,i)], 'g');
                 end
             else
-                plot3(set1_tr(1,:),set1_tr(2,:),set1_tr(3,:),'bx');
+                plot3(Mk(1,:),Mk(2,:),Mk(3,:),'bx');
                 grid
                 hold on
-                plot3(set2_tr(1,:),set2_tr(2,:),set2_tr(3,:),'ro');
+                plot3(Dp(1,:),Dp(2,:),Dp(3,:),'ro');
                 
-                for i=1:numcols(set2_tr),
+                for i=1:numcols(Dp),
                     ic = corresp(i);
-                    plot3( [set1_tr(1,ic) set2_tr(1,i)], [set1_tr(2,ic) set2_tr(2,i)], [set1_tr(3,ic) set2_tr(3,i)], 'g');
+                    plot3( [Mk(1,ic) Dp(1,i)], [Mk(2,ic) Dp(2,i)], [Mk(3,ic) Dp(3,i)], 'g');
                 end
             end
             pause(opt.dplot)
         end
 
-		% find the centroids of the two point sets
+		%% find the centroids of the two point sets
 		% for the observations include only those points which have a
-		% correspondance.
-		p1 = mean(set1_tr(:,corresp)');
+		% correspondence.
+		Mbar = mean(Mk(:,corresp)');
         %[length(corresp)         length(unique(corresp))]
         %p1 = mean(set1_tr');
-		p2 = mean(set2_tr');
+		Dbar = mean(Dp');
 
-        % compute the moments
-		M = zeros(ndims, ndims);
-		for i=1:numcols(set2_tr)
+        %% compute the moments
+		W = zeros(ndims, ndims);
+		for i=1:numcols(Dp)
             ic = corresp(i);
-			M = M + (set1_tr(:,ic) - p1') * (set2_tr(:,i) - p2')';
+			W = W + (Mk(:,ic) - Mbar') * (Dp(:,i) - Dbar')';
         end
         
-		[U,S,V] = svd(M);
+% this vectorized code is slower than above :(
+% W = bsxfun(@minus, Mk(:,corresp), Mbar') * bsxfun(@minus, Dp, Dbar')';
+        %% estimat the transformation
+		[U,S,V] = svd(W);
         
-        % compute the rotation of p1 to p2
-        % p2 = R p1 + t
+        % compute the rotation of M to D
+        % D = R M + t
 		R = V*U';
 
         if det(R) < 0
@@ -180,15 +181,18 @@ function [T,d] = icp(set1, set2, varargin)
         end
         
         if opt.debug
-            p1
-            p2
+            Mbar
+            Dbar
             M
             R
         end
         
-        % optionally clip the rotation, helps converence
-		if ~isempty(opt.maxtheta)
-			[theta,v] = tr2angvec(R);
+        if isrot(R)
+            R = trnorm(R);
+        end
+        % optionally clip the rotation, helps converegence
+        if ~isempty(opt.maxtheta)
+            [theta,v] = tr2angvec(R);
             if theta > opt.maxtheta;
                 theta = opt.maxtheta;
             elseif theta < -opt.maxtheta
@@ -196,51 +200,52 @@ function [T,d] = icp(set1, set2, varargin)
             end
             R = angvec2r(theta, v);
         end
+        
         if opt.debug
             theta
             v
             R
         end
-
-			
+	
 		% determine the incremental translation
-        t = p2' - p1';
+        t = Dbar' - Mbar';
 		
 		%disp([t' tr2rpy(R)])
 
-		% update the transform from data (observation) to model
+		%% update the transform from data (observation) to model
         if ndims == 3
-		T = trnorm( T * rt2tr(R, t) );
-		%count = count + 1;
+            T = trnorm( T * rt2tr(R, t) );
+            %count = count + 1;
             rpy = tr2rpy(T);
         else
-           T = T * rt2tr(R, t);
+            T = T * rt2tr(R, t);
         end
 		
+        %% print info and check for termination
         dnorm = norm(distance);
         
         if opt.verbose
             if ndims == 2
                 fprintf('[%d]: n=%d/%d, d=%8.3f, t = (%8.3f %8.3f), th = (%6.1f) deg\n', ...
-                    count, length(distance), numcols(set2), dnorm, transl2(T), atan2(T(2,1), T(2,2))*180/pi);
+                    k, length(distance), numcols(D), dnorm, transl2(T), atan2(T(2,1), T(2,2))*180/pi);
             elseif ndims == 3
                 fprintf('[%d] n=%d/%d, d=%8.3f, t = (%8.3f %8.3f %8.3f), rpy = (%6.1f %6.1f %6.1f) deg\n', ...
-                    count, length(distance), numcols(set2), dnorm, transl(T), rpy*180/pi);
+                    k, length(distance), numcols(D), dnorm, transl(T), rpy*180/pi);
             end
             %std(distance)
         end
 
         % check termination condition
         if abs(dnorm - dnorm_p)/dnorm_p < opt.mindelta
-            count = NaN;    % flag that we exited on mindelta
+            k = NaN;    % flag that we exited on mindelta
             break
         end
 		dnorm_p = dnorm;
     end
     
     if opt.verbose
-        if isnan(count)
-                fprintf('terminate on minimal change of error norm');
+        if isnan(k)
+            fprintf('terminate on minimal change of error norm');
         else
             fprintf('terminate on iteration limit (%d iterations)\n', opt.maxiter);
         end
