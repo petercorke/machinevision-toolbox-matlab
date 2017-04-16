@@ -180,7 +180,8 @@ classdef SphericalCamera < Camera
             y = P(2,:) ./ R;
             z = P(3,:) ./ R;
             r = sqrt( x.^2 + y.^2);
-            theta = atan2(r, z);
+            %theta = atan2(r, z);
+            theta = acos(P(3,:)./R);
             phi = atan2(y, x);
             f = [phi; theta];
         end
