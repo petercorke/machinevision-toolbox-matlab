@@ -42,6 +42,7 @@ classdef ImageSource < handle
         makeGrey
         gamma
         scaleFactor
+        args             % other passed options (cell array)
     end
 
     methods (Abstract)
@@ -86,6 +87,7 @@ classdef ImageSource < handle
             imsource.scaleFactor = opt.scale;
             imsource.width = opt.width;
             imsource.height = opt.height;
+            imsource.args = args;
             
 
             % remaining arguments get passed to the subclass

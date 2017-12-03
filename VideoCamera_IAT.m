@@ -55,7 +55,7 @@ classdef VideoCamera_IAT < ImageSource
 
         function list()
             % list available adaptors and cameras
-
+            
             hwinfo = imaqhwinfo();
             adaptors = hwinfo.InstalledAdaptors
             for adaptorName=adaptors
@@ -75,7 +75,8 @@ classdef VideoCamera_IAT < ImageSource
                 end
             end
         end
-    end
+        
+    end  % static methods
 
     methods
 
@@ -100,7 +101,7 @@ classdef VideoCamera_IAT < ImageSource
         %   otherwise the result is not predictable.
 
             % invoke the superclass constructor and process common arguments
-            m = m@ImageSource({});
+            m = m@ImageSource(varargin{:});
             m.video = [];
             m.adaptor = [];
             m.id = [];
@@ -108,9 +109,12 @@ classdef VideoCamera_IAT < ImageSource
             opt.continuous = [];
 
             opt.id = [];
-            [opt,args] = tb_optparse(opt, varargin);
+            [opt,args] = tb_optparse(opt, m.args{:});
             if ~isempty(opt.id)
                 m.id = opt.id;
+            end
+            if isempty(m.id)
+                m.id = 1;
             end
             
             m.continuous = opt.continuous;
@@ -131,14 +135,23 @@ classdef VideoCamera_IAT < ImageSource
                             continue;
                         end
                     end
-                    fprintf('Using adaptor %s\n', adaptor.AdaptorName);
-                    m.video = videoinput(adaptor.AdaptorName);
+                    fprintf('Using adaptor %s, device id %d\n', adaptor.AdaptorName, m.id);
+                    if ismac
+                        % need this for Sierra, see http://au.mathworks.com/matlabcentral/fileexchange/45183-image-acquisition-toolbox-support-package-for-os-generic-video-interface
+                        imaqreset;    
+                        imaqmex('feature','-limitPhysicalMemoryUsage', false); 
+                    end
+                    m.video = videoinput(adaptor.AdaptorName, m.id);
                     m.adaptor = adaptor;
-                elseif  length(args) == 1
+                elseif length(args) == 1
                     % we were given an adaptor
+                    assert(ischar(args{1}{1}), 'Adaptor name must be a char array')
 
-                    if isempty(m.id)
-                        m.id = 1;
+
+                    if ismac
+                        % need this for Sierra
+                        imaqreset;    
+                        imaqmex('feature','-limitPhysicalMemoryUsage', false); 
                     end
                     m.video = videoinput(args{1}, m.id);
                     m.adaptor = imaqhwinfo(args{1});
@@ -180,7 +193,7 @@ classdef VideoCamera_IAT < ImageSource
 
         end
 
-        function [im, time] = grab(m, opt)
+        function [im_, time] = grab(m, opt)
         %VideoCamera_IAT.grab Acquire image from the camera
         %
         % IM = V.grab() acquires an image from the camera.
@@ -192,6 +205,14 @@ classdef VideoCamera_IAT < ImageSource
                 im = getdata(m.video);
             else
                 im = getsnapshot(m.video);
+            end
+            
+            im = m.convert(im);
+            
+            if nargout == 0
+                idisp(im);
+            else
+                im_ = im;
             end
         end
 
