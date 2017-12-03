@@ -20,23 +20,27 @@
 % See also VideoCamera, ImageSource, AxisWebCamera, Movie.
 function vid = VideoCamera(varargin)
 
+    opt.simple = false;
+    
+    [opt,args] = tb_optparse(opt, varargin);
+    
     % this function looks like a class, the only way to implement the
     % factory design pattern
 
-    if exist('imaqhwinfo', 'file')
+    if exist('imaqhwinfo', 'file') && ~opt.simple
         % we have the Mathworks Image Acquisition Toolbox
-        if nargin == 1 && strcmp(varargin{1}, '?')
+        if length(args) == 1 && strcmp(args{1}, '?')
             VideoCamera_IAT.list();
         else
-            vid = VideoCamera_IAT(varargin{:});
+            vid = VideoCamera_IAT(args{:});
         end
     elseif exist('framegrabber', 'file') == 3
         % we have the MVTB framegrabber MEX interface, for either
         % MacOS, Linux or Windows
-        if nargin == 1 && strcmp(varargin{1}, '?')
+        if length(args) == 1 && strcmp(args{1}, '?')
             VideoCamera_fg.list();
         else
-            vid = VideoCamera_fg(varargin{:});
+            vid = VideoCamera_fg(args{:});
         end
     else
         error('no video capture capability on this computer');
