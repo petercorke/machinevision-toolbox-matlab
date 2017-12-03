@@ -175,13 +175,33 @@ For elaboration on the underlying principles, extensive illustrations and worked
 MVTB 4 is largely backward compatible with MVTB 3.
 
 \subsection{Incompatible changes}
+\begin{itemize}
+\item \texttt{xycolorspace} replaced with \texttt{showcolorspace('xy')}.  It can also display Lab colorspace.
+\item \texttt{iconv} changed to \texttt{iconvolve}
+\item \texttt{solar.dat} has the units changed from $\mathrm{W/m^2/nm}$ to $\mathrm{W/m^2/m}$.
+\item \texttt{RegionFeature} property \texttt{shape} has been renamed to  \texttt{aspect}
+\item Data files that were previously in the folder \texttt{private} but are now in \texttt{data}.
+\item Options of the form \texttt{'Tcam'}, \texttt{'Tobj'}, \texttt{'T0'} or \texttt{'Tf'} are now respectively 
+\texttt{'pose'}, \texttt{'objpose'}, \texttt{'pose0'} or \texttt{'posef'}.
+\end{itemize}
 
-xycolorspace replaced with showcolorspace('xy')
-iconv -> iconvolve
+%\subsection{Compatible changes}
+%\begin{itemize}
+%\end{itemize}
 
 \subsection{New features}
+\begin{itemize}
+\item For a vector of \texttt{RegionFeature} objects all the properties can now be extracted as vectors.
+\item Bundle adjustment is supported by the new \texttt{BundleAdjust} class.
+\item The folder \texttt{symbolic} contains Live Scripts that demonstrate use of the MATLAB Symbolic Math Toolbox\textsuperscript{TM}
+for deriving Jacobians related to bundle adjustment, image Jacobian for visual servoing and Gaussian kernels.
+\end{itemize}
 
 \subsection{Enhancements}
+\begin{itemize}
+\item cmf2xyz for spectral input multiplies by $\Delta \lambda$
+\item color data
+\end{itemize}
 
 \section{How to obtain the Toolbox}
 The Machine Vision Toolbox is freely available from the Toolbox home
@@ -263,6 +283,8 @@ MATLAB Drive\textsuperscript{TM} from MATLAB File Exchange or using the Get Add-
 just like Google Drive or Dropbox, a local filesystem on your computer is synchronized with your MATLAB Online account.  Copy the MVTB
 files into the local MATLAB Drive cache and they will soon be synchronized, invoke \texttt{startup\_rvc} to setup the paths and you are ready to machine vision on your mobile device or in a web browser.
 
+MATLAB Online does not support MEX files.  
+
 \subsection{Simulink\textsuperscript{\textregistered}}
 Simulink\textsuperscript{\textregistered} is the block diagram simulation environment for MATLAB.
 The following Simulink models are included with the Toolbox, but rely on having RTB installed.
@@ -281,8 +303,6 @@ The following Simulink models are included with the Toolbox, but rely on having 
 \texttt{sl\_quadrotor\_vs} &  Control visual servoing to a target\\ \hline
 \end{tabular}
 \end{center}
-
-
 
 
 \subsection{Documentation}

@@ -17,6 +17,8 @@ rgb2xyz
 rluminos
 showcolorspace
 tristim2cc
+yuv2rgb
+yuv2rgb2
 
 
 h1. Camera models
@@ -141,6 +143,7 @@ isurf
 FeatureMatch
 
 h3. Other features
+apriltags
 peak
 peak2
 ihist
@@ -216,7 +219,7 @@ e2h       : Euclidean coordinates to homogeneous
 h2e       : homogeneous coordinates to Euclidean
 homline:  : homogeneous line from two points
 homtrans  : apply homogeneous transform to points
-skew
+skew      : create skew symmetric matrix
 
 h2. Homogeneous coordinates in 2D
 ishomog2

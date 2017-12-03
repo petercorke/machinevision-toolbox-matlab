@@ -1,3 +1,4 @@
+# build MVTB
 ROOT = ~/code/rvc
 BUILD = tmp
 MANUAL = $(BUILD)/manual/vision.pdf
@@ -59,7 +60,7 @@ _build:
 	cp -r $(SRC)/simulink/*.slx rvctools/simulink
 	cp -r $(SRC)/examples rvctools/vision
 	cp -r $(SRC)/mex rvctools/vision
-	cp -r $(SRC)/private rvctools/vision
+	cp -r $(SRC)/data rvctools/vision
 	cp -r $(SRC)/IPT rvctools/vision
 	#cp -r ../images rvctools/vision
 	-mkdir rvctools/vision/images
@@ -183,4 +184,4 @@ stage:
 	ssh geek mv www/MVTB/vision-*.zip www/MVTB/r3
 
 clean:
-	@-\rm -rf tmp
+	@-\rm -rf tmp *.zip *.mltbx
