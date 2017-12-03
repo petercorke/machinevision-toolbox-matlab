@@ -1,0 +1,12 @@
+Machine Vision Toolbox demo scripts
+
+Some examples of how to use toolbox functions to perform a variety of
+useful/interesting tasks.
+
+Note that the scripts are not added to your MATLAB path.
+
+You can run these scripts by:
+
+- use the mvtbdemo function to invoke the scripts via runscript
+- cd to the demos folder and run them from the command line
+- use addpath to add the demos folder to your MATLAB path
