@@ -1,12 +1,12 @@
 %KSOBEL Sobel edge detector
 %
 % K = KSOBEL() is the Sobel x-derivative kernel:
-%        1   |1  0  -1|
-%       ---  |2  0  -2|
-%        8   |1  0  -1|
+%         1/8  |1  0  -1|
+%              |2  0  -2|
+%              |1  0  -1|
 %
 % Notes::
-% - This kernel is an effective horizontal edge detector
+% - This kernel is an effective vertical edge detector
 % - The Sobel vertical derivative is K'
 %
 % See also ISOBEL.
