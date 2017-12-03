@@ -1,0 +1,373 @@
+<deployment-project plugin="plugin.toolbox" plugin-version="1.0">
+  <configuration build-checksum="757084412" file="/Users/corkep/code/RVC/machinevision-toolbox-matlab/Machine Vision Toolbox.prj" location="/Users/corkep/code/RVC/machinevision-toolbox-matlab" name="Machine Vision Toolbox" target="target.toolbox" target-name="Package Toolbox">
+    <param.appname>Machine Vision Toolbox (MOOC build)</param.appname>
+    <param.authnamewatermark>Peter Corke</param.authnamewatermark>
+    <param.email>rvc@petercorke.com</param.email>
+    <param.company />
+    <param.summary>Files and classes for machine vision</param.summary>
+    <param.description>Files and classes for machine vision: basic image processing, feature extraction, camera models, multiview imaging, etc.
+
+(Updated with several bug fixes, vgg functions, mex binaries, IPT versions of hitormiss+ilabel)</param.description>
+    <param.screenshot>${PROJECT_ROOT}/doc/manual/mvtb-montage-notext.png</param.screenshot>
+    <param.version>3.4.1</param.version>
+    <param.output>${PROJECT_ROOT}/Machine Vision Toolbox (MOOC build).mltbx</param.output>
+    <param.products.name />
+    <param.products.id />
+    <param.products.version />
+    <param.platforms />
+    <param.guid>1905a07c-7b82-4abf-acf4-8e9bda584136</param.guid>
+    <param.exclude.filters>% List files contained in your toolbox folder that you would like to exclude
+% from packaging.  Excludes should be listed relative to the toolbox folder.
+% Some examples of how to specify excludes are provided below:
+%
+% A single file in the toolbox folder:
+% .svn
+%
+% A single file in a subfolder of the toolbox folder:
+% example/.svn
+%
+% All files in a subfolder of the toolbox folder:
+% example/*
+%
+% All files of a certain name in all subfolders of the toolbox folder:
+% **/.svn
+%
+% All files matching a pattern in all subfolders of the toolbox folder:
+% **/*.bak
+%
+
+.git
+distrib
+unit_test
+doc</param.exclude.filters>
+    <param.examples />
+    <param.demosxml />
+    <param.apps />
+    <param.docs>${PROJECT_ROOT}/info.xml</param.docs>
+    <param.matlabpath.excludes />
+    <unset>
+      <param.company />
+      <param.output />
+      <param.products.name />
+      <param.products.id />
+      <param.products.version />
+      <param.platforms />
+      <param.examples />
+      <param.demosxml />
+      <param.apps />
+      <param.matlabpath.excludes />
+    </unset>
+    <fileset.rootdir>
+      <file>/Users/corkep/code/RVC/machinevision-toolbox-matlab</file>
+    </fileset.rootdir>
+    <fileset.rootfiles>
+      <file>${PROJECT_ROOT}/.DS_Store</file>
+      <file>${PROJECT_ROOT}/.gitignore</file>
+      <file>${PROJECT_ROOT}/.iread.m.swp</file>
+      <file>${PROJECT_ROOT}/@Camera</file>
+      <file>${PROJECT_ROOT}/@CentralCamera</file>
+      <file>${PROJECT_ROOT}/@Feature2</file>
+      <file>${PROJECT_ROOT}/@Image</file>
+      <file>${PROJECT_ROOT}/@SiftPointFeature</file>
+      <file>${PROJECT_ROOT}/@SphericalCamera</file>
+      <file>${PROJECT_ROOT}/@SurfPointFeature</file>
+      <file>${PROJECT_ROOT}/AxisWebCamera.m</file>
+      <file>${PROJECT_ROOT}/BagOfWords.m</file>
+      <file>${PROJECT_ROOT}/BundleAdjust.m</file>
+      <file>${PROJECT_ROOT}/CITATION</file>
+      <file>${PROJECT_ROOT}/CatadioptricCamera.m</file>
+      <file>${PROJECT_ROOT}/EarthView.m</file>
+      <file>${PROJECT_ROOT}/FILES</file>
+      <file>${PROJECT_ROOT}/FeatureMatch.m</file>
+      <file>${PROJECT_ROOT}/FishEyeCamera.m</file>
+      <file>${PROJECT_ROOT}/GoogleMaps.m</file>
+      <file>${PROJECT_ROOT}/Hough.m</file>
+      <file>${PROJECT_ROOT}/IPT</file>
+      <file>${PROJECT_ROOT}/ImageSource.m</file>
+      <file>${PROJECT_ROOT}/LGPL-LICENCE.txt</file>
+      <file>${PROJECT_ROOT}/LICENSE</file>
+      <file>${PROJECT_ROOT}/LIST</file>
+      <file>${PROJECT_ROOT}/LineFeature.m</file>
+      <file>${PROJECT_ROOT}/Movie.m</file>
+      <file>${PROJECT_ROOT}/OrientedScalePointFeature.m</file>
+      <file>${PROJECT_ROOT}/PointFeature.m</file>
+      <file>${PROJECT_ROOT}/README</file>
+      <file>${PROJECT_ROOT}/RELEASE</file>
+      <file>${PROJECT_ROOT}/Ray3D.m</file>
+      <file>${PROJECT_ROOT}/RegionFeature.m</file>
+      <file>${PROJECT_ROOT}/ScalePointFeature.m</file>
+      <file>${PROJECT_ROOT}/Tracker.m</file>
+      <file>${PROJECT_ROOT}/VideoCamera.m</file>
+      <file>${PROJECT_ROOT}/VideoCamera_IAT.m</file>
+      <file>${PROJECT_ROOT}/VideoCamera_fg.m</file>
+      <file>${PROJECT_ROOT}/YUV.m</file>
+      <file>${PROJECT_ROOT}/addcircle.m</file>
+      <file>${PROJECT_ROOT}/anaglyph.m</file>
+      <file>${PROJECT_ROOT}/blackbody.m</file>
+      <file>${PROJECT_ROOT}/bunny.mat</file>
+      <file>${PROJECT_ROOT}/camcald.m</file>
+      <file>${PROJECT_ROOT}/camcald4.m</file>
+      <file>${PROJECT_ROOT}/camcalp_c.m</file>
+      <file>${PROJECT_ROOT}/camcalt.m</file>
+      <file>${PROJECT_ROOT}/camcalt8.m</file>
+      <file>${PROJECT_ROOT}/camparam.m</file>
+      <file>${PROJECT_ROOT}/campose4.m</file>
+      <file>${PROJECT_ROOT}/ccdresponse.m</file>
+      <file>${PROJECT_ROOT}/ccxyz.m</file>
+      <file>${PROJECT_ROOT}/cie_primaries.m</file>
+      <file>${PROJECT_ROOT}/circle.m</file>
+      <file>${PROJECT_ROOT}/closest.m</file>
+      <file>${PROJECT_ROOT}/clouds.m</file>
+      <file>${PROJECT_ROOT}/cmfrgb.m</file>
+      <file>${PROJECT_ROOT}/cmfxyz.m</file>
+      <file>${PROJECT_ROOT}/col2im.m</file>
+      <file>${PROJECT_ROOT}/colordistance.m</file>
+      <file>${PROJECT_ROOT}/colorize.m</file>
+      <file>${PROJECT_ROOT}/colorize2.m</file>
+      <file>${PROJECT_ROOT}/colorkmeans.m</file>
+      <file>${PROJECT_ROOT}/colorseg.m</file>
+      <file>${PROJECT_ROOT}/colorseg2.m</file>
+      <file>${PROJECT_ROOT}/colorspace.m</file>
+      <file>${PROJECT_ROOT}/contents.py</file>
+      <file>${PROJECT_ROOT}/contrib</file>
+      <file>${PROJECT_ROOT}/cos4correct.m</file>
+      <file>${PROJECT_ROOT}/crop.m</file>
+      <file>${PROJECT_ROOT}/csubtract.m</file>
+      <file>${PROJECT_ROOT}/distance.m</file>
+      <file>${PROJECT_ROOT}/dtransform.m</file>
+      <file>${PROJECT_ROOT}/e2h.m</file>
+      <file>${PROJECT_ROOT}/epidist.m</file>
+      <file>${PROJECT_ROOT}/epiline.m</file>
+      <file>${PROJECT_ROOT}/epishow.m</file>
+      <file>${PROJECT_ROOT}/estim.m</file>
+      <file>${PROJECT_ROOT}/examples</file>
+      <file>${PROJECT_ROOT}/findgrid.m</file>
+      <file>${PROJECT_ROOT}/findmarker.m</file>
+      <file>${PROJECT_ROOT}/flatfield.m</file>
+      <file>${PROJECT_ROOT}/fmatrix.m</file>
+      <file>${PROJECT_ROOT}/frefine.m</file>
+      <file>${PROJECT_ROOT}/h2e.m</file>
+      <file>${PROJECT_ROOT}/hist2d.m</file>
+      <file>${PROJECT_ROOT}/hitormiss.m</file>
+      <file>${PROJECT_ROOT}/homline.m</file>
+      <file>${PROJECT_ROOT}/homoTrans.m</file>
+      <file>${PROJECT_ROOT}/homog_solve.m</file>
+      <file>${PROJECT_ROOT}/homography.m</file>
+      <file>${PROJECT_ROOT}/homwarp.m</file>
+      <file>${PROJECT_ROOT}/houghdemo.m</file>
+      <file>${PROJECT_ROOT}/houghoverlay.m</file>
+      <file>${PROJECT_ROOT}/houghpeaks.m</file>
+      <file>${PROJECT_ROOT}/houghshow.m</file>
+      <file>${PROJECT_ROOT}/house-ss.gif</file>
+      <file>${PROJECT_ROOT}/humoments.m</file>
+      <file>${PROJECT_ROOT}/ianimate.m</file>
+      <file>${PROJECT_ROOT}/ibbox.m</file>
+      <file>${PROJECT_ROOT}/iblobs.m</file>
+      <file>${PROJECT_ROOT}/icanny.m</file>
+      <file>${PROJECT_ROOT}/iclose.m</file>
+      <file>${PROJECT_ROOT}/icolor.m</file>
+      <file>${PROJECT_ROOT}/iconcat.m</file>
+      <file>${PROJECT_ROOT}/iconv.m</file>
+      <file>${PROJECT_ROOT}/iconvolve.m</file>
+      <file>${PROJECT_ROOT}/icorner.m</file>
+      <file>${PROJECT_ROOT}/icp.m</file>
+      <file>${PROJECT_ROOT}/icp3.m-old</file>
+      <file>${PROJECT_ROOT}/idecimate.m</file>
+      <file>${PROJECT_ROOT}/idilate.m</file>
+      <file>${PROJECT_ROOT}/idisp.m</file>
+      <file>${PROJECT_ROOT}/idisplabel.m</file>
+      <file>${PROJECT_ROOT}/idouble.m</file>
+      <file>${PROJECT_ROOT}/iendpoint.m</file>
+      <file>${PROJECT_ROOT}/ierode.m</file>
+      <file>${PROJECT_ROOT}/igamm.m</file>
+      <file>${PROJECT_ROOT}/igraphseg.m</file>
+      <file>${PROJECT_ROOT}/ihist.m</file>
+      <file>${PROJECT_ROOT}/ihough.m</file>
+      <file>${PROJECT_ROOT}/iii</file>
+      <file>${PROJECT_ROOT}/iint.m</file>
+      <file>${PROJECT_ROOT}/iisum.m</file>
+      <file>${PROJECT_ROOT}/ilabel.m</file>
+      <file>${PROJECT_ROOT}/iline.m</file>
+      <file>${PROJECT_ROOT}/ilogpolar.m</file>
+      <file>${PROJECT_ROOT}/ilut.m</file>
+      <file>${PROJECT_ROOT}/im2col.m</file>
+      <file>${PROJECT_ROOT}/images</file>
+      <file>${PROJECT_ROOT}/imatch.m</file>
+      <file>${PROJECT_ROOT}/imeshgrid.m</file>
+      <file>${PROJECT_ROOT}/imoments.m</file>
+      <file>${PROJECT_ROOT}/imono.m</file>
+      <file>${PROJECT_ROOT}/imser.m</file>
+      <file>${PROJECT_ROOT}/info</file>
+      <file>${PROJECT_ROOT}/info.xml</file>
+      <file>${PROJECT_ROOT}/inormhist.m</file>
+      <file>${PROJECT_ROOT}/intgimage.m</file>
+      <file>${PROJECT_ROOT}/invcamcal.m</file>
+      <file>${PROJECT_ROOT}/iopen.m</file>
+      <file>${PROJECT_ROOT}/ipad.m</file>
+      <file>${PROJECT_ROOT}/ipaste.m</file>
+      <file>${PROJECT_ROOT}/ipixswitch.m</file>
+      <file>${PROJECT_ROOT}/iprocrustes.m</file>
+      <file>${PROJECT_ROOT}/iprofile.m</file>
+      <file>${PROJECT_ROOT}/ipyramid.m</file>
+      <file>${PROJECT_ROOT}/irank.m</file>
+      <file>${PROJECT_ROOT}/iread.m</file>
+      <file>${PROJECT_ROOT}/irectify.m</file>
+      <file>${PROJECT_ROOT}/ireplicate.m</file>
+      <file>${PROJECT_ROOT}/iroi.m</file>
+      <file>${PROJECT_ROOT}/irotate.m</file>
+      <file>${PROJECT_ROOT}/isamesize.m</file>
+      <file>${PROJECT_ROOT}/iscale.m</file>
+      <file>${PROJECT_ROOT}/iscalemax.m</file>
+      <file>${PROJECT_ROOT}/iscalespace.m</file>
+      <file>${PROJECT_ROOT}/iscolor.m</file>
+      <file>${PROJECT_ROOT}/isift.m</file>
+      <file>${PROJECT_ROOT}/isimilarity.m</file>
+      <file>${PROJECT_ROOT}/isize.m</file>
+      <file>${PROJECT_ROOT}/ismooth.m</file>
+      <file>${PROJECT_ROOT}/isobel.m</file>
+      <file>${PROJECT_ROOT}/istereo.m</file>
+      <file>${PROJECT_ROOT}/istretch.m</file>
+      <file>${PROJECT_ROOT}/isurf.m</file>
+      <file>${PROJECT_ROOT}/ithin.m</file>
+      <file>${PROJECT_ROOT}/ithresh.m</file>
+      <file>${PROJECT_ROOT}/itrim.m</file>
+      <file>${PROJECT_ROOT}/itriplepoint.m</file>
+      <file>${PROJECT_ROOT}/ivar.m</file>
+      <file>${PROJECT_ROOT}/iwarp.m</file>
+      <file>${PROJECT_ROOT}/iwindow.m</file>
+      <file>${PROJECT_ROOT}/kcircle.m</file>
+      <file>${PROJECT_ROOT}/kdgauss.m</file>
+      <file>${PROJECT_ROOT}/kdog.m</file>
+      <file>${PROJECT_ROOT}/kgauss.m</file>
+      <file>${PROJECT_ROOT}/klaplace.m</file>
+      <file>${PROJECT_ROOT}/klog.m</file>
+      <file>${PROJECT_ROOT}/kmeans.m</file>
+      <file>${PROJECT_ROOT}/kosecka.m</file>
+      <file>${PROJECT_ROOT}/ksobel.m</file>
+      <file>${PROJECT_ROOT}/ktriangle.m</file>
+      <file>${PROJECT_ROOT}/l2m.m</file>
+      <file>${PROJECT_ROOT}/lambda2rg.m</file>
+      <file>${PROJECT_ROOT}/lambda2xy.m</file>
+      <file>${PROJECT_ROOT}/loadinr.m</file>
+      <file>${PROJECT_ROOT}/loadpcd.m</file>
+      <file>${PROJECT_ROOT}/loadpgm.m</file>
+      <file>${PROJECT_ROOT}/loadppm.m</file>
+      <file>${PROJECT_ROOT}/loadspectrum.m</file>
+      <file>${PROJECT_ROOT}/loadstereo.m</file>
+      <file>${PROJECT_ROOT}/localmax.m</file>
+      <file>${PROJECT_ROOT}/lspcd.m</file>
+      <file>${PROJECT_ROOT}/luminos.m</file>
+      <file>${PROJECT_ROOT}/lzfd.m</file>
+      <file>${PROJECT_ROOT}/makefile-mex</file>
+      <file>${PROJECT_ROOT}/matching</file>
+      <file>${PROJECT_ROOT}/max2d.m</file>
+      <file>${PROJECT_ROOT}/medfilt1.m</file>
+      <file>${PROJECT_ROOT}/mex</file>
+      <file>${PROJECT_ROOT}/mkcube.m</file>
+      <file>${PROJECT_ROOT}/mkgrid.m</file>
+      <file>${PROJECT_ROOT}/mkline.m</file>
+      <file>${PROJECT_ROOT}/mksq.m</file>
+      <file>${PROJECT_ROOT}/moments.m</file>
+      <file>${PROJECT_ROOT}/morphdemo.m</file>
+      <file>${PROJECT_ROOT}/mpq.m</file>
+      <file>${PROJECT_ROOT}/mpq_point.m</file>
+      <file>${PROJECT_ROOT}/mpq_poly.m</file>
+      <file>${PROJECT_ROOT}/mvtbdemo.m</file>
+      <file>${PROJECT_ROOT}/ncc.m</file>
+      <file>${PROJECT_ROOT}/niblack.m</file>
+      <file>${PROJECT_ROOT}/npq.m</file>
+      <file>${PROJECT_ROOT}/npq_poly.m</file>
+      <file>${PROJECT_ROOT}/oflow.m</file>
+      <file>${PROJECT_ROOT}/otsu.m</file>
+      <file>${PROJECT_ROOT}/pclviewer.m</file>
+      <file>${PROJECT_ROOT}/pilu.m</file>
+      <file>${PROJECT_ROOT}/plot3d.m</file>
+      <file>${PROJECT_ROOT}/pnmfilt.m</file>
+      <file>${PROJECT_ROOT}/private</file>
+      <file>${PROJECT_ROOT}/radgrad.m</file>
+      <file>${PROJECT_ROOT}/ransac.m</file>
+      <file>${PROJECT_ROOT}/rectify.m</file>
+      <file>${PROJECT_ROOT}/rectify2.m</file>
+      <file>${PROJECT_ROOT}/rectify3.m</file>
+      <file>${PROJECT_ROOT}/rg_addticks.m</file>
+      <file>${PROJECT_ROOT}/rgb2xyz.m</file>
+      <file>${PROJECT_ROOT}/rluminos.m</file>
+      <file>${PROJECT_ROOT}/sad.m</file>
+      <file>${PROJECT_ROOT}/saveinr.m</file>
+      <file>${PROJECT_ROOT}/savepcd.m</file>
+      <file>${PROJECT_ROOT}/savepgm.m</file>
+      <file>${PROJECT_ROOT}/savepnm.m</file>
+      <file>${PROJECT_ROOT}/saveppm.m</file>
+      <file>${PROJECT_ROOT}/sbaGenJac.m</file>
+      <file>${PROJECT_ROOT}/sbrgb2.txt</file>
+      <file>${PROJECT_ROOT}/showcolorspace.m</file>
+      <file>${PROJECT_ROOT}/showcolorspace.m-new</file>
+      <file>${PROJECT_ROOT}/showpixels.m</file>
+      <file>${PROJECT_ROOT}/simulink</file>
+      <file>${PROJECT_ROOT}/ssd.m</file>
+      <file>${PROJECT_ROOT}/startup_mvtb.m</file>
+      <file>${PROJECT_ROOT}/stdisp.m</file>
+      <file>${PROJECT_ROOT}/symbolic</file>
+      <file>${PROJECT_ROOT}/testpattern.m</file>
+      <file>${PROJECT_ROOT}/texput.log</file>
+      <file>${PROJECT_ROOT}/trainseg.m</file>
+      <file>${PROJECT_ROOT}/tripleangle.svg</file>
+      <file>${PROJECT_ROOT}/tristim2cc.m</file>
+      <file>${PROJECT_ROOT}/upq.m</file>
+      <file>${PROJECT_ROOT}/upq_poly.m</file>
+      <file>${PROJECT_ROOT}/vgg_rq.m</file>
+      <file>${PROJECT_ROOT}/xv.m</file>
+      <file>${PROJECT_ROOT}/xy2rgb.m</file>
+      <file>${PROJECT_ROOT}/xy2xyz.m</file>
+      <file>${PROJECT_ROOT}/xyz2xy.m</file>
+      <file>${PROJECT_ROOT}/yuv2rgb.m</file>
+      <file>${PROJECT_ROOT}/yuv2rgb2.m</file>
+      <file>${PROJECT_ROOT}/yuvclose.m</file>
+      <file>${PROJECT_ROOT}/yuvopen.m</file>
+      <file>${PROJECT_ROOT}/yuvread.m</file>
+      <file>${PROJECT_ROOT}/zcross.m</file>
+      <file>${PROJECT_ROOT}/zncc.m</file>
+      <file>${PROJECT_ROOT}/zsad.m</file>
+      <file>${PROJECT_ROOT}/zssd.m</file>
+    </fileset.rootfiles>
+    <fileset.depfun.included />
+    <fileset.depfun.excluded />
+    <fileset.package />
+    <build-deliverables>
+      <file location="/Users/corkep/code/RVC/machinevision-toolbox-matlab" name="Machine Vision Toolbox (MOOC build).mltbx" optional="false">/Users/corkep/code/RVC/machinevision-toolbox-matlab/Machine Vision Toolbox (MOOC build).mltbx</file>
+    </build-deliverables>
+    <workflow />
+    <matlab>
+      <root>/Applications/MATLAB_R2016a.app</root>
+      <toolboxes>
+        <toolbox name="matlabcoder" />
+        <toolbox name="embeddedcoder" />
+      </toolboxes>
+      <toolbox>
+        <matlabcoder>
+          <enabled>true</enabled>
+        </matlabcoder>
+      </toolbox>
+      <toolbox>
+        <embeddedcoder>
+          <enabled>true</enabled>
+        </embeddedcoder>
+      </toolbox>
+    </matlab>
+    <platform>
+      <unix>true</unix>
+      <mac>true</mac>
+      <windows>false</windows>
+      <win2k>false</win2k>
+      <winxp>false</winxp>
+      <vista>false</vista>
+      <linux>false</linux>
+      <solaris>false</solaris>
+      <osver>10.12</osver>
+      <os32>false</os32>
+      <os64>true</os64>
+      <arch>maci64</arch>
+      <matlab>true</matlab>
+    </platform>
+  </configuration>
+</deployment-project>
