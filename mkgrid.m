@@ -37,7 +37,8 @@ function p = mkgrid(N, s, varargin)
     [opt,args] = tb_optparse(opt, varargin);
     
     if length(args) > 0 && ishomog(args{1})
-        opt.T = args{1};
+        % compatible with legacy call
+        opt.pose = args{1};
     end
     if length(s) == 1
         sx = s; sy = s;

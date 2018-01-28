@@ -46,7 +46,11 @@ function [o1,o2,o3] = mkcube(s, varargin)
     opt.edge = false;
     opt.facepoint = false;
 
-    opt = tb_optparse(opt, varargin);
+    [opt,args] = tb_optparse(opt, varargin);
+    if length(args) > 0 && ishomog(args{1})
+        % compatible with legacy call
+        opt.pose = args{1};
+    end
  
     % offset it
     if ~isempty(opt.centre)
