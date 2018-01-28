@@ -51,8 +51,19 @@ function dilated = idilate(im, se, varargin)
     else
         n = 1;
     end
-
     dilated = im;
-    for i=1:n
-        dilated = imorph(dilated, se, 'max', varargin{:});
+
+    if exist('imorph') == 3
+        % use Peter's mex file
+        for i=1:n
+            dilated = imorph(dilated, se, 'max', varargin{:});
+        end
+    elseif exist('imdilate') == 2
+        % use IPT
+        for i=1:n
+            dilated = imdilate(dilated, se);
+        end
+    else
+        error('MVTB:idilate:nomex', 'You need to compile the MEX file or install MATLAB Image Processing Toolbox');
     end
+end

@@ -55,6 +55,17 @@ function eroded = ierode(im, se, varargin)
     end
 
     eroded = im;
-    for i=1:n
-        eroded = imorph(eroded, se, 'min', varargin{:});
+    if exist('imorph') == 3
+        % use Peter's mex file
+        for i=1:n
+            eroded = imorph(eroded, se, 'min', varargin{:});
+        end
+    elseif exist('imdilate') == 2
+        % use IPT
+        for i=1:n
+            eroded = imerode(eroded, se);
+        end
+    else
+        error('MVTB:idilate:nomex', 'You need to compile the MEX file or install MATLAB Image Processing Toolbox');
     end
+end

@@ -35,7 +35,6 @@
 % See also IRANK, IVAR, HITORMISS, IOPEN, ICLOSE, DTRANSFORM.
 
 
-
 % Copyright (C) 1993-2011, by Peter I. Corke
 %
 % This file is part of The Machine Vision Toolbox for Matlab (MVTB).
@@ -54,6 +53,23 @@
 % along with MVTB.  If not, see <http://www.gnu.org/licenses/>.
 % along with MVTB.  If not, see <http://www.gnu.org/licenses/>.
 
-if ~exist('imorph', 'file')
-    error('you need to build the MEX version of imorph, see vision/mex/README');
+function out = imorph(im, se, op, edge)
+    % this executes if imorph MEX file not found, try using IPT as fallback
+    
+    if exist('bwmorph') == 2
+        if nargin > 3
+            error('MVTB:imorph:nomex', 'Non-MEX version doesn''t support edge options %s', edge);
+        end
+        switch op
+            case 'min'
+                out = imerode(im, se);
+            case 'max'
+                out = imdilate(im, se);
+            otherwise
+                error('MVTB:imorph:nomex', 'Non-MEX version doesn''t support %s', op);
+        end
+    
+    else
+        error('you need to build the MEX version of imorph, see vision/mex/README, or install MATLAB Image Processing Toolbox');
+    end
 end
