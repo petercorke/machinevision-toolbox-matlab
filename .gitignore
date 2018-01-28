@@ -1,6 +1,10 @@
 # ignore png, gimp and pdf files
 *.png
 *.pdf
+*.jpg
+*.JPG
+*.mltbx
+*.mlapp
 *.xcf
 *.log
 *.aux
@@ -13,3 +17,8 @@
 *~
 distrib/tmp
 .DS_Store
+*.mex*
+*.dll
+*.slx.r*
+*.a
+*.svg
