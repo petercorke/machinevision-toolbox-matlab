@@ -46,6 +46,7 @@ classdef PointFeature < handle
         v_           % feature y-coordinates
         strength_
         descriptor_
+        image_id_
     end % properties
 
     methods
@@ -128,7 +129,7 @@ classdef PointFeature < handle
             end
         end
 
-        function [m,corresp] = match(f1, f2)
+        function [m,corresp] = match(f1, f2, varargin)
         %PointFeature.match Match point features
         %   
         % M = F.match(F2, OPTIONS) is a vector of FeatureMatch objects that 
@@ -142,19 +143,45 @@ classdef PointFeature < handle
         % Options::
         % 'thresh',T    Match threshold (default 0.05)
         % 'median'      Threshold at the median distance
+        % 'top',N       Take top N features
         %
         % See also FeatureMatch.
+        
+        % TODO: should use a kd-tree or FLANN
 
-
-            [matches,dist,dist2] = closest([f1.descriptor], [f2.descriptor]);
-            matches = [1:length(f1); matches];
-   
-            % delete matches where distance of closest match is greater than 
-            % 0.7 of second closest match
-            k = dist > 0.7 * dist2;
-   
-            matches(:,k) = [];
+            opt.bilateral = false;
+            opt = tb_optparse(opt, varargin);
+            
+            if opt.bilateral
+                % bilateral matching, best match of f1 in f2 must be best match back in f1
+                matches = [];
+                d = distance([f1.descriptor], [f2.descriptor]);
+                for i=1:numrows(d)
+                    % find smallest element in the row
+                    [best,ii] = min(d(i,:));
+                    [~,jj] = min(d(:,ii));
+                    if jj == i
+                        % we have a match
+                        row = d(i,:);
+                        row(ii) = Inf;
+                        nextbest = min(row);
+                        if nextbest < 0.7*best
+                            matches = [matches [i; ii]];
+                        end
+                    end
+                end
+            else
+                
+                [matches,dist,dist2] = closest([f1.descriptor], [f2.descriptor]);
+                matches = [1:length(f1); matches];
+                
+                % delete matches where distance of closest match is greater than
+                % 0.7 of second closest match
+                k = dist > 0.7 * dist2;
+                
+                matches(:,k) = [];
             dist(k) = [];
+            end
    
             % dist is a 1xM matrix of distance between the matched features, low is good.
    
@@ -205,12 +232,20 @@ classdef PointFeature < handle
             val = [f.descriptor_];
         end
         
-        function k = pick(f)
-            
-            [u,v] = ginput(1);
-            uv = f.uv;
+        function fp = pick(f, uv)
+            %PointFeature.pick Graphically select a feature
+            %
+            % V = F.pick() is the id of the feature closest to the point clicked
+            % by the user on a plot of the image.
+            %
+            if nargin < 2
+                [u,v] = ginput(1);
+                uv = f.uv;
+            end
             k = closest([u v]', uv);
+            fp = f(k);
         end
+                 
 
         function display(f)
         %PointFeature.display Display value
