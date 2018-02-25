@@ -109,9 +109,10 @@ _pdf:
 	(cd manual; make)
 
 	cp manual/vision.pdf rvctools/vision
+	open -a pdfreduce rvctools/vision/vision.pdf
 
 	# and let's take a look
-	open manual/vision.pdf 
+	open rvctools/vision/vision.pdf
 
 
 CMD = '/INSERT_HERE/ {\
