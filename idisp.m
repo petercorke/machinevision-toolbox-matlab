@@ -249,9 +249,9 @@ function idisp(im, varargin)
     set(gca, 'CLim', [i_min, i_max]);
     
     if ~isempty(opt.xydata)
-        ud.image = image(opt.xydata{1}, opt.xydata{2}, im, 'CDataMapping', 'scaled');
+        ud.image = image(gca, opt.xydata{1}, opt.xydata{2}, im, 'CDataMapping', 'scaled');
     else
-        ud.image = image(im, 'CDataMapping', 'scaled');
+        ud.image = image(gca, im, 'CDataMapping', 'scaled');
     end
 
     if opt.wide
