@@ -8,6 +8,8 @@
 % size    Size of image
 % close   Close the image source
 % char    Convert the object parameters to human readable string
+% skipttotime   X
+% skiptoframe   X
 %
 % Properties::
 % curFrame        The index of the frame just read
@@ -40,7 +42,7 @@ classdef Movie < ImageSource
 
     properties
 
-        rate            % frame rate at which movie was capture
+        rate            % frame rate at which movie was captured
 
         nframes;
         
@@ -83,16 +85,27 @@ classdef Movie < ImageSource
             % properties
             
             % see if it exists on the MATLAB search path
-            p = fileparts( which('iread') );
-            pth = [ fullfile(p, 'images') path2cell(path)];
-            for p=pth
-                fname = fullfile(p{1}, filename);
-                if exist( fname ) > 0
-                    m.fullfilename = fullfile(p{1}, filename);
-                    m.movie = VideoReader(m.fullfilename);
-                    break;
+%             p = fileparts( which('iread') );
+%             pth = [ fullfile(p, 'images') path2cell(path)];
+%             for p=pth
+%                 fname = fullfile(p{1}, filename);
+%                 if exist( fname ) > 0
+%                     m.fullfilename = fullfile(p{1}, filename);
+%                     m.movie = VideoReader(m.fullfilename);
+%                     break;
+%                 end
+%             end
+
+            if exist( filename, 'file' ) ~= 2
+                % file is not here, download it
+                if ~fileonserver(filename)
+                    error('MVTB:badarg:nosuchfile', 'Can''t find file: %s', filename);
                 end
+                getfromserver(filename);
             end
+            
+                    m.fullfilename = filename;
+                    m.movie = VideoReader(m.fullfilename);
             
             if isempty(m.movie)
                 error('MVTB:badarg:nosuchfile', 'Can''t find file: %s', filename);
@@ -102,11 +115,9 @@ classdef Movie < ImageSource
             m.height = m.movie.Height;
             m.rate = m.movie.FrameRate;
             m.totalDuration = m.movie.Duration;
-            m.nframes = m.movie.NumberOfFrames;
-        
+            m.nframes = floor(m.totalDuration * m.rate);
         end
         
-
         function paramSet(m, varargin)
             opt.skip = 1;
             
@@ -144,6 +155,7 @@ classdef Movie < ImageSource
         % Options::
         % 'skip',S    Skip frames, and return current+S frame
         % 'frame',F   Return frame F within the movie
+        % 'time',T    Return frame at time T within the movie
         %
         % Notes::
         % - If no output argument given the image is displayed using IDISP.
@@ -154,31 +166,23 @@ classdef Movie < ImageSource
             opt = tb_optparse(opt, varargin);
             
 
-            if isempty(opt.frame)
-                m.curFrame = m.curFrame + opt.skip;
-            else
-                m.curFrame = opt.frame;
+            if ~isempty(opt.frame)
+                m.movie.CurrentTime = m.curFrame + opt.skip;
+            end
+            if ~isempty(opt.time)
+                m.movie.CurrentTime = opt.time;
+            end
+            if isempty(opt.frame) & isempty(opt.time)
+                m.movie.CurrentTime = m.movie.CurrentTime + opt.skip / m.rate;
             end
             
             % read next frame from the file
-            if m.curFrame < m.nframes
-                try
-                    data = read(m.movie, m.curFrame);
-                catch me
-                    % it seems that the test above is not enough to prevent reading past
-                    % the end of file...
-                    if strcmp(me.identifier, 'MATLAB:audiovideo:VideoReader:invalidFrameVarFrameRate')
-                        out = [];
-                        return;
-                    else
-                        rethrow(me);
-                    end
-                end
+            if m.hasframe
+                    data = readFrame(m.movie);
             else
                 out = [];
                 return;
             end
-
 
             if (numel(data) > 3*m.width*m.height)
                 warning('Movie: dimensions do not match data size. Got %d bytes for %d x %d', numel(data), m.width, m.height);
@@ -202,6 +206,14 @@ classdef Movie < ImageSource
             end
         end
 
+        function skiptotime(m, t)
+            m.movie.CurrentTime = t;
+        end
+        
+        function skiptoframe(m, n)
+            m.movie.CurrentTime = n / m.rate;
+        end
+        
         function s = char(m)
         %Movie.char Convert to string
         %
@@ -217,12 +229,62 @@ classdef Movie < ImageSource
 end
 
 
-function c = path2cell(s)
-    remain = s;
-    c = {};
-    while true
-        [str, remain] = strtok(remain, ':');
-        if isempty(str), break; end
-        c = [c str];
+% test if the file is on the server in root folder
+function v = fileonserver(filename)
+    % list of all the files associated with the toolbox, test here rather than pester my server
+    filelist = [
+        "LeftBag.mpg"
+        "traffic_sequence.mpg"
+    ];
+
+    v =  ~isempty( intersect(filelist, filename) );
+end
+
+% works like loadimage
+function getfromserver(filename)
+    
+    % get data from server
+    fprintf('downloading from server...');
+    movie = webread( fullfile('http://petercorke.com/files/images', filename) );
+    fprintf('\n');
+    
+    mvtb = fileparts( which('iread') );
+    mkdir_p(mvtb, fullfile('images', filename) );
+    
+    filename = fullfile(mvtb, 'images', filename);
+    
+    % save it to local file
+    fprintf('saving locally to %s\n', filename);
+    fp = fopen(filename, 'w');
+    fwrite(fp, movie);
+    fclose(fp);
+end
+
+% works like mkdir -p
+% starting at base, it creates all the folders needed for filename
+function mkdir_p(base, filename)
+
+    [pth,fname] = pathlist(filename);
+    
+    dir = base;
+    for i=1:length(pth)
+        dir = fullfile(dir, pth{i});
+        if exist( dir ) ~= 7
+            % folder doesn't exist, create it
+            mkdir(dir);
+        end
+    end
+end
+
+% convert a file path into a cell array of path components and the filename (with
+% extension)
+function [pth,fname] = pathlist(filename)
+    [p,f,e] = fileparts(filename);
+    fname = [f e];
+    
+    if isempty(p)
+        pth = {};
+    else
+        pth = strsplit(p, filesep);
     end
 end

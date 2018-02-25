@@ -149,7 +149,7 @@ function [I,info] = iread(filename, varargin)
         if ~isempty(strfind(filename, '*')) | ~isempty(strfind(filename, '?')),
             % wild card files, eg.  'seq/*.png', we need to look for a folder
             % seq somewhere along the path.
-                        [pth,name,ext] = fileparts(filename);
+            [pth,name,ext] = fileparts(filename);
 
             if opt.verbose
                 fprintf('wildcard lookup: %s %s %s\n', pth, name, ext);
@@ -171,12 +171,40 @@ function [I,info] = iread(filename, varargin)
             end
             s = dir( fullfile(folderonpath, [name, ext]));      % do a wildcard lookup
 
+            onserver = false;
             if length(s) == 0
-                error('no matching files found');
+                % not found locally, try on the server
+                
+                
+                % try to find it on the server
+                if ~folderonserver(folderonpath)
+                    error('MVTB:iread:nofile', 'file not found');
+                end
+                
+                index = webread(['http://petercorke.com/files/images/' folderonpath]);
+                index = strrep(index, '<br />', '');
+                files = regexp(index, [strrep(name, '*', '.*') strrep(ext, '*', '.*')], 'match');
+                files = splitlines(files{1});
+                
+                if length(files) == 0
+                                    error('no matching files found');
+                end
+                
+                onserver = true;
+                for i=1:length(files)
+                    s(i).name = files{i};
+                end
+                %folderonpath = ['http://petercorke.com/files/images/' folderonpath];
+                                fprintf('downloading from server...')
+
             end
 
             for i=1:length(s)
-                im1 = loadimg( fullfile(folderonpath, s(i).name), opt);
+                if onserver
+                    im1 = fetchfromserver( fullfile(folderonpath, s(i).name), opt);
+                else
+                    im1 = loadimg( fullfile(folderonpath, s(i).name), opt);
+                end
                 if i==1
                     % preallocate storage, much quicker
                     im = zeros([size(im1) length(s)], class(im1));
@@ -186,6 +214,12 @@ function [I,info] = iread(filename, varargin)
                 elseif ndims(im1) == 3
                     im(:,:,:,i) = im1;
                 end
+                if onserver
+                    fprintf('.')
+                end
+            end
+            if onserver
+                fprintf('\n');
             end
         else
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -195,16 +229,23 @@ function [I,info] = iread(filename, varargin)
             elseif exist(filename)
                 im = loadimg(filename, opt);
             else
-                % see if it exists on the MATLAB search path
-                p=fileparts( which('iread') );
-                pth = [ fullfile(p, 'images') path2cell(path)];
-                for p=pth
-                    fname = fullfile(p{1}, filename);
-                    if exist( fname ) > 0
-                        im = loadimg(fullfile(p{1}, filename), opt);
-                        break;
-                    end
+%                 % see if it exists on the MATLAB search path
+%                 p=fileparts( which('iread') );
+%                 pth = [ fullfile(p, 'images') path2cell(path)];
+%                 for p=pth
+%                     fname = fullfile(p{1}, filename);
+%                     if exist( fname ) > 0
+%                         im = loadimg(fullfile(p{1}, filename), opt);
+%                         break;
+%                     end
+%                 end
+
+                im = fetchfromserver(filename, opt);
+                
+                if isempty(im)
+                    error('MVTB:iread:nofile', 'file not found');
                 end
+
             end
         end
     end
@@ -239,6 +280,40 @@ function im = loadimg(filename, opt)
             fprintf('loaded %s, %dx%dx%d\n', filename, size(im,2), size(im,1), size(im,3));
         end
     end
+    
+    im = applyoptions(im, opt);
+end
+
+
+% get named file from the server, and process according to options
+function im = fetchfromserver(filename, opt)
+    
+    [pth,fname] = pathlist(filename);
+    if isempty(pth)
+        % simple filename
+        if ~fileonserver(fname)
+            im = [];
+            return
+        end
+
+    else
+        if ~folderonserver(pth{1})
+            error('MVTB:iread:nofile', 'folder not on server');
+        end
+    end
+    
+    fprintf('downloading from server...')
+    im = imread(fullfile('http://petercorke.com/files/images', filename));
+    fprintf('\n');
+    
+    % stash a copy away locally
+    
+    savetocache(im, filename);
+    im = applyoptions(im, opt);
+end
+
+% apply options to image
+function im = applyoptions(im, opt)
 
     % optionally convert it to greyscale using specified method
     if ~isempty(opt.mkGrey) && (ndims(im) == 3)
@@ -271,10 +346,11 @@ function im = loadimg(filename, opt)
 
     if opt.disp
         idisp(im);
+        drawnow
     end
-
 end
 
+% return the MATLAB path as a cell array
 function c = path2cell(s)
     remain = s;
     c = {};
@@ -283,4 +359,135 @@ function c = path2cell(s)
         if isempty(str), break; end
         c = [c str];
     end
+end
+
+% works like loadimage
+function savetocache(im, filename)
+
+    mvtb = fileparts( which('iread') );
+    
+    mkdir_p(mvtb, fullfile('images', filename) );
+    
+    filename = fullfile(mvtb, 'images', filename);
+    
+    fprintf('saving locally to %s\n', filename);
+    imwrite(im, filename);
+end
+
+% works like mkdir -p
+% starting at base, it creates all the folders needed for filename
+function mkdir_p(base, filename)
+
+    [pth,fname] = pathlist(filename);
+    
+    dir = base;
+    for i=1:length(pth)
+        dir = fullfile(dir, pth{i});
+        if exist( dir ) ~= 7
+            % folder doesn't exist, create it
+            mkdir(dir);
+        end
+    end
+end
+
+% convert a file path into a cell array of path components and the filename (with
+% extension)
+function [pth,fname] = pathlist(filename)
+    [p,f,e] = fileparts(filename);
+    fname = [f e];
+    
+    if isempty(p)
+        pth = {};
+    else
+        pth = strsplit(p, filesep);
+    end
+end
+
+% test if the first component of the folder is on the server
+function v = folderonserver(folder)
+    folderlist = [
+        "bridge-l"
+        "bridge-r"
+        "campus"
+        "mosaic"
+        ];
+    pth = strsplit(folder, filesep);
+    
+    v =  ~isempty( intersect(folderlist, pth{1}) );
+end
+
+% test if the file is on the server in root folder
+function v = fileonserver(filename)
+    % list of all the files associated with the toolbox, test here rather than pester my server
+    filelist = [  
+        "58060.jpg"
+        "5points.png"
+        "Image18.tif"
+        "P2.png"
+        "adelson.png"
+        "apriltag12.png"
+        "bender2.png"
+        "bouget.mat"
+        "building2-1.png"
+        "building2-2.png"
+        "building2-3.png"
+        "castle.png"
+        "castle2.png"
+        "castle_sign.jpg"
+        "castle_sign2.png"
+        "church.png"
+        "circle_noisy.png"
+        "eiffel-1.png"
+        "eiffel-2.png"
+        "eiffel2-1.jpg"
+        "eiffel2-2.jpg"
+        "eye.png"
+        "fisheye_target.png"
+        "flowers1.png"
+        "flowers2.png"
+        "flowers3.png"
+        "flowers4.png"
+        "flowers5.png"
+        "flowers6.png"
+        "flowers7.png"
+        "flowers8.png"
+        "flowers9.png"
+        "garden-l.jpg"
+        "garden-r.jpg"
+        "garden_big-l.jpg"
+        "garden_big-r.jpg"
+        "greenscreen.jpg"
+        "lena.pgm"
+        "lena.png"
+        "lotsblobs.png"
+        "mb.png"
+        "monalisa.png"
+        "morph1.png"
+        "multiblobs.png"
+        "notre-dame.jpg"
+        "parks.jpg"
+        "penguins.jpg"
+        "penguins.png"
+        "road.png"
+        "rocks2-l.png"
+        "rocks2-r.png"
+        "roof.jpg"
+        "shapes.png"
+        "shark1.png"
+        "shark2.png"
+        "shark2a.png"
+        "sharks.png"
+        "street.png"
+        "tomato_124.jpg"
+        "tomato_14.jpg"
+        "tomato_54.jpg"
+        "traffic_sequence.mpg"
+        "walls-l.jpg"
+        "walls-r.jpg"
+        "wally.png"
+        "wheres-wally.png"
+        "yellowtargets.png"
+    ];
+
+    v =  ~isempty( intersect(filelist, filename) );
 end
