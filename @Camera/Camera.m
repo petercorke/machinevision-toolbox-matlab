@@ -43,22 +43,25 @@
 %  - The object can create a window to display the Camera image plane, this
 %    window is protected and can only be accessed by the plot methods of
 %    this object.
+%  - The project method is implemented by the concrete subclass.
+%
+% See also CentralCamera, SphericalCamera, FishEyeCamera, CatadiptricCamera.
 
 
 % Copyright (C) 1995-2009, by Peter I. Corke
 %
 % This file is part of The Machine Vision Toolbox for Matlab (MVTB).
-% 
+%
 % MVTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % MVTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with MVTB.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -68,7 +71,7 @@
 %   test for points off the image plane and set to NaN if not
 %     make clipping/test flags
 classdef Camera < handle
-
+    
     properties
         name    % camera name
         type
@@ -79,18 +82,17 @@ classdef Camera < handle
         noise   % pixel noise 1x2
         image
     end
-
+    
     properties (SetAccess = protected)
-        handle
         limits
         perspective
-        h_image     % handle for image plane
-        h_visualize % handle for camera 3D view
+        h_imageplane     % handle for image plane
+        h_3dview % handle for camera 3D view
         P           % world points (last plotted)
         holdon
         color
     end
-
+    
     properties (Dependent = true, SetAccess = protected)
         u0
         v0
@@ -103,44 +105,44 @@ classdef Camera < handle
     end
     
     methods
-
+        
         function c = Camera(varargin)
-        %Camera.Camera Create camera object
-        %
-        % Constructor for abstact Camera class, used by all subclasses.
-        %
-        % C = Camera(OPTIONS) creates a default (abstract) camera with null parameters.
-        %
-        % Options::
-        % 'name',N          Name of camera
-        % 'image',IM        Load image IM to image plane
-        % 'resolution',N    Image plane resolution: NxN or N=[W H]
-        % 'sensor',S        Image sensor size in metres (2x1) [metres]
-        % 'centre',P        Principal point (2x1)
-        % 'pixel',S         Pixel size: SxS or S=[W H]
-        % 'noise',SIGMA     Standard deviation of additive Gaussian noise added to
-        %                   returned image projections
-        % 'pose',T          Pose of the camera as a homogeneous transformation
-        % 'color',C         Color of image plane background (default [1 1 0.8])
-        %
-        % Notes::
-        % - Normally the class plots points and lines into a set of axes that represent
-        %   the image plane.  The 'image' option paints the specified image onto the
-        %   image plane and allows points and lines to be overlaid.
-        %
-        % See also CentralCamera, FisheyeCamera, CatadioptricCamera, SphericalCamera.
-
+            %Camera.Camera Create camera object
+            %
+            % Constructor for abstact Camera class, used by all subclasses.
+            %
+            % C = Camera(OPTIONS) creates a default (abstract) camera with null parameters.
+            %
+            % Options::
+            % 'name',N          Name of camera
+            % 'image',IM        Load image IM to image plane
+            % 'resolution',N    Image plane resolution: NxN or N=[W H]
+            % 'sensor',S        Image sensor size in metres (2x1) [metres]
+            % 'centre',P        Principal point (2x1)
+            % 'pixel',S         Pixel size: SxS or S=[W H]
+            % 'noise',SIGMA     Standard deviation of additive Gaussian noise added to
+            %                   returned image projections
+            % 'pose',T          Pose of the camera as a homogeneous transformation
+            % 'color',C         Color of image plane background (default [1 1 0.8])
+            %
+            % Notes::
+            % - Normally the class plots points and lines into a set of axes that represent
+            %   the image plane.  The 'image' option paints the specified image onto the
+            %   image plane and allows points and lines to be overlaid.
+            %
+            % See also CentralCamera, FisheyeCamera, CatadioptricCamera, SphericalCamera.
+            
             % default values
             c.type = '**abstract**';
             c.T = eye(4,4);
             c.pp = [];
             c.limits = [-1 1 -1 1];
             c.perspective = false;
-            c.h_image = [];
-            c.h_visualize = [];
+            c.h_imageplane = [];
+            c.h_3dview = [];
             c.holdon = false;
             c.color = [1 1 0.8];
-
+            
             if nargin == 1 && isa(varargin{1}, 'Camera')
                 return;
             else
@@ -154,10 +156,10 @@ classdef Camera < handle
                 opt.pose = [];
                 opt.color = [];
                 c.pp = [0 0];
-
-
+                
+                
                 [opt,args] = tb_optparse(opt, varargin);
-
+                
                 c.name = opt.name;
                 if ~isempty(opt.image)
                     c.image = opt.image;
@@ -172,7 +174,7 @@ classdef Camera < handle
                         error('resolution must be a 1- or 2-vector');
                     end
                 end
-
+                
                 c.pp = opt.centre;
                 c.rho = opt.pixel;
                 if ~isempty(opt.color)
@@ -194,7 +196,7 @@ classdef Camera < handle
                     c.rho = opt.sensor ./ c.npix;
                 end
             end
-
+            
             if length(c.rho) == 1
                 c.rho = ones(1,2) * c.rho;
             end
@@ -203,33 +205,33 @@ classdef Camera < handle
                 c.pp = c.npix / 2;
             end
         end
-
+        
         function delete(c)
-        %Camera.delete Camera object destructor
-        %
-        % C.delete() destroys all figures associated with the Camera object and
-        % removes the object.
+            %Camera.delete Camera object destructor
+            %
+            % C.delete() destroys all figures associated with the Camera object and
+            % removes the object.
             %disp('delete camera object');
-            if ~isempty(c.h_image) && ishandle(c.h_image)
-                delete(get(c.h_image, 'Parent'));
+            if ~isempty(c.h_imageplane) && isgraphics(c.h_imageplane)
+                delete(get(c.h_imageplane, 'Parent'));
             end
-            if ~isempty(c.h_visualize) && ishandle(c.h_visualize)
-                delete(get(c.h_visualize, 'Parent'));
+            if ~isempty(c.h_3dview) && isgraphics(c.h_3dview)
+                delete(get(c.h_3dview, 'Parent'));
             end
         end
-
+        
         function display(c)
-        %Camera.display Display value
-        %
-        % C.display() displays a compact human-readable representation of the camera 
-        % parameters.
-        %
-        % Notes::
-        % - This method is invoked implicitly at the command line when the result
-        %   of an expression is a Camera object and the command has no trailing
-        %   semicolon.
-        %
-        % See also Camera.char.
+            %Camera.display Display value
+            %
+            % C.display() displays a compact human-readable representation of the camera
+            % parameters.
+            %
+            % Notes::
+            % - This method is invoked implicitly at the command line when the result
+            %   of an expression is a Camera object and the command has no trailing
+            %   semicolon.
+            %
+            % See also Camera.char.
             loose = strcmp( get(0, 'FormatSpacing'), 'loose');
             if loose
                 disp(' ');
@@ -243,12 +245,12 @@ classdef Camera < handle
                 disp(' ');
             end
         end
-
+        
         function s = char(c, s)
-        %Camera.char Convert to string
-        %
-        % S = C.char() is a compact string representation of the camera parameters.
-
+            %Camera.char Convert to string
+            %
+            % S = C.char() is a compact string representation of the camera parameters.
+            
             s = '';
             if ~isempty(c.rho)
                 s = strvcat(s, sprintf('  pixel size:     (%.4g, %.4g)', c.rho(1), c.rho(2)));
@@ -265,13 +267,13 @@ classdef Camera < handle
             s = strvcat(s,     sprintf('  pose:           %s', print(c.T, 'camera')));
             % = strvcat(s, [repmat('      ', 4,1) num2str(c.T)]);
         end
-
+        
         function rpy(c, roll, pitch, yaw)
-        %Camera.rpy Set camera attitude
-        %
-        % C.rpy(R, P, Y) sets the camera attitude to the specified roll-pitch-yaw angles.
-        %
-        % C.rpy(RPY) as above but RPY=[R,P,Y].
+            %Camera.rpy Set camera attitude
+            %
+            % C.rpy(R, P, Y) sets the camera attitude to the specified roll-pitch-yaw angles.
+            %
+            % C.rpy(RPY) as above but RPY=[R,P,Y].
             if nargin == 2,
                 pitch = roll(2);
                 yaw = roll(3);
@@ -279,61 +281,61 @@ classdef Camera < handle
             end
             c.T = SE3.Ry(yaw) * SE3.Rx(pitch) * SE3.Rz(roll);
         end
-
+        
         function c = centre(c)
-        %Camera.centre Get camera position
-        %
-        % P = C.centre() is the 3-dimensional position of the camera centre (3x1).
-
+            %Camera.centre Get camera position
+            %
+            % P = C.centre() is the 3-dimensional position of the camera centre (3x1).
+            
             c = c.T.t;
         end
-
-        function ishold = hold(c, flag)
-        %Camera.hold Control hold on image plane graphics
-        %
-        % C.hold() sets "hold on" for the camera's image plane.
-        %
-        % C.hold(H) hold mode is set on if H is true (or > 0), and off if
-        % H is false (or 0).
         
-        % cam.ishold(); set hold
-        % cam.ishold(flag); set hold
-        if nargin < 2
-            flag = true;
+        function ishold = hold(c, flag)
+            %Camera.hold Control hold on image plane graphics
+            %
+            % C.hold() sets "hold on" for the camera's image plane.
+            %
+            % C.hold(H) hold mode is set on if H is true (or > 0), and off if
+            % H is false (or 0).
+            
+            % cam.ishold(); set hold
+            % cam.ishold(flag); set hold
+            if nargin < 2
+                flag = true;
+            end
+            c.holdon = flag;
+            if flag
+                set(c.h_imageplane, 'NextPlot', 'add');
+            else
+                set(c.h_imageplane, 'NextPlot', 'replacechildren');
+            end
+            if nargout > 0
+                % i = cam.ishold(); test hold condition
+                ishold = c.holdon;
+                
+            end
         end
-        c.holdon = flag;
-        if flag
-            set(c.h_image, 'NextPlot', 'add');
-        else
-            set(c.h_image, 'NextPlot', 'replacechildren');
-        end
-        if nargout > 0
-            % i = cam.ishold(); test hold condition
-            ishold = c.holdon;
-
-        end
-        end
-
+        
         function v = ishold(c)
-        %Camera.ishold Return image plane hold status
-        %
-        % H = C.ishold() returns true (1) if the camera's image plane is in hold mode,
-        % otherwise false (0).
-            v = c.holdon;
+            %Camera.ishold Return image plane hold status
+            %
+            % H = C.ishold() returns true (1) if the camera's image plane is in hold mode,
+            % otherwise false (0).
+            v = c.holdon();
         end
-
+        
         function clf(c, flag)
-        %Camera.clf Clear the image plane
-        %
-        % C.clf() removes all graphics from the camera's image plane.
-            h = c.h_image;
-            if ~isempty(h) && ishandle(h)
+            %Camera.clf Clear the image plane
+            %
+            % C.clf() removes all graphics from the camera's image plane.
+            h = c.h_imageplane;
+            if ~isempty(h) && isgraphics(h)
                 % remove all children of the figure
                 children = get(h, 'Children');
                 for child=children
                     delete(child)
                 end
-
+                
                 % if the camera is displaying an image
                 if ~isempty(c.image)
                     c.figure
@@ -342,54 +344,58 @@ classdef Camera < handle
                 end
             end
         end
-
+        
         function h = figure(c)
-        %Camera.figure Return figure handle
-        %
-        % H = C.figure() is the handle of the figure that contains the camera's
-        % image plane graphics.
-            fig  = get(c.h_image, 'Parent');
+            %Camera.figure Return figure handle
+            %
+            % H = C.figure() is the handle of the figure that contains the camera's
+            % image plane graphics.
+            fig  = get(c.h_imageplane, 'Parent');
             figure( fig );
             if nargout > 0
                 h = fig;
             end
         end
-
+        
         % Return the graphics handle for this camera's image plane
         % and create the graphics if it doesnt exist
         %
         function h = plot_create(c, hin)
-
-            % if this camera is created from an image, then display that image
+            
             if ~isempty(c.image)
+                % if this camera is created from an image, then display that image
 
-                if isempty(c.h_image) || ~ishandle(c.h_image)
+                if isempty(c.h_imageplane) || ~isgraphics(c.h_imageplane)
                     idisp(c.image, 'nogui');
                     set(gcf, 'name', sprintf('%s(%s) - image plane', class(c), c.name));
                     set(gcf, 'MenuBar', 'none');
                     hold on
                     h = gca;
                     %title(h, ['CentralCamera image plane:' c.name);
-                    c.h_image = h;
+                    c.h_imageplane = h;
                     set(gcf, 'HandleVisibility', 'off');
                     set(h, 'HandleVisibility', 'off');
                 else
-                    h = c.h_image;
+                    h = c.h_imageplane;
                 end
                 return;
             end
-
-            if ishandle(c.h_image)
-                h = c.h_image;
+            
+            if isgraphics(c.h_imageplane)
+                % it already exists, just return the handle
+                h = c.h_imageplane;
                 return;
             end
-
-            disp('creating new figure for camera')
-            if (nargin == 2) && ishandle(hin),
+            c.h_imageplane = [];  % handle is invalid
+            
+            if (nargin == 2) && isgraphics(hin)
                 % draw camera in an existing axes
+                disp('draw image plane in existing axes')
                 h = hin;
-                set(h, 'HandleVisibility', 'off');
+                h.HandleVisibility = 'Off';
             else
+                disp('creating new figure for camera')
+                
                 figure
                 h = axes
                 fig = get(h, 'Parent');
@@ -409,16 +415,17 @@ classdef Camera < handle
                 'NextPlot', 'add', ...
                 'Tag', c.name ...
                 );
-            c.h_image = h;       % keep this around
-            c.newplot();
+            c.h_imageplane = h;       % keep this around
+            c.labelaxes();
+            
             title(h, c.name);
-            figure( fig );   % raise the camera view
-            set(h, 'NextPlot', 'replacechildren');
+            %figure( fig );   % raise the camera view
+            set(h, 'NextPlot', 'replacechildren');      
         end
-
-        
-        function newplot(c)
-            h = c.h_image;
+           
+        function labelaxes(c)
+            h = c.h_imageplane;
+            
             if ~isempty(c.npix)
                 xlabel(h, 'u (pixels)');
                 ylabel(h, 'v (pixels)');
@@ -428,41 +435,40 @@ classdef Camera < handle
             end
         end
         
-
         function v =  plot(c, points, varargin)
-        %Camera.plot Plot points on image plane
-        %
-        % C.plot(P, OPTIONS) projects world points P (3xN) to the image plane and plots them.  If P is 2xN
-        % the points are assumed to be image plane coordinates and are plotted directly.
-        %
-        % UV = C.plot(P) as above but returns the image plane coordinates UV (2xN).
-        %
-        % - If P has 3 dimensions (3xNxS) then it is considered a sequence of point sets and is
-        %   displayed as an animation.
-        %
-        % C.plot(L, OPTIONS) projects the world lines represented by the
-        % array of Plucker objects (1xN) to the image plane and plots them.
-        %
-        % LI = C.plot(L, OPTIONS) as above but returns an array (3xN) of
-        % image plane lines in homogeneous form.
-        %
-        % Options::
-        % 'objpose',T     Transform all points by the homogeneous transformation T before
-        %                  projecting them to the camera image plane.
-        % 'pose',T         Set the camera pose to the homogeneous transformation T before
-        %                  projecting points to the camera image plane.  Overrides the current
-        %                  camera pose C.T.
-        % 'fps',N          Number of frames per second for point sequence display
-        % 'sequence'       Annotate the points with their index
-        % 'textcolor',C    Text color for annotation (default black)
-        % 'textsize',S     Text size for annotation (default 12)
-        % 'drawnow'        Execute MATLAB drawnow function
-        %
-        % Additional options are considered MATLAB linestyle parameters and are passed 
-        % directly to plot.
-        %
-        % See also Camera.mesh, Camera.hold, Camera.clf, Plucker.
-
+            %Camera.plot Plot points on image plane
+            %
+            % C.plot(P, OPTIONS) projects world points P (3xN) to the image plane and plots them.  If P is 2xN
+            % the points are assumed to be image plane coordinates and are plotted directly.
+            %
+            % UV = C.plot(P) as above but returns the image plane coordinates UV (2xN).
+            %
+            % - If P has 3 dimensions (3xNxS) then it is considered a sequence of point sets and is
+            %   displayed as an animation.
+            %
+            % C.plot(L, OPTIONS) projects the world lines represented by the
+            % array of Plucker objects (1xN) to the image plane and plots them.
+            %
+            % LI = C.plot(L, OPTIONS) as above but returns an array (3xN) of
+            % image plane lines in homogeneous form.
+            %
+            % Options::
+            % 'objpose',T     Transform all points by the homogeneous transformation T before
+            %                  projecting them to the camera image plane.
+            % 'pose',T         Set the camera pose to the homogeneous transformation T before
+            %                  projecting points to the camera image plane.  Overrides the current
+            %                  camera pose C.T.
+            % 'fps',N          Number of frames per second for point sequence display
+            % 'sequence'       Annotate the points with their index
+            % 'textcolor',C    Text color for annotation (default black)
+            % 'textsize',S     Text size for annotation (default 12)
+            % 'drawnow'        Execute MATLAB drawnow function
+            %
+            % Additional options are considered MATLAB linestyle parameters and are passed
+            % directly to plot.
+            %
+            % See also Camera.mesh, Camera.hold, Camera.clf, Plucker.
+            
             opt.objpose = [];
             opt.pose = [];
             opt.fps = 5;
@@ -470,12 +476,12 @@ classdef Camera < handle
             opt.textcolor = 'k';
             opt.textsize = 12;
             opt.drawnow = false;
-
+            
             [opt,arglist] = tb_optparse(opt, varargin);
-
+            
             % get handle for this camera image plane
             h = c.plot_create();
-
+            
             if isa(points, 'Plucker')
                 % plot lines
                 
@@ -521,65 +527,65 @@ classdef Camera < handle
                     end
                 end
             end
-
+            
             if opt.drawnow
                 drawnow
             end
-
+            
             if nargout > 0,
                 v = uv;
             end
         end % plot
-
+        
         function mesh(c, X, Y, Z, varargin)
-        %Camera.mesh Plot mesh object on image plane
-        %
-        % C.mesh(X, Y, Z, OPTIONS) projects a 3D shape defined by the matrices X, Y, Z
-        % to the image plane and plots them.  The matrices X, Y, Z are of the same size
-        % and the corresponding elements of the matrices define 3D points.
-        %
-        % Options::
-        % 'objpose',T   Transform all points by the homogeneous transformation T before
-        %               projecting them to the camera image plane.
-        % 'pose',T      Set the camera pose to the homogeneous transformation T before
-        %               projecting points to the camera image plane.  Temporarily overrides
-        %               the current camera pose C.T.
-        %
-        % Additional arguments are passed to plot as line style parameters.
-        %
-        % See also MESH, CYLINDER, SPHERE, MKCUBE, Camera.plot, Camera.hold, Camera.clf.
-
+            %Camera.mesh Plot mesh object on image plane
+            %
+            % C.mesh(X, Y, Z, OPTIONS) projects a 3D shape defined by the matrices X, Y, Z
+            % to the image plane and plots them.  The matrices X, Y, Z are of the same size
+            % and the corresponding elements of the matrices define 3D points.
+            %
+            % Options::
+            % 'objpose',T   Transform all points by the homogeneous transformation T before
+            %               projecting them to the camera image plane.
+            % 'pose',T      Set the camera pose to the homogeneous transformation T before
+            %               projecting points to the camera image plane.  Temporarily overrides
+            %               the current camera pose C.T.
+            %
+            % Additional arguments are passed to plot as line style parameters.
+            %
+            % See also MESH, CYLINDER, SPHERE, MKCUBE, Camera.plot, Camera.hold, Camera.clf.
+            
             % check that mesh matrices conform
             assert( all(size(X) == size(Y)) && all(size(X) == size(Z)), 'matrices must be the same size');
-
+            
             opt.objpose = [];
             opt.pose = [];
-
+            
             [opt,arglist,ls] = tb_optparse(opt, varargin);
             if isempty(opt.pose)
                 opt.pose = c.T;
             end
-
+            
             if isempty(ls)
                 ls = {'k'};
             end
             
             % get handle for this camera image plane
             h = c.plot_create();
-
+            
             % draw 3D line segments
             nsteps = 21;
-
+            
             c.clf
             holdon = c.hold(1);
             s = linspace(0, 1, nsteps);
-
+            
             for i=1:numrows(X)-1
                 for j=1:numcols(X)-1
                     P0 = [X(i,j), Y(i,j), Z(i,j)]';
                     P1 = [X(i+1,j), Y(i+1,j), Z(i+1,j)]';
                     P2 = [X(i,j+1), Y(i,j+1), Z(i,j+1)]';
-
+                    
                     if c.perspective
                         % straight world lines are straight on the image plane
                         uv = c.project([P0 P1], 'setopt', opt);
@@ -588,8 +594,8 @@ classdef Camera < handle
                         P = bsxfun(@times, (1-s), P0) + bsxfun(@times, s, P1);
                         uv = c.project(P, 'setopt', opt);
                     end
-                    plot(uv(1,:)', uv(2,:)', ls{:}, arglist{:}, 'Parent', c.h_image);
-
+                    plot(uv(1,:)', uv(2,:)', ls{:}, arglist{:}, 'Parent', c.h_imageplane);
+                    
                     if c.perspective
                         % straight world lines are straight on the image plane
                         uv = c.project([P0 P2], 'setopt', opt);
@@ -598,14 +604,14 @@ classdef Camera < handle
                         P = bsxfun(@times, (1-s), P0) + bsxfun(@times, s, P2);
                         uv = c.project(P, 'setopt', opt);
                     end
-                    plot(uv(1,:)', uv(2,:)', ls{:}, arglist{:}, 'Parent', c.h_image);
+                    plot(uv(1,:)', uv(2,:)', ls{:}, arglist{:}, 'Parent', c.h_imageplane);
                 end
             end
-
+            
             for j=1:numcols(X)-1
                 P0 = [X(end,j), Y(end,j), Z(end,j)]';
                 P1 = [X(end,j+1), Y(end,j+1), Z(end,j+1)]';
-
+                
                 if c.perspective
                     % straight world lines are straight on the image plane
                     uv = c.project([P0 P1], 'setopt', opt);
@@ -614,50 +620,50 @@ classdef Camera < handle
                     P = bsxfun(@times, (1-s), P0) + bsxfun(@times, s, P1);
                     uv = c.project(P, 'setopt', opt);
                 end
-                plot(uv(1,:)', uv(2,:)', ls{:}, arglist{:}, 'Parent', c.h_image);
+                plot(uv(1,:)', uv(2,:)', ls{:}, arglist{:}, 'Parent', c.h_imageplane);
             end
             c.hold(holdon); % turn hold off if it was initially off
-
+            
         end % mesh
-
+        
         function h =  point(c, p, varargin)
-        %Camera.point Plot homogeneous points on image plane
-        %
-        % C.point(P) plots points on the camera image plane which are defined by columns 
-        % of P (3xN) considered as points in homogeneous form.
-
+            %Camera.point Plot homogeneous points on image plane
+            %
+            % C.point(P) plots points on the camera image plane which are defined by columns
+            % of P (3xN) considered as points in homogeneous form.
+            
             % get handle for this camera image plane
             h = c.create
-
+            
             uv = e2h(p);
             h = plot(uv(1,:), uv(2,:), varargin{:});
         end % point
-
+        
         function h =  homline(c, lines, varargin)
-        %Camera.homline Plot homogeneous lines on image plane
-        %
-        % C.homline(L) plots lines on the camera image plane which are defined by columns 
-        % of L (3xN) considered as lines in homogeneous form: a.u + b.v + c = 0.
-
+            %Camera.homline Plot homogeneous lines on image plane
+            %
+            % C.homline(L) plots lines on the camera image plane which are defined by columns
+            % of L (3xN) considered as lines in homogeneous form: a.u + b.v + c = 0.
+            
             % get handle for this camera image plane
             h = c.plot_create;
             xlim = get(h, 'XLim');
             ylim = get(h, 'YLim');
-
+            
             if numel(lines) == 3
                 lines = lines(:);
             end
-
+            
             for l=lines
                 if abs(l(1)/l(2)) > 1
                     % steeper than 45deg
                     x = (-l(3) - l(2)*ylim) / l(1);
-                    h = plot(x, ylim, varargin{:}, 'Parent', c.h_image);
+                    h = plot(x, ylim, varargin{:}, 'Parent', c.h_imageplane);
                 else
                     % less than 45deg
                     y = (-l(3) - l(1)*xlim) / l(2);
-
-                    h = plot(xlim, y, varargin{:}, 'Parent', c.h_image);
+                    
+                    h = plot(xlim, y, varargin{:}, 'Parent', c.h_imageplane);
                 end
             end
         end % line
@@ -667,96 +673,96 @@ classdef Camera < handle
             h = c.plot_create
             c.hold(1)
             for i=1:numcols(p0)
-                plot([p0(1,i) p1(1,i)], [p0(2,i) p1(2,i)], varargin{:}, 'Parent', c.h_image);
+                plot([p0(1,i) p1(1,i)], [p0(2,i) p1(2,i)], varargin{:}, 'Parent', c.h_imageplane);
             end
         end
-
+        
         function newcam = move(cam, T)
-        %Camera.move Instantiate displaced camera 
-        %
-        % C2 = C.move(T) is a new camera object that is a clone of C but its pose
-        % is displaced by the homogeneous transformation T with respect to the
-        % current pose of C.
+            %Camera.move Instantiate displaced camera
+            %
+            % C2 = C.move(T) is a new camera object that is a clone of C but its pose
+            % is displaced by the homogeneous transformation T with respect to the
+            % current pose of C.
             newcam = CentralCamera(cam);
-            newcam.T = newcam.T * T;
+            newcam.T = newcam.T * SE3.check(T);
         end
-
+        
         function movedby(c, robot)
             robot.addlistener('Moved', @(src,data)cameramove_callback(src,data,c));
-
+            
             function cameramove_callback(robot, event, camera)
                 camera.T = robot.fkine(robot.q);
             end
         end
-
+        
         % return components of principal point and image size
         function v = get.u0(c)
             v = c.pp(1);
         end
-
+        
         function v = get.v0(c)
             v = c.pp(2);
         end
-
+        
         function v = get.rho(c)
             v = c.rho;
         end
-
+        
         function v = get.nu(c)
             v = c.npix(1);
         end
-
+        
         function v = get.nv(c)
             v = c.npix(2);
         end
-
+        
         function c = set.T(c, Tc)
             c.T = SE3(Tc);
-
-
-            if ~isempty(c.h_visualize) && ishandle(c.h_visualize)
-                set(c.h_visualize, 'Matrix', c.T.T);
+            
+            
+            if ~isempty(c.h_3dview) && isgraphics(c.h_3dview)
+                set(c.h_3dview, 'Matrix', c.T.T);
             end
         end
-
-
+        
+        
         function c = set.rho(c, sxy)
             if isempty(sxy)
                 c.rho = sxy;
-            elseif length(sxy) == 1,
+            elseif length(sxy) == 1
                 c.rho = [sxy sxy];
-            elseif length(sxy) == 2,
+            elseif length(sxy) == 2
                 c.rho = sxy(:)';
             else
                 error('need 1 or 2 scale elements');
             end
         end
-
+        
         function c = set.pp(c, pp)
             if isempty(pp)
                 c.pp = [];
-            elseif length(pp) == 1,
+            elseif length(pp) == 1
                 c.pp = [pp pp];
-            elseif length(pp) == 2,
+            elseif length(pp) == 2
                 c.pp = pp(:)';
             else
                 error('need 1 or 2 pp elements');
             end
         end
-
-         function c = set.npix(c, npix)
-             if ~isempty(npix)
-                 if length(npix) == 1,
-                     c.npix = [npix npix];
-                 elseif length(npix) == 2,
-                     c.npix = npix(:)';
-                 else
-                     error('need 1 or 2 npix elements');
-                 end
-                 c.limits = [0 c.npix(1) 0 c.npix(2)];
-             end
-         end
-
+        
+        function c = set.npix(c, npix)
+            if ~isempty(npix)
+                if length(npix) == 1,
+                    c.npix = [npix npix];
+                elseif length(npix) == 2,
+                    c.npix = npix(:)';
+                else
+                    error('need 1 or 2 npix elements');
+                end
+                c.limits = [0 c.npix(1) 0 c.npix(2)];
+            end
+        end
+        
         function help(c)
             disp(' C.plot(P)     return image coordinates for world points  P');
             disp(' C.point(P)     return image coordinates for world points  P');
@@ -769,5 +775,5 @@ classdef Camera < handle
             disp(' transformed by T prior to projection');
         end
     end % methods
-
+    
 end % class

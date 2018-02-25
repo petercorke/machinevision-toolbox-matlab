@@ -3,19 +3,18 @@
 % A concrete class for a central-projection perspective camera, a subclass of
 % Camera.
 %
-%   The camera coordinate system is:
+% The camera coordinate system is:
 %
-%       0------------> u X
-%       |
-%       |
-%       |   + (principal point)
-%       |
-%       |   Z-axis is into the page.
-%       v Y
+%         0------------> u X
+%         |
+%         |
+%         |   + (principal point)
+%         |
+%         |   Z-axis is into the page.
+%         v Y
 %
 % This camera model assumes central projection, that is, the focal point
 % is at z=0 and the image plane is at z=f.  The image is not inverted.
-%
 %
 % Methods::
 %
@@ -30,7 +29,7 @@
 % fov              field of view
 % ray              Ray3D corresponding to point
 % centre           projective centre
-% normalzied       convert image plane coordinate to normalized coordinates
+% normalized       convert image plane coordinate to normalized coordinates
 %-
 % plot             plot projection of world point on image plane
 % hold             control hold for image plane
@@ -49,7 +48,7 @@
 % visjac_p_polar   image Jacobian for point features in polar coordinates
 % visjac_l         image Jacobian for line features
 % visjac_e         image Jacobian for ellipse features
-% derivs      
+% derivs           point and camera motion Jacobians for bundle adjustment      
 %-
 % rpy              set camera attitude
 % move             clone Camera after motion
@@ -539,8 +538,8 @@ classdef CentralCamera < Camera
         %
         % See also Hough.
 
-            x = get(cam.h_image, 'XLim');
-            y = get(cam.h_image, 'YLim');
+            x = get(cam.h_imageplane, 'XLim');
+            y = get(cam.h_imageplane, 'YLim');
 
             % plot it
             for i=1:numcols(lines)
@@ -549,10 +548,10 @@ classdef CentralCamera < Camera
                 %fprintf('theta = %f, d = %f\n', line.theta, line.rho);
                 if abs(cos(theta)) > 0.5,
                     % horizontalish lines
-                    plot(x, -x*tan(theta) + rho/cos(theta), varargin{:}, 'Parent', cam.h_image);
+                    plot(x, -x*tan(theta) + rho/cos(theta), varargin{:}, 'Parent', cam.h_imageplane);
                 else
                     % verticalish lines
-                    plot( -y/tan(theta) + rho/sin(theta), y, varargin{:}, 'Parent', cam.h_image);
+                    plot( -y/tan(theta) + rho/sin(theta), y, varargin{:}, 'Parent', cam.h_imageplane);
                 end
             end
         end

@@ -34,9 +34,9 @@ function h = plot_camera(c, varargin)
         opt.scale = sz / 15;
     end
     
-    if ishandle(c.h_visualize)
+    if isgraphics(c.h_3dview)
         % if a handle already exists just update the transform
-        set(c.h_visualize, 'Matrix', opt.pose.T);
+        set(c.h_3dview, 'Matrix', opt.pose.T);
 
     else
         % otherwise draw the graphical object from scratch in this figure
@@ -90,7 +90,7 @@ function h = plot_camera(c, varargin)
                 text(0, 0, 0, c.name, 'Parent', hg);
             end
 
-            c.h_visualize = hg;  % save handle for later
+            c.h_3dview = hg;  % save handle for later
             
         else
             % draw a somewhat detailed camera-looking object specific to the
@@ -100,12 +100,12 @@ function h = plot_camera(c, varargin)
                 args = [args 'label'];
             end
             args = [args arglist{:}];
-            c.h_visualize = c.drawCamera(args{:});
+            c.h_3dview = c.drawCamera(args{:});
         end
-        set(c.h_visualize, 'Matrix', opt.pose.T);
+        set(c.h_3dview, 'Matrix', opt.pose.T);
 
         if opt.persist
-            c.h_visualize = [];
+            c.h_3dview = [];
         end
         set(gcf, 'name', sprintf('%s(%s) - camera view', class(c), c.name));
 

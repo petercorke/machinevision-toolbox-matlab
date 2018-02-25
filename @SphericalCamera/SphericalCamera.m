@@ -135,12 +135,12 @@ classdef SphericalCamera < Camera
             th = 2*pi;
         end
         
-        
-        function newplot(c)
-            
-            h = c.h_image;
-            xlabel(h, 'longitude \phi (rad)');
-            ylabel(h, 'colatitude \theta (rad)');
+        % override the superclass method
+        function labelaxes(c)
+            h = c.h_imageplane;
+            xlabel(h, 'Longitude \phi (rad)');
+            ylabel(h, 'Colatitude \theta (rad)');
+            % would be nice to make this square
         end
         
         function f = project(cam, P, varargin)
@@ -188,6 +188,7 @@ classdef SphericalCamera < Camera
             phi = atan2(y, x);
             f = [phi; theta];
         end
+        
         
     end % methods
 end % class
