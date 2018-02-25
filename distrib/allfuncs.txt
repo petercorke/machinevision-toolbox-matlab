@@ -227,6 +227,7 @@ rot2
 transl2
 trexp2
 SE2
+SO2
 
 h2. Homogeneous coordinates in 3D
 angvec2r
@@ -245,6 +246,7 @@ trlog
 trnorm
 Twist
 SE3
+SO3
 vex
 
 h2. 3D geometry
@@ -286,3 +288,4 @@ xaxis
 yaxis
 xyzlabel
 zcross
+RTBPose
