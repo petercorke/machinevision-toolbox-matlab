@@ -165,6 +165,7 @@ irectify
 
 h1. Image sequence
 BagOfWords
+BundleAdjust
 ianimate
 Tracker
 
