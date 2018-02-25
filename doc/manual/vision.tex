@@ -275,6 +275,13 @@ automate this by setting up environment variables, editing your
 \texttt{startup.m} script by pressing the ``Update Toolbox Path
 Cache" button under \Mlab\ General preferences.
 
+\subsection{MEX files and IPT substitution}
+The Toolbox comes with MEX files for fast computation of image labelling (\texttt{ilabel}), mathematical morphology (\texttt{imorph}) and other less commonly used operations.  Binaries for Windows, Linux and Mac are shipped for most functions. 
+
+If the MEX files are not available for your platform then you can compile them. Change into the \texttt{mex} folder and follow the instructions in the README file.  You will need to have a C compiler.  You can build the MEX files from inside MATLAB using \texttt{make.m} or from the command line using \texttt{make}.
+
+If you  have the MATLAB Image Processing Toolbox (IPT) installed then the following MVTB functions will use IPT functions instead of MEX files: \texttt{imorph}, \texttt{idilate}, \texttt{ierode}, \texttt{ilabel}. 
+
 \subsection{MATLAB Online\textsuperscript{TM}}
 The Toolbox works well with MATLAB Online\textsuperscript{TM} which lets you access a \Mlab\ session from a web browser, tablet 
 or even a phone.
@@ -283,7 +290,8 @@ MATLAB Drive\textsuperscript{TM} from MATLAB File Exchange or using the Get Add-
 just like Google Drive or Dropbox, a local filesystem on your computer is synchronized with your MATLAB Online account.  Copy the MVTB
 files into the local MATLAB Drive cache and they will soon be synchronized, invoke \texttt{startup\_rvc} to setup the paths and you are ready to machine vision on your mobile device or in a web browser.
 
-MATLAB Online does not support MEX files.  
+MATLAB Online does not support MEX files.  If you have IPT as part of your MATLAB Online licence then the Toolbox will use that functionality to support key functions such as: \texttt{imorph}, \texttt{idilate}, \texttt{ierode}, \texttt{ilabel}. 
+
 
 \subsection{Simulink\textsuperscript{\textregistered}}
 Simulink\textsuperscript{\textregistered} is the block diagram simulation environment for MATLAB.
