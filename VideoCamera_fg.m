@@ -99,7 +99,7 @@ classdef VideoCamera_fg < ImageSource
             if length(varargin) == 0
                 camera = -1;        % choose default
             else
-                camera = args(1);
+                camera = varargin{1};
             end
             framegrabber(VideoCamera_fg.CAMERA_OP_OPEN, camera);
             
