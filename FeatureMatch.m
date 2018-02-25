@@ -12,6 +12,7 @@
 % inlier     Return inlier matches
 % outlier    Return outlier matches
 % subset     Return a subset of matches
+% remove
 %
 % display    Display value of match
 % char       Convert value of match to string
@@ -66,9 +67,9 @@ classdef FeatureMatch < handle
         % create methods to provide this.  Using dependent properties does not work.
         xy_          % x1 y1 x2 y2 of corresponding points
         distance_    % strength of match
-        inlier_      % NaN indeterminate
-                    % true inlier
-                    % false outlier
+        inlier_      % NaN - indeterminate
+                    % true - inlier
+                    % false - outlier
     end
 
     methods
@@ -131,6 +132,10 @@ classdef FeatureMatch < handle
         function v = distance(m)
             v = [m.distance_];
         end
+        
+        function v = inlierx(m)
+            v = find([m.inlier_]);
+        end
 
         function display(m)
         %FeatureMatch.display Display value
@@ -188,15 +193,24 @@ classdef FeatureMatch < handle
                 sum(in==false), sum(in==false)/length(m)*100) ];
         end
         
-        function v = subset(m, n)
+        function v = subset(m, n, varargin)
         %FeatureMatch.subset Subset of matches
         %
         % M2 = M.subset(N) is a FeatureMatch vector with no more than N elements
         % sampled uniformly from M.
-            i = round(linspace(1, length(m), n));
+        
+            opt.random = false;
+            opt = tb_optparse(opt, varargin);
+
+            if opt.random
+                i = randi(length(m), n);
+            else
+                i = round(linspace(1, length(m), n));
+            end
             v = m(i);
         end
 
+        
         function s = p1(m, k)
         %FeatureMatch.p1 Feature point coordinates from view 1
         %
@@ -252,18 +266,24 @@ classdef FeatureMatch < handle
         %   created if this UserData is not found.
         % See also IDISP.
 
+            opt.offset = [];
+            [opt,args] = tb_optparse(opt, varargin);
+            
+            if isempty(opt.offset)
             try
                 ud = get(gca, 'UserData');
                 u0 = ud.u0;
             catch
                 error('Current image is not a pair displayed by idisp');
             end
-            w = u0(2);
+            opt.offset = [0 u0(2) 0 0];
+            end
             
             xy = [m.xy_];
             hold on
             for k=1:numcols(xy),
-                plot([xy(1,k) xy(3,k)+w], xy([2 4],k), varargin{:});
+                plot([xy(1,k)+opt.offset(1) xy(3,k)+opt.offset(2)], ...
+                    [xy(2,k)+opt.offset(3), xy(4,k)+opt.offset(4)],  args{:});
             end
             hold off
             figure(gcf);
@@ -285,7 +305,26 @@ classdef FeatureMatch < handle
         %      m.ransac( @fmatrix, 1e-4);
         %
         % See also FMATRIX, HOMOGRAPHY, RANSAC.
-            [M,in,resid] = ransac(func, [m.xy_], varargin{:});
+        
+            opt.retry = 1;
+            [opt,args] = tb_optparse(opt, varargin);
+            if opt.verbose
+                args = [args 'verbose'];
+            end
+            
+            while true
+                try
+                    [M,in,resid] = ransac(func, [m.xy_], args{:});
+                    break;
+                catch err
+                    opt.retry = opt.retry - 1;
+                    if opt.retry > 0
+                        continue;
+                    else
+                        rethrow(err);
+                    end
+                end
+            end
             
             % mark all as outliers
             for i=1:length(m)
