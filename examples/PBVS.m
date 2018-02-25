@@ -65,6 +65,7 @@ classdef PBVS < VisualServo
             % 'targetsize',S    The target points are the corners of an SxS square
             % 'fps',F           Number of simulation frames per second (default t)
             % 'verbose'         Print out extra information during simulation
+            % 'axis'            Axis dimensions
             %
             % Notes::
             % - If 'P' is specified it overrides the default square target.
@@ -78,6 +79,7 @@ classdef PBVS < VisualServo
             opt.targetsize = 0.5;       % dimensions of target
             opt.eterm = 0;
             opt.lambda = 0.05;         % control gain
+
 
             opt = tb_optparse(opt, pbvs.arglist);
 
@@ -105,12 +107,12 @@ classdef PBVS < VisualServo
             
             % initialize the vservo variables
             %vs.camera.clf();
-            vs.camera.T = vs.T0;    % set camera back to its initial pose
-            vs.Tcam = vs.T0;        % initial camera/robot pose
+            vs.camera.T = SE3.check(vs.T0);    % set camera back to its initial pose
+            vs.Tcam = SE3.check(vs.T0);        % initial camera/robot pose
             
             % show the reference location, this is the view we wish to achieve
             % when Tc = T_final
-            uv_star = vs.camera.project(vs.P, 'Tcam', inv(vs.Tf));    % create the camera view
+            uv_star = vs.camera.project(vs.P, 'pose', inv(vs.Tf));    % create the camera view
             %hold on
             %plot(uv_star(:,1), uv_star(:,2), '*');      % show desired view
             %hold off
@@ -118,7 +120,11 @@ classdef PBVS < VisualServo
             pause(1)
 
             % this is the 'external' view of the points and the camera
-            plot_sphere(vs.P, 0.05, 'b')
+            if ~isempty(vs.axis)
+                figure
+                axis(vs.axis);
+            end
+            plot_sphere(vs.P, 0.05, 'r')
             lighting gouraud
             light
             %cam2 = showcamera(T0);
@@ -141,11 +147,11 @@ classdef PBVS < VisualServo
             % compute the view
             uv = vs.camera.plot(vs.P);
 
-            Tct_est = vs.camera.estpose(vs.P, uv);
-            delta =  Tct_est * inv(vs.Tf);
+            C_Te_G = vs.camera.estpose(vs.P, uv);
+            delta =  C_Te_G * inv(vs.Tf);
            
             % update the camera pose
-            Td = trinterp(delta, vs.lambda);
+            Td = interp(delta, vs.lambda);
 
             vs.Tcam = vs.Tcam * Td;       % apply it to current pose
 

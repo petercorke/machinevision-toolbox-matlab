@@ -6,7 +6,7 @@
 % run            Run the simulation, complete results kept in the object
 % step           One simulation step (provided by the concrete class)
 % init           Initialized the simulation (provided by the concrete class)
-% plot_p         Plot image plane coordinates of points vs time
+% plot_p         Plot feature values vs time
 % plot_vel       Plot camera velocity vs time
 % plot_camera    Plot camera pose vs time
 % plot_jcond     Plot Jacobian condition vs time 
@@ -29,7 +29,7 @@ classdef VisualServo < handle
         P
         uv_star
         Tcam
-        camera
+        camera         % camera object
         Tf
         T0
         pf
@@ -41,6 +41,12 @@ classdef VisualServo < handle
 
         verbose
         arglist
+        axis
+        
+        movie
+        anim
+        
+        type
     end
 
     methods
@@ -72,18 +78,24 @@ classdef VisualServo < handle
             z = 3;
             opt.niter = [];
             opt.fps = 5;
-            opt.Tf = [];
-            opt.T0 = cam.T;
+            opt.posef = [];
+            opt.pose0 = cam.T;
             opt.P = [];
             opt.targetsize = 0.5;       % dimensions of target
             opt.pstar = [];
-
+            opt.axis = [];
+            opt.movie = [];
+            
             [opt,vs.arglist] = tb_optparse(opt, varargin);
             vs.niter = opt.niter;
             vs.fps = opt.fps;
             vs.verbose = opt.verbose;
-            vs.T0 = opt.T0;
-            vs.Tf = opt.Tf;
+            if ~isempty(opt.pose0)
+                vs.T0 = SE3(opt.pose0);
+            end
+            if ~isempty(opt.posef)
+                vs.Tf = SE3(opt.posef);
+            end
 
             % define feature points in XY plane, make vertices of a square
             if isempty(opt.P)
@@ -91,6 +103,8 @@ classdef VisualServo < handle
             end
             vs.P = opt.P;
             vs.pf = opt.pstar;
+            vs.axis = opt.axis;
+            vs.movie = opt.movie;
         end
 
         function run(vs, nsteps)
@@ -104,15 +118,28 @@ classdef VisualServo < handle
             % Notes::
             % - Repeatedly calls the subclass step() method which returns
             %   a flag to indicate if the simulation is complete.
+            
             vs.init();
             
+                        if ~isempty(vs.movie)
+                vs.anim = Animate(vs.movie);
+            end
+            
+            if nargin < 2
+                nsteps = vs.niter;
+            end
             ksteps = 0;
             while true
                 ksteps = ksteps + 1;
                 status = vs.step();
 
                 drawnow
+                
+                            if ~isempty(vs.movie)
+                vs.anim.add();
+                            else
                 pause(1/vs.fps)
+                            end
                 
                 if status > 0
                     fprintf('completed on error tolerance\n');
@@ -122,9 +149,13 @@ classdef VisualServo < handle
                     break;
                 end
                 
-                if ~isempty(vs.niter) && (ksteps > vs.niter)
+                if ~isempty(nsteps) && (ksteps > nsteps)
                     break;
                 end
+            end
+            
+            if ~isempty(vs.movie)
+                vs.anim.close();
             end
 
             if status == 0
@@ -135,7 +166,7 @@ classdef VisualServo < handle
         function plot_p(vs)
             %VisualServo.plot_p Plot feature trajectory
             %
-            % VS.plot_p() plots the feature values versus time.
+            % VS.plot_p() plots point feature trajectories on the image plane.
             %
             % See also VS.plot_vel, VS.plot_error, VS.plot_camera,
             % VS.plot_jcond, VS.plot_z, VS.plot_error, VS.plot_all.
@@ -143,27 +174,38 @@ classdef VisualServo < handle
             if isempty(vs.history)
                 return
             end
+            if strcmp(vs.type, 'point') == 0
+                disp('Can only plot image plane trajectories for point-based IBVS');
+                return
+            end
             clf
             hold on
+            
             % image plane trajectory
-            uv = [vs.history.uv]';
+            uv = [vs.history.f]';
             % result is a vector with row per time step, each row is u1, v1, u2, v2 ...
             for i=1:numcols(uv)/2
                 p = uv(:,i*2-1:i*2);    % get data for i'th point
-                plot(p(:,1), p(:,2))
+                plot(p(:,1), p(:,2), 'b')
             end
+            
+            % mark the initial target shape
             plot_poly( reshape(uv(1,:), 2, []), 'o--');
             uv(end,:)
+            
+            % mark the final target shape
             if ~isempty(vs.uv_star)
-                plot_poly(vs.uv_star, '*:')
+                plot_poly(vs.uv_star, 'rh:', 'MarkerSize', 8, 'MarkerFaceColor', 'r')
             else
-                plot_poly( reshape(uv(end,:), 2, []), 'rd--');
+                plot_poly( reshape(uv(end,:), 2, []), 'rh--', 'MarkerSize', 8, 'MarkerFaceColor', 'r');
             end
             axis([0 vs.camera.npix(1) 0 vs.camera.npix(2)]);
+            daspect([1 1 1])
             set(gca, 'Ydir' , 'reverse');
             grid
             xlabel('u (pixels)');
             ylabel('v (pixels)');
+            
             hold off
         end
 
@@ -185,7 +227,7 @@ classdef VisualServo < handle
             hold off
             ylabel('Cartesian velocity')
             grid
-            xlabel('Time')
+            xlabel('Time step')
             xaxis(length(vs.history));
             legend('v_x', 'v_y', 'v_z', '\omega_x', '\omega_y', '\omega_z')
         end
@@ -202,21 +244,23 @@ classdef VisualServo < handle
                 return
             end
             clf
-            % Cartesian camera position vs time
-            T = reshape([vs.history.Tcam], 4, 4, []);
+            % Cartesian camera position vs timestep
+            T = SE3( cat(3, vs.history.Tcam) );
+            
             subplot(211)
-            plot(transl(T));
-            ylabel('camera position')
+            plot(T.tv');
+            xaxis(length(vs.history));
+            ylabel('Camera position')
+            legend('X', 'Y', 'Z');
             grid
+            
             subplot(212)
-            plot(tr2rpy(T))
-            ylabel('camera orientation')
+            plot(T.torpy)
+            ylabel('Camera orientation (rad)')
             grid
-            xlabel('Time')
+            xlabel('Time step')
             xaxis(length(vs.history));
             legend('R', 'P', 'Y');
-            subplot(211)
-            legend('X', 'Y', 'Z');
         end
 
         function plot_jcond(vs)
@@ -239,7 +283,7 @@ classdef VisualServo < handle
             plot(Jcond);
             grid
             ylabel('Jacobian condition number')
-            xlabel('Time')
+            xlabel('Time step')
             xaxis(length(vs.history));
          end
 
@@ -247,11 +291,17 @@ classdef VisualServo < handle
         function plot_z(vs)
             %VisualServo.plot_z Plot feature depth
             %
-            % VS.plot_p() plots  feature depth versus time.
+            % VS.plot_z() plots feature depth versus time.  If a depth estimator is
+            % used it shows true and estimated depth.
             %
             % See also VS.plot_p, VS.plot_vel, VS.plot_error, VS.plot_camera,
             % VS.plot_jcond, VS.plot_error, VS.plot_all.
              if isempty(vs.history)
+                return
+             end
+             
+            if strcmp(vs.type, 'point') == 0
+                disp('Z-estimator data only computed for point-based IBVS');
                 return
             end
             clf
@@ -259,17 +309,19 @@ classdef VisualServo < handle
             Ztrue = [vs.history.Ztrue];
             plot(Ztrue', '-')
             hold on
+            set(gca, 'ColorOrderIndex', 1);
             plot(Zest', '--')
             grid
-            ylabel('depth (m)')
+            ylabel('Depth (m)')
+            xlabel('Time step')
             xaxis(length(vs.history));
             %legend('true', 'estimate')
         end
 
-        function plot_error(vs)
+        function out = plot_error(vs)
             %VisualServo.plot_error Plot feature error
             %
-            % VS.plot_p() plots  feature error versus time.
+            % VS.plot_error() plots feature error versus time.
             %
             % See also VS.plot_vel, VS.plot_error, VS.plot_camera,
             % VS.plot_jcond, VS.plot_z, VS.plot_all.
@@ -279,15 +331,26 @@ classdef VisualServo < handle
             end
             clf
             e = [vs.history.e]';
-            plot(e(:,1:2:end), 'r');
-            hold on
-            plot(e(:,2:2:end), 'b');
-            hold off
-            ylabel('Feature error (pixel)')
+            switch vs.type
+                case 'point'
+                    plot(e(:,1:2:end), 'r');
+                    hold on
+                    plot(e(:,2:2:end), 'b');
+                    hold off
+                    ylabel('Feature error (pixel)')
+                    
+                    legend('u', 'v');
+                otherwise
+                    plot(e);
+                    ylabel('Feature error')
+            end
             grid
             xlabel('Time')
             xaxis(length(vs.history));
-            legend('u', 'v');
+            
+            if nargout > 0
+                out = e;
+            end
         end
 
         function plot_all(vs, name, dev)
@@ -311,46 +374,46 @@ classdef VisualServo < handle
                 dev = '-depsc';
             end
             if nargin < 2
-                prefix = [];
+                name = [];
             end
 
             figure
             vs.plot_p();
-            if ~isempty(prefix)
+            if ~isempty(name)
                 print(gcf, dev, sprintf(name, '-p'));
             end
 
             figure
             vs.plot_vel();
-            if ~isempty(prefix)
-                print(gcf, dev, strcat(prefix, '-vel'));
+            if ~isempty(name)
+                print(gcf, dev, strcat(name, '-vel'));
             end
 
             figure
             vs.plot_camera();
-            if ~isempty(prefix)
-                print(gcf, dev, strcat(prefix, '-camera'));
+            if ~isempty(name)
+                print(gcf, dev, strcat(name, '-camera'));
             end
             figure
             vs.plot_error();
-            if ~isempty(prefix)
-                print(gcf, dev, strcat(prefix, '-error'));
+            if ~isempty(name)
+                print(gcf, dev, strcat(name, '-error'));
             end
             
             % optional plots depending on what history was recorded
             if isfield(vs.history, 'Zest')
                 figure
                 vs.plot_z();
-                if ~isempty(prefix)
-                    print(gcf, dev, strcat(prefix, '-z'));
+                if ~isempty(name)
+                    print(gcf, dev, strcat(name, '-z'));
                 end
             end
             
             if isfield(vs.history, 'jcond')
                 figure
                 vs.plot_jcond();
-                if ~isempty(prefix)
-                    print(gcf, dev, strcat(prefix, '-jcond'));
+                if ~isempty(name)
+                    print(gcf, dev, strcat(name, '-jcond'));
                 end
             end
           
@@ -389,13 +452,15 @@ classdef VisualServo < handle
             if 0
             s = strvcat(s, sprintf('  T0:'));
             s = strvcat(s, [repmat('      ', 4,1) num2str(vs.T0)]);
-            s = strvcat(s, sprintf('  T_CT*:'));
+            s = strvcat(s, sprintf('  C*_T_G:'));
             s = strvcat(s, [repmat('      ', 4,1) num2str(vs.Tf)]);
             else
-            s = strvcat(s, ['  Tc0:   ' trprint(vs.T0, 'fmt', ' %g', 'angvec')]);
-            if ~isempty(vs.Tf)
-                s = strvcat(s, ['  Tc*_t: ' trprint(vs.Tf, 'fmt', ' %g', 'angvec')]);
-            end
+                if ~isempty(vs.T0)
+                    s = strvcat(s, ['  C_T0:   ' trprint(vs.T0, 'fmt', ' %g', 'angvec')]);
+                end
+                if ~isempty(vs.Tf)
+                    s = strvcat(s, ['  C*_T_G: ' trprint(vs.Tf, 'fmt', ' %g', 'angvec')]);
+                end
             end
         end
     end

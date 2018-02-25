@@ -24,6 +24,9 @@
 %         ibvs = IBVS_e(cam, 'example'); 
 %         ibvs.run()
 %
+% You can change various properties of the ibvs object (initial/final pose,
+% error tolerance etc. and rerun the simulation using the run() method.
+%
 % References::
 % - Robotics, Vision & Control, Chap 15
 %   P. Corke, Springer 2011.
@@ -51,10 +54,9 @@ classdef IBVS_e < VisualServo
     properties
         lambda          % IBVS gain
         eterm
-
-        E
-        E_star
+        f_star
         plane
+        ellipse_star
     end
 
     methods
@@ -87,7 +89,7 @@ classdef IBVS_e < VisualServo
             ibvs = ibvs@VisualServo(cam, varargin{:});
 
             % handle arguments
-            opt.eterm = 0;
+            opt.eterm = 0.08;
             opt.plane = [];
             opt.lambda = 0.04;         % control gain
             opt.example = false;
@@ -97,20 +99,40 @@ classdef IBVS_e < VisualServo
             if opt.example
                 % run a canned example
                 fprintf('---------------------------------------------------\n');
-                fprintf('canned example, ellipse-based IBVS with 10 points\n');
+                fprintf('canned example, ellipse + point-based IBVS\n');
                 fprintf('---------------------------------------------------\n');
-                ibvs.P = circle([0 0 3], 0.5, 'n', 10);
+                ibvs.P = circle([0 0 3], 0.5, 'n', 40);
                 ibvs.Tf = transl(0.5, 0.5, 1);
                 ibvs.T0 = transl(0.5, 0.5, 0)*trotx(0.3);
                 %ibvs.T0 = transl(-1,-0.1,-3);%*trotx(0.2);
                 ibvs.plane = [0 0 1 -3];    % in plane z=3
-            else
-                ibvs.plane = opt.plane;
             end
+            
+                ibvs.plane = opt.plane;
+            
 
             % copy options to IBVS object
             ibvs.lambda = opt.lambda;
             ibvs.eterm = opt.eterm;
+            
+            clf
+            subplot(121);
+            ibvs.camera.plot_create(gca)
+            
+            % this is the 'external' view of the points and the camera
+            subplot(122)
+            PP = [ibvs.P ibvs.P(:,1)];
+            plot3(PP(1,:), PP(2,:), PP(3,:), 'r', 'LineWidth', 5)
+            plot_sphere(PP(:,1), 0.06, 'b');
+            ibvs.camera.plot_camera();
+            plotvol([-1 1 -1 1 -1 3.1])
+            view(16, 28);
+            grid on
+            set(gcf, 'Color', 'w')
+            
+            set(gcf, 'HandleVisibility', 'Off');
+            
+            ibvs.type = 'ellipse';
         end
 
         function init(vs)
@@ -126,28 +148,25 @@ classdef IBVS_e < VisualServo
                 warning('setting Tf to default');
             end
 
-            % final pose is specified in terms of a camera-target pose
-            %   convert to image coords
-            vs.E_star = vs.getfeatures(vs.Tf);
-            vs.uv_star = vs.camera.project(vs.P, 'Tcam', vs.Tf);
+            % desired feature coordinates.  This vector comprises the ellipse
+            % parameters (5) and the coordinaes of 1 point
+            vs.f_star = [
+                    vs.get_ellipse_parameters(vs.Tf)
+                    vs.camera.project(vs.P(:,1), 'pose', vs.Tf)
+                ];
+            
+            vs.ellipse_star = vs.camera.project([vs.P vs.P(:,1)], 'pose', vs.Tf);
 
             % initialize the vservo variables
             vs.camera.T = vs.T0;    % set camera back to its initial pose
             vs.Tcam = vs.T0;                % initial camera/robot pose
             
-            vs.camera.plot(vs.P);    % show initial view
-
-            % this is the 'external' view of the points and the camera
-            plot_sphere(vs.P, 0.05, 'b')
-            %cam2 = showcamera(T0);
-            vs.camera.plot_camera();
-            %camup([0,-1,0]);
-
             vs.history = [];
+            
         end
 
-        function A = getfeatures(vs, T)
-            p = vs.camera.project(vs.P, 'Tcam', T);
+        function A = get_ellipse_parameters(vs, T)
+            p = vs.camera.project(vs.P, 'pose', T);
 
             % convert to normalized image-plane coordinates
             p = homtrans(inv(vs.camera.K), p);
@@ -173,25 +192,31 @@ classdef IBVS_e < VisualServo
             status = 0;
             Zest = [];
             
-            % compute the view
+            % plot the ellipse
             vs.camera.clf();
-            uv = vs.camera.plot(vs.P);
             vs.camera.hold(true);
-            vs.camera.plot(vs.uv_star, '*');
+            vs.camera.plot([vs.P vs.P(:,1)], 'pose', vs.Tcam, 'r-', 'LineWidth', 2);
+            vs.camera.plot(vs.P(:,1), 'pose', vs.Tcam, 'bo', 'MarkerFaceColor', 'b');
+            vs.camera.plot(vs.ellipse_star, 'r--', 'LineWidth', 2);
+            vs.camera.plot(vs.P(:,1), 'pose', vs.Tf, 'bo');
 
-            E = vs.getfeatures(vs.Tcam);
-
+            % compute feature vector
+            f = [
+                    vs.get_ellipse_parameters(vs.Tcam)
+                    vs.camera.project(vs.P(:,1), 'pose', vs.Tcam)
+                ];
+            
             % compute image plane error as a column
-            e = E - vs.E_star;   % feature error
-            e = [e; uv(:,1) - vs.uv_star(:,1)];
-        
-            J = vs.camera.visjac_e(E, vs.plane);
+            e = f - vs.f_star;   % feature error
+            
+            % compute the Jacobians and stack them
+            Je = vs.camera.visjac_e(f(1:5), vs.plane);  % ellipse
+            Jp = vs.camera.visjac_p(f(6:7), -vs.plane(4)); % point
 
-            J = [J; vs.camera.visjac_p(uv(:,1), -vs.plane(4))];
+            J = [Je; Jp];
 
             % compute the velocity of camera in camera frame
             v = -vs.lambda * pinv(J) * e;
-            %v = v.*[1 -1 1 0 0 0]';
 
             % update the camera pose
             Td = delta2tr(v);    % differential motion
@@ -210,7 +235,7 @@ classdef IBVS_e < VisualServo
             end
 
             % update the history variables
-            hist.uv = uv(:);
+            hist.f = f';
             vel = tr2delta(Td);
             hist.vel = vel;
             hist.e = e;
@@ -219,9 +244,10 @@ classdef IBVS_e < VisualServo
             hist.Tcam = vs.Tcam;
 
             vs.history = [vs.history hist];
-
-            if norm(e) < vs.eterm,
+            
+            if norm(e) < vs.eterm
                 status = 1;
+
                 return
             end
         end

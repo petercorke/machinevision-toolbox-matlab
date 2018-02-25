@@ -49,8 +49,8 @@ classdef IBVS_l < VisualServo
         lambda          % IBVS gain
         eterm
 
-        tr_star         % desired theta-rho coordinates
-        tr_star_plot
+        f_star_retinal         % desired theta-rho coordinates
+        f_star
         planes
     end
 
@@ -105,6 +105,25 @@ classdef IBVS_l < VisualServo
             % copy options to IBVS object
             ibvs.lambda = opt.lambda;
             ibvs.eterm = opt.eterm;
+            
+            
+            % init the graphics
+            clf
+            subplot(121);
+            ibvs.camera.plot_create(gca)
+            
+            subplot(122)
+            % this is the 'external' view of the points and the camera
+            PP = [ibvs.P ibvs.P(:,1)];
+            plot3(PP(1,:), PP(2,:), PP(3,:), 'r', 'LineWidth', 5)
+            ibvs.camera.plot_camera();
+            plotvol([-1 1 -1 1 -3 3])
+            view(16, 28);
+            grid on
+            set(gcf, 'Color', 'w')
+            
+            ibvs.type = 'line';
+            
         end
 
         function init(vs)
@@ -119,32 +138,32 @@ classdef IBVS_l < VisualServo
                 vs.Tf = transl(0, 0, 1);
                 warning('setting Tf to default');
             end
+            
+
 
             % final pose is specified in terms of a camera-target pose
-            %   convert to image coords
-            vs.tr_star = vs.getlines(vs.Tf, inv(vs.camera.K));
-            vs.tr_star_plot = vs.getlines(vs.Tf);
+            vs.f_star_retinal = vs.getlines(vs.Tf, inv(vs.camera.K)); % in retinal coordinates
+            vs.f_star = vs.getlines(vs.Tf); % in image coordinates
 
             % initialize the vservo variables
             vs.camera.T = vs.T0;    % set camera back to its initial pose
             vs.Tcam = vs.T0;                % initial camera/robot pose
             
-            vs.camera.plot(vs.P);    % show initial view
-
-            % this is the 'external' view of the points and the camera
-            %plot_sphere(vs.P, 0.05, 'b')
-            %cam2 = showcamera(T0);
-            vs.camera.plot_camera();
-            %camup([0,-1,0]);
-
             vs.history = [];
+            
+
         end
 
         function lines = getlines(vs, T, scale)
-            p = vs.camera.project(vs.P, 'Tcam', T);
+            % one line per column
+            %  row 1 theta
+            %  row 2 rho
+            % project corner points to image plane
+            p = vs.camera.project(vs.P, 'pose', T);
             if nargin > 2
                 p = homtrans(scale, p);
             end
+            % compute lines and their slope and intercept
             for i=1:numcols(p)
                 j = mod(i,numcols(p))+1;
                 theta = atan2(p(2,j)-p(2,i), p(1,i)-p(1,j));
@@ -164,30 +183,30 @@ classdef IBVS_l < VisualServo
             status = 0;
             Zest = [];
             
-            % compute the view
-            vs.camera.clf();
-            uv = vs.camera.project(vs.P);
-            tr = vs.getlines(vs.Tcam);
-            vs.camera.hold(true);
-            vs.camera.plot_line_tr(tr);
-            vs.camera.plot_line_tr(vs.tr_star_plot, 'r--');
+            % compute the lines
+            f = vs.getlines(vs.Tcam);
 
-            tr = vs.getlines(vs.Tcam, inv(vs.camera.K));
+            % now plot them
+            vs.camera.clf();
+            vs.camera.hold(true);
+            colors = 'rgb';
+            for i=1:3
+                % plot current line
+                vs.camera.plot_line_tr(f(:,i), colors(i), 'LineWidth', 2);
+                % plot demanded line
+                vs.camera.plot_line_tr(vs.f_star(:,i), [colors(i) '--'], 'LineWidth', 2);
+            end
+
+            f_retinal = vs.getlines(vs.Tcam, inv(vs.camera.K));
 
             % compute image plane error as a column
-            e = tr - vs.tr_star;   % feature error
+            e = f_retinal - vs.f_star_retinal;   % feature error on retinal plane
             e = e(:);
             for i=1:2:numrows(e)
-                if e(i) > pi
-                    e(i) = e(i) - 2*pi;
-                elseif e(i) < -pi
-                    e(i) = e(i) + 2*pi;
-                end
+                e(i) = angdiff(e(i));
             end
         
-            vs.tr_star
-
-            J = vs.camera.visjac_l(tr, vs.planes);
+            J = vs.camera.visjac_l(f_retinal, vs.planes);
 
             % compute the velocity of camera in camera frame
             v = -vs.lambda * pinv(J) * e;
@@ -201,11 +220,11 @@ classdef IBVS_l < VisualServo
             vs.Tcam = vs.Tcam * Td;       % apply it to current pose
             vs.Tcam = trnorm(vs.Tcam);
 
-            % update the camera pose
+            % update the exteranl view camera pose
             vs.camera.T = vs.Tcam;
 
             % update the history variables
-            hist.uv = uv(:);
+            hist.f = f(:);
             vel = tr2delta(Td);
             hist.vel = vel;
             hist.e = e;
@@ -214,8 +233,7 @@ classdef IBVS_l < VisualServo
             hist.Tcam = vs.Tcam;
 
             vs.history = [vs.history hist];
-
-            if norm(e) < vs.eterm,
+            if norm(e) < vs.eterm
                 status = 1;
                 return
             end

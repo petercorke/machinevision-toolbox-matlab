@@ -59,6 +59,8 @@ classdef IBVS_polar < VisualServo
 
             % invoke superclass constructor
             ibvs = ibvs@VisualServo(cam, varargin{:});
+            
+            assert(isa(cam, 'CentralCamera'), 'camera must be a CentralCamera');
 
             % handle arguments
             opt.eterm = 0.001;
@@ -74,8 +76,7 @@ classdef IBVS_polar < VisualServo
         end
 
         function init(vs)
-            vs.h_rt
-            ishandle(vs.h_rt)
+
             if 0 % isempty(vs.h_rt) || ~ishandle(vs.h_rt)
                 fprintf('create rt axes\n');
                 vs.h_rt = axes;
@@ -122,7 +123,8 @@ classdef IBVS_polar < VisualServo
             % this is the 'external' view of the points and the camera
             %plot_sphere(vs.P, 0.05, 'b')
             %cam2 = showcamera(T0);
-            vs.camera.visualize(vs.P, 'label');
+            clf
+            vs.camera.plot_camera(vs.P, 'label');
             %camup([0,-1,0]);
 
 
@@ -147,7 +149,6 @@ classdef IBVS_polar < VisualServo
             if isempty(vs.depth)
                 % exact depth from simulation (not possible in practice)
                 P_C = homtrans(inv(vs.Tcam), vs.P);
-                P_C(3,:)
                 J = vs.camera.visjac_p_polar(rt, P_C(3,:) );
             else
                 J = vs.camera.visjac_p_polar(rt, vs.depth );
@@ -172,23 +173,23 @@ classdef IBVS_polar < VisualServo
             % update the camera pose
             Td = trnorm(delta2tr(v));    % differential motion
 
-            vs.Tcam = vs.Tcam * Td;       % apply it to current pose
+            vs.Tcam = vs.Tcam * SE3(Td);       % apply it to current pose
             vs.Tcam = trnorm(vs.Tcam);
 
             % update the camera pose
             vs.camera.T = vs.Tcam;
 
             % update the history variables
-            hist.uv = uv(:);
-            hist.rt = rt(:);
-            vel = tr2diff(Td);
-            hist.vel = vel;
-            hist.e = e;
-            hist.en = norm(e);
-            hist.jcond = cond(J);
-            hist.Tcam = vs.Tcam;
+            history.uv = uv(:);
+            history.rt = rt(:);
+            vel = tr2delta(Td);
+            history.vel = vel;
+            history.e = e;
+            history.en = norm(e);
+            history.jcond = cond(J);
+            history.Tcam = SE3(vs.Tcam);
 
-            vs.history = [vs.history hist];
+            vs.history = [vs.history history];
 
             if norm(e) < vs.eterm,
                 status = 1;
@@ -197,13 +198,12 @@ classdef IBVS_polar < VisualServo
         end
 
         function rt = project(vs, P, T)
+            % overloaded projection method, projects to polar coordinates
 
             if nargin < 3
-                99
                 T = vs.Tcam;
             end
-            T
-            p = vs.camera.plot(P, 'Tcam', T);
+            p = vs.camera.plot(P, 'pose', T);
             %p = homtrans( inv(vs.camera.K), p);
 
             pp = vs.camera.pp;
@@ -230,7 +230,7 @@ classdef IBVS_polar < VisualServo
             end
             axis([-pi pi 0 sqrt(2)]);
             grid
-            xlabel('\phi (rad)');
+            xlabel('Azimuth \phi (rad)');
             ylabel('r (pixels)');
             hold off
         end

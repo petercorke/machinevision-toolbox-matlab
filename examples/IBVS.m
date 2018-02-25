@@ -95,16 +95,52 @@ classdef IBVS < VisualServo
             opt.lambda = 0.08;         % control gain
             opt.depth = [];
             opt.depthest = false;
+            opt.example = false;
+            
             
             opt = tb_optparse(opt, ibvs.arglist);
-
-            % copy options to IBVS object
-            ibvs.lambda = opt.lambda;
-            ibvs.eterm = opt.eterm;
-            ibvs.theta = 0;
-            ibvs.smoothing = 0.80;
-            ibvs.depth = opt.depth;
-            ibvs.depthest = opt.depthest;
+            
+            if opt.example
+                % run a canned example
+                fprintf('---------------------------------------------------\n');
+                fprintf('canned example, image-based IBVS with 4 points\n');
+                fprintf('---------------------------------------------------\n');
+                ibvs.P = mkgrid(2, 0.5, 'pose', SE3(0,0,3));
+                ibvs.pf = bsxfun(@plus, 200*[-1 -1 1 1; -1 1 1 -1], cam.pp');
+                ibvs.T0 = SE3(1,1,-3)*SE3.Rz(0.6);
+                ibvs.lambda = opt.lambda;
+                ibvs.eterm = 0.5;
+            else
+                % copy options to IBVS object
+                ibvs.lambda = opt.lambda;
+                ibvs.eterm = opt.eterm;
+                ibvs.theta = 0;
+                ibvs.smoothing = 0.80;
+                ibvs.depth = opt.depth;
+                ibvs.depthest = opt.depthest;
+            end
+            
+            clf
+            subplot(121);
+            ibvs.camera.plot_create(gca)
+            
+            % this is the 'external' view of the points and the camera
+            subplot(122)
+            
+            plot_sphere(ibvs.P, 0.06, 'r');
+            ibvs.camera.plot_camera(ibvs.P, 'label');
+            
+            plotvol([-1 1 -1 1 -3 3.1])
+            view(16, 28);
+            grid on
+            set(gcf, 'Color', 'w')
+            lighting gouraud
+            light
+            
+           
+            set(gcf, 'HandleVisibility', 'Off');
+            
+            ibvs.type = 'point';
 
         end
 
@@ -135,25 +171,7 @@ classdef IBVS < VisualServo
             
             % show the reference location, this is the view we wish to achieve
             % when Tc = Tct_star
-            if 0
-            vs.camera.clf()
-            vs.camera.plot(vs.uv_star, '*'); % create the camera view
-            vs.camera.hold(true);
-            vs.camera.plot(vs.P, 'Tcam', vs.T0, 'o'); % create the camera view
-            pause(2)
-            vs.camera.hold(false);
-            vs.camera.clf();
-            end
 
-            vs.camera.plot(vs.P);    % show initial view
-
-            % this is the 'external' view of the points and the camera
-            plot_sphere(vs.P, 0.05, 'b')
-            lighting gouraud
-            light
-            %cam2 = showcamera(T0);
-            vs.camera.plot_camera(vs.P, 'label');
-            %camup([0,-1,0]);
 
             vs.vel_p = [];
             vs.uv_p = [];
@@ -180,8 +198,7 @@ classdef IBVS < VisualServo
                 % run the depth estimator
                 [Zest,Ztrue] = vs.depth_estimator(uv);
                 if vs.verbose
-                    Zest
-                    Ztrue
+                    fprintf('Z: est=%f, true=%f\n', Zest, Ztrue)
                 end
                 vs.depth = Zest;
                 hist.Ztrue = Ztrue(:);
@@ -196,7 +213,7 @@ classdef IBVS < VisualServo
             % compute the Jacobian
             if isempty(vs.depth)
                 % exact depth from simulation (not possible in practice)
-                pt = homtrans(inv(vs.Tcam), vs.P);
+                pt = inv(vs.Tcam) * vs.P;
                 J = vs.camera.visjac_p(uv, pt(3,:) );
             elseif ~isempty(Zest)
                 J = vs.camera.visjac_p(uv, Zest);
@@ -217,16 +234,17 @@ classdef IBVS < VisualServo
             end
 
             % update the camera pose
-            Td = trnorm(delta2tr(v));    % differential motion
-
-            vs.Tcam = vs.Tcam * Td;       % apply it to current pose
-            vs.Tcam = trnorm(vs.Tcam);
-
+    Td = SE3(trnorm(delta2tr(v)));    % differential motion
+            %Td = expm( skewa(v) );
+            %Td = SE3( delta2tr(v) );
+            vs.Tcam = vs.Tcam .* Td;       % apply it to current pose
+    %vs.Tcam = trnorm(vs.Tcam);
+    
             % update the camera pose
             vs.camera.T = vs.Tcam;
 
             % update the history variables
-            hist.uv = uv(:);
+            hist.f = uv(:);
             vel = tr2delta(Td);
             hist.vel = vel;
             hist.e = e;
@@ -282,7 +300,7 @@ classdef IBVS < VisualServo
             Zest = vs.theta;
 
             % true depth
-            P_CT = homtrans(inv(vs.Tcam), vs.P);
+            P_CT = inv(vs.Tcam) * vs.P;
             Ztrue = P_CT(3,:);
 
             if vs.verbose
