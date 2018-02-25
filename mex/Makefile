@@ -31,7 +31,12 @@ mex:
 	mex CFLAGS=$(CFLAGS) $(DEBUG) iwindow.c
 	mex CFLAGS=$(CFLAGS) $(DEBUG) stereo_match.c
 
-	
+APRILTAGDIR = ../../contrib/apriltag
+
+apriltags: apriltags.c $(APRILTAGDIR)/libapriltag.a
+	mex apriltags.c -I $(APRILTAGDIR) -I$(APRILTAGDIR)/common -L$(APRILTAGDIR) -lapriltag
+
+
 UNAME = $(shell uname)
 MATLAB = $(subst /bin/matlab,,$(shell which matlab))
 

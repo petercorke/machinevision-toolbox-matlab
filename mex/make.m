@@ -20,13 +20,46 @@ pth = which('imorph.m');
 pth = fileparts(pth);
 cd( fullfile(pth, 'mex') );
 
-mex CFLAGS=-std=c99 closest.c
-mex CFLAGS=-std=c99 fhist.c
-mex CFLAGS=-std=c99 hist2d.c
-mex CFLAGS=-std=c99 ilabel.c
-mex CFLAGS=-std=c99 imatch.c
-mex CFLAGS=-std=c99 imorph.c
-mex CFLAGS=-std=c99 irank.c
-mex CFLAGS=-std=c99 ivar.c
-mex CFLAGS=-std=c99 iwindow.c
-mex CFLAGS=-std=c99 stereo_match.c
+mexfiles = {
+    'closest.c',
+    'fhist.c',
+    'hist2d.c',
+    'ilabel.c',
+    'imatch.c',
+    'imorph.c',
+    'irank.c',
+    'ivar.c',
+    'iwindow.c',
+    'stereo_match.c'
+    };
+
+for file = mexfiles'
+    fprintf('\n* Compiling: %s\n', file{1});
+    mex('CFLAGS=-std=c99',  file{1})
+end
+
+% MATLAB script to build apriltags.mex
+%
+% you must have first installed the standalone C version of AprilTags
+% obtained from https://april.eecs.umich.edu/wiki/index.php/AprilTags.
+% and named it apriltags
+%
+% then built the library, run make in the apriltags folder.
+
+fprintf('\n* Compiling: apriltags.c\n');
+
+% test for apriltag folder
+if ~exist('apriltag', 'file')
+    error('no apriltag folder found in current directory, download it from https://april.eecs.umich.edu/wiki/index.php/AprilTags');
+end
+
+p = which('apriltag.h');
+p = fileparts(p);
+
+% test for a build library
+if ~exist(fullfile(p, 'libapriltag.a'), 'file')
+    error('you need to first build the apriltag library: libapriltag.a');
+end
+
+eval( sprintf('mex apriltags.c -I%s -I%s/common -L%s -lapriltag', p, p, p) )
+

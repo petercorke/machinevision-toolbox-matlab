@@ -11,6 +11,7 @@ If you attempted to execute one of the functions
     ivar()
     iwindow()
     stereo_match()
+    apriltags()
 
 and got the message "Attempt to execute SCRIPT xxxx as a function:" you need
 to compile the MEX files for your archicture.  The Toolbox ships with compiled
@@ -22,11 +23,14 @@ For Linux or MacOS just run:
 
 % make
 
-which assumes that the mex utility is in your current path.  This is typically
-found in the bin subdirectory of your installed MATLAB.  You do of course also
-need a C compiler.
+which assumes that:
 
-For Windows:
+* the mex utility is in your current path (typically found in the bin subdirectory 
+  of your installed MATLAB)
+* that you have compilers
+* and mex is configured (mex -setup).  
+
+For Windows, Linux or MacOS:
 
 probably easier to run the script from inside MATLAB
 
