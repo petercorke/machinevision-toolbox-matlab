@@ -51,7 +51,7 @@ function [out, out2, out3] = iroi(image, reg, wh)
             w = round(wh/2);
             h = w;
         else
-            w = round(wh(1)/2); h = round(h(2)/2);
+            w = round(wh(1)/2); h = round(wh(2)/2);
         end
         left = xc-w; right = xc+w;
         top = yc-h; bot = yc+h;
