@@ -162,6 +162,7 @@ classdef Movie < ImageSource
 
             opt.skip = m.skip;
             opt.frame = [];
+            opt.time = [];
             
             opt = tb_optparse(opt, varargin);
             
@@ -177,7 +178,7 @@ classdef Movie < ImageSource
             end
             
             % read next frame from the file
-            if m.hasframe
+            if m.movie.hasFrame
                     data = readFrame(m.movie);
             else
                 out = [];
