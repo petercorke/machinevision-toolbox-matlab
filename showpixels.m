@@ -18,9 +18,13 @@
 % 'hideinf'       don't display value if Inf
 % 'hidenan'       don't display value if Nan
 % 'contrast'      display text as white against dark squares
+% 'infsymbol'     use the mathematical symbol for inf
 %
 % Notes::
 % - This is meant for small images, say 10x10 pixels.
+
+% TODO
+% - allow arbitrary nan and inf colors
 
 function hout = showpixels(im, varargin)
     
@@ -45,6 +49,7 @@ function hout = showpixels(im, varargin)
     opt.contrast = NaN;
     opt.hidenan = true;
     opt.hideinf = true;
+    opt.infsymbol = false;
     
     [opt,args] = tb_optparse(opt, varargin);
     
@@ -104,11 +109,17 @@ function hout = showpixels(im, varargin)
             for col=1:nc
                 val = imv(row,col);
                 if ~( (isnan(val) && opt.hidenan) || (isinf(val) && opt.hideinf) )
-                    h = text(ulab(col), vlab(row), sprintf(opt.fmt, val) );
+                    if isinf(val) && opt.infsymbol
+                        h = text(ulab(col), vlab(row), '\bf\infty' );
+                    else
+                        h = text(ulab(col), vlab(row), sprintf(opt.fmt, val) );
+                    end
                     if isnan(opt.contrast)
                         color = opt.color;
                     else
-                        color = [1 1 1]*(val<=opt.contrast);
+                        if ~isinf(val)
+                            color = [1 1 1]*(val<=opt.contrast);
+                        end
                     end
                     set(h, 'Color', color, 'HorizontalAlignment', 'center', 'VerticalAlignment', 'middle', 'FontSize', opt.fontsize );
                 end
