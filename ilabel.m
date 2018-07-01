@@ -73,6 +73,8 @@ function [L,N,P,C,E] = ilabel(im, connectivity)
     UNKNOWN = 0;
     THRESH = 0;
     nextlabel = int32(0);  % the highest label yet assigned
+    edge = [];
+    color = [];
     
     for row=1:height
         prevlab = UNKNOWN;
@@ -157,7 +159,6 @@ function [L,N,P,C,E] = ilabel(im, connectivity)
                     
                     % save the coordinate and color of the northwest blob
                     edge(northwest) = (row-2) + height*(col-2) + 1;
-                    color(northwest) = im(row-1,col-1);
                        
                     if blobsize(curlab) > THRESH
                         parents(northwest) = curlab;
@@ -180,7 +181,9 @@ function [L,N,P,C,E] = ilabel(im, connectivity)
                     curlab = labellist(1);
                     labellist(1) = [];
                 end
+                % new blob, set its size to 0 and note its color
                 blobsize(curlab) = 0;
+                color(curlab) = im(row,col);
             end
             
             blobsize(curlab) = blobsize(curlab) + 1;
@@ -196,12 +199,9 @@ function [L,N,P,C,E] = ilabel(im, connectivity)
     % and parent arrays are sparse
     
     % create a map:  map(label) -> consecutive label
-    map = [];
-    
-    u=unique(limage(:))';
-    for i=1:length(u)
-        map(u(i)) = i;
-    end
+    map = [];    
+    uniqlabels = unique(limage(:))';
+    map(uniqlabels) = 1:length(uniqlabels);
     
     % map the label image
     if nargout > 0
@@ -210,26 +210,37 @@ function [L,N,P,C,E] = ilabel(im, connectivity)
     
     % number of unique labels
     if nargout > 1
-        N = length(u);
+        N = length(uniqlabels);
     end
     
     % parent array
     if nargout > 2
         % find the valid indices into parent, color, edge arrays
-        k = u;
-        k(k>length(edge)) = [];
+        % the edge array has a nonzero entry if the blob has been enclosed
         
-        k2 = k;
-        k2(parents==0) = [];
+        if isempty(edge)
+            numedge = 0;
+        else
+            numedge = length(edge);
+        end
+        
+        % make a list of valid edge coordinates
+        %  only for blobs that were enclosed, ie. didn't touch the edge
+        k = [];
+        for u=uniqlabels
+            if u <= numedge && edge(u) > 0
+                k = [k u];
+            end
+        end
+
         P = zeros(1,N);   % init to zero
-        P(map(k2)) = map(parents(k2)); % map parents and children
+        P(map(k)) = map(parents(k)); % map parents and children
     end
     
     % pixel class array
     if nargout > 3
         % map the entries
-        C = zeros(1,N);
-        C(map(k)) = color(k);
+        C = color( find(map>0) );
     end
     
    % edge point coordinates
