@@ -487,9 +487,11 @@ classdef Camera < handle
                 
                 % project 3D world lines using the class project() method
                 uv = c.project(points, varargin{:});
+                c.hold(true);
                 for line=uv
                     c.homline(line);
                 end
+                c.hold(false)
             else
                 % plot points
                 nr = numrows(points);
