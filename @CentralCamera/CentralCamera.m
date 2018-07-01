@@ -649,8 +649,8 @@ classdef CentralCamera < Camera
                 % get camera matrix for this camera pose
                 C = c.C(opt.pose);
                 for i=1:length(P)
-                    l = vex( C * P(i).L * C');
-                    uv(:,i) = l / max(abs(l));
+                    l = vex( C * P(i).skew * C');
+                    uv(:,i) = l / max(abs(l)); % normalize by largest element
                 end
             else
                 % project points
