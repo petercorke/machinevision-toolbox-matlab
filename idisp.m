@@ -199,6 +199,8 @@ function idisp(im, varargin)
         axes(opt.axis)
     end
     
+    rotate3d off
+    
     if iscell(im)
         % image is a cell array
         [im,ud.u0] = iconcat(im);
