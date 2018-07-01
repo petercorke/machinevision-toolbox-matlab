@@ -34,7 +34,6 @@
 
 function s = ktriangle(sz)
 
-    sz
     if numel(sz) == 1
         w = bitor(sz, 1);  % make it odd
         h = w;
