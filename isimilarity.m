@@ -84,8 +84,8 @@ function S = isimilarity(T, im, metric)
 
     S = NaN(size(im));
     
-    for c=hc1:nc-hc1
-        for r=hr1:nr-hr1
+    for c=hc1:nc-hc
+        for r=hr1:nr-hr
             S(r,c) = metric(T, im(r-hr:r+hr,c-hc:c+hc));
         end
     end
