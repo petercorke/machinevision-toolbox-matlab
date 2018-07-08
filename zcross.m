@@ -44,4 +44,4 @@ function iz = zcross(im)
     maxval = max(z, [], 3);
     minval = min(z, [], 3);
 
-    iz = (maxval > 0) & (minval < 0);
+    iz = double( (maxval > 0) & (minval < 0) );
