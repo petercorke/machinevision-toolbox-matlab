@@ -551,12 +551,12 @@ end
 function histo_callback(ud, src)   
     imdata = get(ud.image, 'CData');
     b = floor(axis);   % bounds of displayed image
-    if b(1) == 0,
+    if b(1) == 0
         b = [1 b(2) 1 b(4)];
     end
     
     figure
-    imdata = double(imdata(b(3):b(4), b(1):b(2),:));
+    imdata = imdata(b(3):b(4), b(1):b(2),:);
     ihist(imdata);
 end
 
