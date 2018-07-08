@@ -1,6 +1,6 @@
 %HUMOMENTS Hu moments
 %
-% PHI = HUMOMENTS(IM) is the vector (7x1) of Hu moment invariants for the binary
+% PHI = HUMOMENTS(IM) is the vector (1x7) of Hu moment invariants for the binary
 % image IM.
 %
 % Notes::
@@ -44,6 +44,7 @@ function phi = humoments(im)
     eta_21 = npq(im, 2, 1);
     eta_12 = npq(im, 1, 2);
 
+    phi = zeros(1,7);
     phi(1) = eta_20 + eta_02;
     phi(2) = (eta_20 - eta_02)^2 + 4*eta_11^2;
     phi(3) = (eta_30 - 3*eta_12)^2 + (3*eta_21 - eta_03)^2;
