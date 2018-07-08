@@ -50,3 +50,4 @@ function c = im2col(im, mask)
         
         c = c(k,:);
     end
+end
