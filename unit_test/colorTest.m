@@ -1,27 +1,38 @@
 function tests = ColorTest(testCase)
     tests = functiontests(localfunctions);
+    clc
+end
+
+function teardownOnce(testCase)
+    close all
 end
 
 function colorname_test(testCase)
     rgb = colorname('skyblue');
     verifyEqual(testCase, rgb, [0 0.541176470588235 1], 'AbsTol', 1e-6);
+    
     xy = colorname('skyblue', 'xy');
-    verifyEqual(testCase, xy, [0.184454842683699 0.184037626225452], 'AbsTol', 1e-6);
+    verifyEqual(testCase, xy, [0.180179904027058 0.168619966433637], 'AbsTol', 1e-6);
 
     s = colorname([.2 .3 .4]);
     verifyEqual(testCase, s, 'darkslateblue');
 
     s = colorname([.2 .3], 'xy');
-    verifyEqual(testCase, s, 'turquoise1');
+    verifyEqual(testCase, s, 'cerulean');
 end
 
-function xycolor_test(testCase)
+function showcolorspace_test(testCase)
     clf
-    xycolorspace
-    rg_addticks
+    showcolorspace('xy')
+    clf
+    showcolorspace('xy', [.2 .3; .3 4]')
+    
+    clf
+    showcolorspace('Lab')
+    clf
+    showcolorspace('xy', [.2 .3; .3 4]')
 
-    xy = colorname('skyblue', 'xy');
-    xycolorspace(xy');
+
 end
 
 function loadspec_test(testCase)

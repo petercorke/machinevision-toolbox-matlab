@@ -1,41 +1,47 @@
-function tests = ioTest(testCase)
+function tests = ioTest(tc)
     tests = functiontests(localfunctions);
 end
 
-function fileio_test(testCase)
+function teardownOnce(tc)
+    close all
+end
+
+function fileio_test(tc)
     % iread
     z = iread('lena.png');
-    verifyTrue(testCase, iscolor(z));
-    verifyTrue(testCase,  isa(z, 'uint8'));
+    tc.verifyTrue(iscolor(z));
+    tc.verifyTrue( isa(z, 'uint8'));
 
     z = iread('lena.pgm', 'double');
-    verifyFalse(testCase, iscolor(z));
-    verifyTrue(testCase,  isa(z, 'double'));
+    tc.verifyFalse(iscolor(z));
+    tc.verifyTrue( isa(z, 'double'));
 
     z = iread('lena.png', 'mono', 'double');
-    verifyFalse(testCase, iscolor(z));
+    tc.verifyFalse(iscolor(z));
     z = iread('lena.png', 'grey');
-    verifyFalse(testCase, iscolor(z));
+    tc.verifyFalse(iscolor(z));
     z = iread('lena.png', 'grey_709');
-    verifyFalse(testCase, iscolor(z));
+    tc.verifyFalse(iscolor(z));
     z = iread('lena.png', 'grey');
-    verifyFalse(testCase, iscolor(z));
+    tc.verifyFalse(iscolor(z));
 
     sz = size(z);
     z = iread('lena.png', 'grey', 'reduce', 2);
-    verifyEqual(testCase,  size(z)*2, sz);
+    tc.verifyEqual( size(z)*2, sz);
 
     z = iread('lena.png', 'gamma', 2.2);
 
     z = iread('lena.png', 'roi', [100 200; 200 350]);
-    verifyEqual(testCase, size(z), [151 101 3]);
+    tc.verifyEqual(size(z), [151 101 3]);
 
-    % pnmfilt
-    z2 = pnmfilt(z, 'pnmrotate 30');
-    verifyEqual(testCase, size(z2), size(z));
+    % test pnmfilt if pnmtools is installed
+    if system('which pnmrotate') == 0
+        z2 = pnmfilt(z, 'pnmrotate 30');
+        tc.verifyEqual(size(z2), size(z));
+    end
 end
 
-function idisp_test(testCase)
+function idisp_test(tc)
     z = iread('lena.png');
     zm = imono(z);
 
@@ -69,7 +75,7 @@ function idisp_test(testCase)
 
     clf
     idisp(z, 'print', 'test.eps');
-    verifyTrue(testCase,  exist('test.eps', 'file') > 0 );
+    tc.verifyTrue( exist('test.eps', 'file') > 0 );
     system('rm -f test.eps');
 
     clf
