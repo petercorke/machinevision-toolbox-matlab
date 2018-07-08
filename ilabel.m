@@ -105,6 +105,8 @@ function [L,N,P,C,E] = ilabel(im, connectivity)
                         
                         labellist = [labellist curlab];  % recycle the old label
                         blobsize(newlabel) = blobsize(newlabel) + blobsize(curlab);
+                        edge(newlabel) = edge(curlab);
+                        color(newlabel) = color(curlab);
                     end
                     curlab = newlabel;
                     
@@ -158,13 +160,12 @@ function [L,N,P,C,E] = ilabel(im, connectivity)
                     parents(northwest) = curlab;
                     
                     % save the coordinate and color of the northwest blob
-                    edge(northwest) = (row-2) + height*(col-2) + 1;
+                    %edge(northwest) = (row-2) + height*(col-2) + 1;
                        
-                    if blobsize(curlab) > THRESH
-                        parents(northwest) = curlab;
-                        %                     else
-                        %                         % its a runt
-                        %                         lmap(curlab) = northwest;
+                    if blobsize(curlab) < THRESH
+                        %
+                        % it's a runt, maybe recycle it
+                        % or just give it to the parent blob lmap(curlab) = northwest;
                     end
                 end
             end
@@ -184,6 +185,7 @@ function [L,N,P,C,E] = ilabel(im, connectivity)
                 % new blob, set its size to 0 and note its color
                 blobsize(curlab) = 0;
                 color(curlab) = im(row,col);
+                edge(curlab) = row-1 + height*(col-1) + 1;
             end
             
             blobsize(curlab) = blobsize(curlab) + 1;
@@ -193,7 +195,7 @@ function [L,N,P,C,E] = ilabel(im, connectivity)
             prevpix = curpix;
         end
     end
-        
+    
     % we're done
     % however the labels are not consecutive and the data in the edge, color
     % and parent arrays are sparse
@@ -233,8 +235,10 @@ function [L,N,P,C,E] = ilabel(im, connectivity)
             end
         end
 
-        P = zeros(1,N);   % init to zero
-        P(map(k)) = map(parents(k)); % map parents and children
+        P = zeros(1,N);   % init to zero, by default nobody has a parent :(
+        j = find(parents > 0); % take the child-parent relationship noted above
+        % and map both parent and child to new labels
+        P(map(j)) = map(parents(j));
     end
     
     % pixel class array
