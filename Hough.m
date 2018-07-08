@@ -89,8 +89,9 @@ classdef Hough < handle
         % Options::
         % 'equal'            All edge pixels have equal weight, otherwise the
         %                    edge pixel value is the vote strength
-        % 'points'           Pass set of points rather than an edge image, in 
-        %                    this case E (2xN) is a set of N points, or E (3xN)
+        % 'points',SZ        Pass set of points rather than an edge image, in 
+        %                    this case E (2xN) is a set of N points, or E (3xN).
+        %                    Specify the image size as SZ=[NC NR]
         %                    is a set of N points with corresponding vote strengths 
         %                    as the third row
         % 'interpwidth',W    Interpolation width (default 3)
@@ -105,7 +106,7 @@ classdef Hough < handle
             opt.suppress = [];
             opt.nbins = [];
             opt.equal = false;
-            opt.points = false;
+            opt.points = [];
 
             h.Nrho = 401;
             h.Ntheta = 400;
@@ -143,10 +144,11 @@ classdef Hough < handle
                 h.suppress = (h.interpWidth-1)/2;
             end
 
-            if opt.points
+            if ~isempty(opt.points)
+                assert(size(IM,1) == 2 || size(IM,1) == 3, 'MVTB:Hough:badarg', 'point input must have 2 or 3 rows');
+                assert(length(opt.points) == 2, 'MVTB:Hough', 'argument to ''points'' must be a 2-vector');
+                nr = opt.points(2); nc = opt.points(1);
                 xyz = IM';
-                nr = max(xyz(:,2));
-                nc = max(xyz(:,1));
             else
                 [nr,nc] = size(IM);
                 
@@ -248,17 +250,18 @@ classdef Hough < handle
 
             [x,y] = meshgrid(1:h.Ntheta, 1:h.Nrho);
 
-            nw2= floor((h.interpWidth-1)/2);
-            nr2= floor((h.suppress-1)/2);
+            nw2 = floor((h.interpWidth-1)/2);
+            nr2 = floor((h.suppress-1)/2);
 
             [Wx,Wy] = meshgrid(-nw2:nw2,-nw2:nw2);
             globalMax = max(h.A(:));
             
             A = h.A;
 
-            i = 0;
+            i = 0;     % funny loop because N can be Inf
             while i<=N
                 i = i + 1;
+
                 
                 % find the current peak
                 [mx,where] = max(A(:));
@@ -350,7 +353,6 @@ classdef Hough < handle
         % SEE ALSO: ihough mkline, mksq, isobel
         %
         function H = xyhough(h, XYZ, dmax, Nth)
-
             inc = 1;
             
             h.rho_offset = (h.Nrho+1)/2;
@@ -378,7 +380,6 @@ classdef Hough < handle
                 x = xyz(1);     % determine (x, y) coordinate
                 y = xyz(2);
                 inc = xyz(3);
-                inc =1 ;
                 
                 rho = y * ct + x * st;
                 
