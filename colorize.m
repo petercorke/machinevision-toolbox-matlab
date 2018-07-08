@@ -43,11 +43,7 @@
 
 function co = colorize(img, mask, color)
 
-    if isa(img, 'uint8') || isa(img, 'logical') 
-        grey = double(img) / 255;
-    else
-        grey = img / max(img(:));
-    end
+    grey = idouble(img);
 
     g = grey(:);
     z = [g g g];
