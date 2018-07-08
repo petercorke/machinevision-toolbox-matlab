@@ -1,7 +1,7 @@
 %TESTPATTERN Create test images
 %
-% IM = TESTPATTERN(TYPE, W, ARGS) creates a test pattern image.  If W is a
-% scalar the image is WxW else W(2)xW(1).  The image is specified by the
+% IM = TESTPATTERN(TYPE, D, ARGS) creates a test pattern image.  If D is a
+% scalar the image is DxD else D=[W H] the image is WxH.  The image is specified by the
 % string TYPE and one or two (type specific) arguments:
 %
 % 'rampx'     intensity ramp from 0 to 1 in the x-direction. ARGS is the number
@@ -54,7 +54,12 @@
 
 function Z = testpattern(type, w, varargin)
 
-    z = zeros(w);
+    if length(w) == 1
+        z = zeros(w);
+    elseif length(w) == 2
+        z = zeros(w(2), w(1));
+    end
+    
     switch type,
     case {'sinx'}
         if nargin > 2,
