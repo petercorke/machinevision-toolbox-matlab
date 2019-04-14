@@ -55,7 +55,8 @@ function im2 = pnmfilt(cmd, im)
         % create temporary input file
         ifile = sprintf('%s.pnm', tempname);
         imwrite(im, ifile, 'pnm');
-        unix([cmd ' < ' ifile ' > ' ofile ' ' quiet]);
+        [s,w] = unix([cmd ' < ' ifile ' > ' ofile ]);
+        assert(s == 0, 'MVTB:pnmfilt', 'PNM command non-existent or failed')
     end
 
 	im2 = idouble( imread(ofile) );
