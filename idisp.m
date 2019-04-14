@@ -87,7 +87,7 @@
 %
 %   Display an image which contains a map of a region, perhaps an obstacle grid,
 %   that spans real world dimensions x, y in the range -10 to 10.
-%        idisp(map, 'xyscale', {[-10 10], [-10 10]});
+%        idisp(map, 'xydata', {[-10 10], [-10 10]});
 %
 % See also IMAGE, CAXIS, COLORMAP, ICONCAT.
 
@@ -248,7 +248,6 @@ function idisp(im, varargin)
         i_min = 0;
         i_max = 1;
     end
-    set(gca, 'CLim', [i_min, i_max]);
     
     if ~isempty(opt.xydata)
         ud.image = image(gca, opt.xydata{1}, opt.xydata{2}, im, 'CDataMapping', 'scaled');
@@ -315,7 +314,9 @@ function idisp(im, varargin)
         set(gca, 'YDir', 'normal');
     end
     set(ud.image, 'CDataMapping', 'scaled');
-    if ~isempty(opt.cscale)
+    if isempty(opt.cscale)
+            set(gca, 'CLim', [i_min, i_max]);
+    else
         set(gca, 'Clim', opt.cscale);
     end
     
