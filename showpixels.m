@@ -5,20 +5,20 @@
 % for illustrating principles in teaching.
 %
 % Options::
-% 'fmt',F         Format string (defaults to %d or %.2f depending on image type)
-% 'label'         Display axis labels (default true)
-% 'color',C       Text color (default 'b')
-% 'fontsize',S    Font size (default 12)
-% 'pixval'        Display pixel numeric values (default true)
-% 'tick'          Display axis tick marks (default true)
-% 'cscale',C      Color map scaling [min max] (defaults [0 1] or [0 255])
-% 'uv',UV         UV={u,v} vectors of u and v coordinates
-% 'infcolor'      show Inf values as red
-% 'nancolor'      show NaN values as red
-% 'hideinf'       don't display value if Inf
-% 'hidenan'       don't display value if Nan
-% 'contrast'      display text as white against dark squares
-% 'infsymbol'     use the mathematical symbol for inf
+% 'fmt',F          Format string (defaults to %d or %.2f depending on image type)
+% 'label'          Display axis labels (default true)
+% 'color',C        Text color (default 'b')
+% 'fontsize',S     Font size (default 12)
+% 'pixval'         Display pixel numeric values (default true)
+% 'tick'           Display axis tick marks (default true)
+% 'cscale',C       Color map scaling [min max] (defaults [0 1] or [0 255])
+% 'uv',UV          UV={u,v} vectors of u and v coordinates
+% 'highlight',V    highlight cells with values in the set V
+% 'hide',V         don't display values in the set V
+% 'contrast'       display text as white against dark squares
+% 'infsymbol'      use the mathematical symbol for inf
+% 'infstr',S       label cell with Inf value as S
+% 'hlcolor',C      highlight color (default 'r')
 %
 % Notes::
 % - This is meant for small images, say 10x10 pixels.
@@ -29,6 +29,8 @@
 function hout = showpixels(im, varargin)
     
     assert( size(im,1)<=20 && size(im,2)<=20, 'showpixels is meant for small images');
+    
+    ismembernan = @(a,b) ismember(a,b) | (isnan(a) & any(isnan(b)));
 
     nr = size(im,1); nc = size(im,2);
     if isinteger(im)
@@ -44,12 +46,12 @@ function hout = showpixels(im, varargin)
     opt.fontsize = 12;
     opt.pixval = true;
     opt.uv = [];
-    opt.nancolor = false;
-    opt.infcolor = false;
+    opt.highlight = [];
     opt.contrast = NaN;
-    opt.hidenan = true;
-    opt.hideinf = true;
+    opt.hide = [];
     opt.infsymbol = false;
+    opt.infstr = '';
+    opt.hlcolor = 'r';
     
     [opt,args] = tb_optparse(opt, varargin);
     
@@ -66,28 +68,48 @@ function hout = showpixels(im, varargin)
         vlab = 1:nr;
     end
     
-    % display the image
-    if opt.nancolor
-        imc(isnan(im)) = Inf;  % all Nans -> Inf
-    end
-    if ~opt.infcolor
-        imc(isinf(im)) = 0;
-    end
+%     % display the image
+%     if opt.nancolor
+%         imc(isnan(im)) = Inf;  % all Nans -> Inf
+%     end
+%     if ~opt.infcolor
+%         imc(isinf(im)) = 0;
+%     end
     
-    idisp(imc, 'nogui', 'square', 'cscale', opt.cscale, args{:})
+    %idisp(imc, 'nogui', 'square', 'cscale', opt.cscale, args{:})
+    hi = imagesc(imc, opt.cscale);
+    
+    % handle highlighted values
+    alpha = ones(size(imc));
+    if ~isempty(opt.highlight)
+        for hl = opt.highlight
+            if isnan(hl)
+                alpha(isnan(im)) = 0;
+            elseif isinf(hl)
+                alpha(isinf(im)) = 0;
+            else
+                alpha(im == hl) = 0;
+            end
+        end
+    end
+    ax = gca;
+    ax.Color = opt.hlcolor;
+    hi.AlphaData = alpha;
+    
     if ~opt.label
         xlabel('');
         ylabel('');
     end
     
-    if opt.nancolor || opt.infcolor
-            colormap([colormap; 1 0 0]);
-    else
-        im(isnan(im)) = 0.5;  % ???
-    end
+    colormap(gray);
+%     if opt.nancolor || opt.infcolor
+%             colormap([colormap; 1 0 0]);
+%     else
+%         im(isnan(im)) = 0.5;  % ???
+%     end
 
  
-    axis equal
+    %axis equal
     hold on
     
     umin = min(ulab); vmin = min(vlab);
@@ -108,17 +130,26 @@ function hout = showpixels(im, varargin)
         for row=1:nr
             for col=1:nc
                 val = imv(row,col);
-                if ~( (isnan(val) && opt.hidenan) || (isinf(val) && opt.hideinf) )
-                    if isinf(val) && opt.infsymbol
-                        h = text(ulab(col), vlab(row), '\bf\infty' );
+                if ~ismembernan(val, opt.hide)
+                    % value is not hidden
+                    if isinf(val)
+                        if opt.infsymbol
+                            % display infinity symbol
+                            h = text(ulab(col), vlab(row), '\bf\infty' );
+                        elseif ~isempty(opt.infstr)
+                            h = text(ulab(col), vlab(row), opt.infstr );
+                        end
                     else
+                        % display the numeric value or Inf or NaN
                         h = text(ulab(col), vlab(row), sprintf(opt.fmt, val) );
                     end
                     if isnan(opt.contrast)
-                        color = opt.color;
+                        color = opt.color;  % no contrast given
                     else
                         if ~isinf(val)
                             color = [1 1 1]*(val<=opt.contrast);
+                        else
+                            color = opt.color;
                         end
                     end
                     set(h, 'Color', color, 'HorizontalAlignment', 'center', 'VerticalAlignment', 'middle', 'FontSize', opt.fontsize );
