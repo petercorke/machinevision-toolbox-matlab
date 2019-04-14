@@ -191,6 +191,8 @@ classdef EarthView < ImageSource
                 end
 
                 location = locations.item(0);   % take the first return
+                
+                assert(~isempty(location), 'location not found');
 
                 node_lat = location.getElementsByTagName('lat');
                 el = node_lat.item(0);
@@ -210,7 +212,7 @@ classdef EarthView < ImageSource
                 
             end
             % now read the map
-            baseurl = sprintf('http://maps.google.com/maps/api/staticmap?center=%.6f,%.6f&zoom=%d&size=%dx%d&scale=%d&format=png&maptype=%s&key=%s&sensor=false', lat, lon, zoom, ev.width, ev.height, opt.scale, opt.type, ev.key);
+            baseurl = sprintf('https://maps.googleapis.com/maps/api/staticmap?center=%.6f,%.6f&zoom=%d&size=%dx%d&scale=%d&format=png&maptype=%s&key=%s&sensor=false', lat, lon, zoom, ev.width, ev.height, opt.scale, opt.type, ev.key);
 
             opturl = '';
             
