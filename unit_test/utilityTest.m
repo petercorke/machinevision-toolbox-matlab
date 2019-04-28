@@ -141,36 +141,23 @@ function mesh_test(tc)
     tc.verifyEqual(u, u0);
     tc.verifyEqual(v, v0);
 
-    [u,v] = imeshgrid(im, 1);
-    tc.verifyEqual(u, u0);
-    tc.verifyEqual(v, v0);
+    [u,v] = imeshgrid([1 1]);
+    tc.verifyEqual(u, 1);
+    tc.verifyEqual(v, 1);
 
-    [u,v] = imeshgrid(im, [1 1]);
-    tc.verifyEqual(u, u0);
-    tc.verifyEqual(v, v0);
 
-    [u,v] = imeshgrid(6, 4);
-    tc.verifyEqual(u, u0);
-    tc.verifyEqual(v, v0);
+    [u,v] = imeshgrid(2);
+    tc.verifyEqual(u, [1 2; 1 2]);
+    tc.verifyEqual(v, [1 1; 2 2]);
 
-    [u,v] = imeshgrid(im, 2);
-    tc.verifyEqual(u, u0(1:2:end,1:2:end));
-    tc.verifyEqual(v, v0(1:2:end,1:2:end));
+    [u,v] = imeshgrid([2 3]);
+    tc.verifyEqual(u, [1 2; 1 2; 1 2]);
+    tc.verifyEqual(v, [1 1; 2 2; 3 3]);
 
-    [u,v] = imeshgrid(im, [1 2]);
-    tc.verifyEqual(u, u0(1:2:end,:));
-    tc.verifyEqual(v, v0(1:2:end,:));
+    [u,v] = imeshgrid([3 2]);
+    tc.verifyEqual(u, [1 2 3; 1 2 3]);
+    tc.verifyEqual(v, [1 1 1; 2 2 2]);
 
-    [u,v] = imeshgrid(im, [2 1]);
-    tc.verifyEqual(u, u0(:,1:2:end));
-    tc.verifyEqual(v, v0(:,1:2:end));
-
-    im = rand(6,6);
-    [u0,v0] = meshgrid(1:6, 1:6);
-
-    [u,v] = imeshgrid(6);
-    tc.verifyEqual(u, u0);
-    tc.verifyEqual(v, v0);
 end
 
 function mono_test(tc)

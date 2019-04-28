@@ -225,8 +225,8 @@ function pattern8_test(tc)
         tc.verifyTrue(all(p(L==i)==C(i)), 'blob pixel class');
     end
     
-    tc.verifyEqual(double(P(:))', [0 0 0 3 0 0], 'blob parent'); % label.m
-    %tc.verifyEqual(double(P(:))', [0 0 0 2 0 0], 'blob parent'); % ilabel.mex
+    % label.m and ilabel.mex give different values of background
+    tc.verifyEqual(double(P(:))', [0 0 0 L(1,1) 0 0], 'blob parent'); % ilabel.mex
     k = find(E > 0);
     tc.verifyEqual(p(E(k)), double(C(k)), 'blob edge pixel coordinate');
 end
