@@ -35,25 +35,54 @@ The Machine Vision Toolbox for MATLAB has dependency on the repositories `roboti
 To install the Toolbox on your computer from github follow these simple instructions.
 
 From the shell:
-
 ```shell
-% mkdir rvctools
-% cd rvctools
-% git clone https://github.com/petercorke/machinevision-toolbox-matlab.git vision
-% git clone https://github.com/petercorke/robotics-toolbox-matlab.git robot
-% git clone https://github.com/petercorke/toolbox-common-matlab.git common
-% mv common/startup_rvc.m .
+mkdir rvctools
+cd rvctools
+git clone https://github.com/petercorke/machinevision-toolbox-matlab.git vision
+git clone https://github.com/petercorke/spatial-math.git smtb
+git clone https://github.com/petercorke/toolbox-common-matlab.git common
+```
+
+If you want to use the Robotics Toolbox for MATLAB as well then do this
+```shell
+git clone https://github.com/petercorke/robotics-toolbox-matlab.git robot
 ```
 
 From within MATLAB
 ```matlab
->> cd rvctools  % this is the same folder as above
+>> addpath rvctools/common  % rvctools is this is the same folder as above
 >> startup_rvc
 ```
 The second line sets up the MATLAB path appropriately but it's only for the current session.  You can either:
 1. Repeat this everytime you start MATLAB
 2. Add it to your `startup.m` file
 3. Once you have run startup_rvc, run `pathtool` and push the `Save` button
+
+## Downloading the example images
+
+The Robotics, Vision & Control book (2nd edition) uses a number of example images and image sequences.  These are bulky and not really appropriate to keep on Github but you can download them.
+There are two zip archives:
+
+| Archive        | Size | Contents |
+| -------------- | ----:| -------- |
+images-RVC2a.zip | 74M  | All images, seq/\*, mosaic/\*, campus/\* |
+images-RVC2a.zip | 255M | Chapter 14: bridge-l/\*, bridge-r/\* |
+
+Each will expand into the `./images` folder which is the default location that MVTB searches for images and sequences.
+
+To download the main (and smaller) archive
+```shell
+cd rvctools/vision
+wget petercorke.com/files/MVTB/images-RVC2a.zip
+unzip images-RVC2a
+```
+
+To download the second (and larger) archive
+```shell
+cd rvctools/vision
+wget petercorke.com/files/MVTB/images-RVC2b.zip
+unzip images-RVC2b
+```
 
 
 ## Online resources:
