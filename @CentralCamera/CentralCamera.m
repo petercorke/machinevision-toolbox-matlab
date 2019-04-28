@@ -639,6 +639,7 @@ classdef CentralCamera < Camera
             if isempty(opt.pose)
                 opt.pose = c.T;
             end
+            opt.pose = SE3.convert(opt.pose);  % ensure it's an SE3 object
 
             if length(opt.objpose) > 1 && length(opt.pose) > 1
                 error('cannot animate object and camera simultaneously');

@@ -173,10 +173,10 @@ classdef SphericalCamera < Camera
             if isempty(opt.objpose)
                 opt.objpose = SE3();
             else
-                opt.objpose = SE3.check(opt.objpose);
+                opt.objpose = SE3.convert(opt.objpose);
             end
             
-            P = inv(opt.pose) * opt.objpose * P;         % project them
+            P = inv(SE3.convert(opt.pose)) * opt.objpose * P;         % project them
             
             R = sqrt( sum(P.^2) );
             x = P(1,:) ./ R;

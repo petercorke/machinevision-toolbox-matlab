@@ -686,7 +686,7 @@ classdef Camera < handle
             % is displaced by the homogeneous transformation T with respect to the
             % current pose of C.
             newcam = CentralCamera(cam);
-            newcam.T = newcam.T * SE3.check(T);
+            newcam.T = newcam.T * SE3.convert(T);
         end
         
         function movedby(c, robot)

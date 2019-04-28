@@ -223,7 +223,7 @@ classdef CatadioptricCamera < Camera
             if isempty(opt.objpose)
                 opt.objpose = SE3();
             else
-                opt.objpose = SE3.check(opt.objpose);
+                opt.objpose = SE3.convert(opt.objpose);
             end
             
             % transform all the points to camera frame
