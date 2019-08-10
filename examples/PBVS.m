@@ -107,8 +107,8 @@ classdef PBVS < VisualServo
             
             % initialize the vservo variables
             %vs.camera.clf();
-            vs.camera.T = SE3.check(vs.T0);    % set camera back to its initial pose
-            vs.Tcam = SE3.check(vs.T0);        % initial camera/robot pose
+            vs.camera.T = SE3.convert(vs.T0);    % set camera back to its initial pose
+            vs.Tcam = SE3.convert(vs.T0);        % initial camera/robot pose
             
             % show the reference location, this is the view we wish to achieve
             % when Tc = T_final

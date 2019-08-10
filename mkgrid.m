@@ -69,5 +69,5 @@ function p = mkgrid(N, s, varargin)
     
     % optionally transform the points
     if ~isempty(opt.pose)
-        p = SE3.check(opt.pose) * p;
+        p = SE3.convert(opt.pose) * p;
     end
