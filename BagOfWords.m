@@ -323,11 +323,15 @@ classdef BagOfWords < handle
         % of thumbnail images.  The original sequence of images from which the features
         % were extracted must be provided as IMAGES.
         %
+        % IM = B.exemplars(W, IMAGES, OPTIONS) as above but returns the thumbnails
+        % as a composite image.
+        %
         % Options::
-        % 'columns',N      Number of columns to display (default 10)
+        % 'columns',N       Number of columns to display (default 10)
         % 'maxperimage',M   Maximum number of exemplars to display from any 
         %                   one image (default 2)
         % 'width',W         Width of each thumbnail [pixels] (default 50)
+        % 'label'           Display word labels on the thumbnails.
 
             opt.gap = 2;
             opt.columns = 10;
@@ -390,33 +394,36 @@ classdef BagOfWords < handle
                 end
             end
             
-            % optionally label the cells
-            if opt.label
-                if nargout == 0
+            if nargout == 1
+                % output specified, return the image
+                out = composite;
+            else
+                if opt.label
+                    % no output specified, optionally label the cells
+                    
+                    if nargout == 0
+                        idisp(composite, 'plain');
+                    end
+                    
+                    row = 0; col = 0;
+                    for ex=exemplars
+                        ex = ex{1};
+                        word = ex{1}; f = ex{2};
+                        
+                        text(col*Ng+opt.gap*2, row*Ng+3*opt.gap, ...
+                            sprintf('%d #%d', word, f.image_id), 'Color', 'g')
+                        
+                        % update row/column indices
+                        col = col + 1;
+                        if col >= opt.columns
+                            row = row + 1;
+                            col = 0;
+                        end
+                    end
+                else
                     idisp(composite, 'plain');
                 end
-                
-                row = 0; col = 0;
-                for ex=exemplars
-                    ex = ex{1};
-                    word = ex{1}; f = ex{2};
-                    
-                    text(col*Ng+opt.gap*2, row*Ng+3*opt.gap, ...
-                        sprintf('%d #%d', word, f.image_id), 'Color', 'g')
-                    
-                    % update row/column indices
-                    col = col + 1;
-                    if col >= opt.columns
-                        row = row + 1;
-                        col = 0;
-                    end
-                end
             end
-            
-            if nargout > 0
-                out = composite;
-            end
-            
         end
     end
 end
