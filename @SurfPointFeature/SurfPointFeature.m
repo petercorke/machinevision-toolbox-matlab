@@ -40,7 +40,7 @@
 classdef SurfPointFeature < OrientedScalePointFeature
 
     properties
-        image_id_
+        %image_id_
     end % properties
 
     methods
@@ -82,11 +82,11 @@ classdef SurfPointFeature < OrientedScalePointFeature
         % in F and F2  respectively.
         %
         % Options::
-        % 'thresh',T    Match threshold (default 0.05)
-        % 'median'      Threshold at the median distance
+        % 'thresh',T    Match threshold
+        % 'top',N       Take strongest N matches
         %
         % Notes::
-        % - for no threshold set to [].
+        % - to obtain all matches use 'top', Inf
         %
         % See also FeatureMatch.
         
@@ -96,8 +96,10 @@ classdef SurfPointFeature < OrientedScalePointFeature
                 return;
             end
 
-            opt.thresh = 0.05;
-            opt.median = false;
+            % HACK, pg 463 requires median (default)
+            opt.thresh = [];
+            opt.top = [];
+            opt.all = false;
             opt = tb_optparse(opt, varargin);
 
             % Put the landmark descriptors in a matrix
@@ -105,13 +107,20 @@ classdef SurfPointFeature < OrientedScalePointFeature
             D2 = f2.descriptor;
 
             % Find the best matches
-            err=zeros(1,length(f1));
-            cor1=1:length(f1); 
-            cor2=zeros(1,length(f1));
-            for i=1:length(f1),
-                distance = sum((D2-repmat(D1(:,i),[1 length(f2)])).^2,1);
-                [err(i),cor2(i)] = min(distance);
-            end
+
+            
+%             err=zeros(1,length(f1));
+%             cor1=1:length(f1); 
+%             cor2=zeros(1,length(f1));
+%             for i=1:length(f1)
+%                 distance = sum((D2-repmat(D1(:,i),[1 length(f2)])).^2,1);
+%                 [err(i),cor2(i)] = min(distance);
+%             end
+
+            % vectorized code (much faster)
+            cor1 = 1:length(f1);
+            [cor2,err] = closest(D1, D2);
+            err = err.^2;  % closest returns distance, old code used distance squared
 
             % Sort matches on vector distance
             [err, ind] = sort(err); 
@@ -129,18 +138,28 @@ classdef SurfPointFeature < OrientedScalePointFeature
                 cor(:,i) = [k1 k2]';
             end            
 
-            % get the threshold, either given or the median of all errors
-            if opt.median
-                thresh = median(err);
-            else
-                thresh = opt.thresh;
-            end
-
-            % remove those matches over threshold
-            if ~isempty(thresh)
-                k = err > thresh;
-                cor(:,k) = [];
-                m(k) = [];
+            % find the strongest matches
+            if ~opt.all
+                if ~isempty(opt.top)
+                    % take the N strongest
+                    
+                    k = min(opt.top, numcols(cor));
+                    cor(:,k+1:end) = [];
+                    m(k+1:end) = [];
+                else
+                    % use a threshold
+                    
+                    if isempty(opt.thresh)
+                        % use median of errors if no threshold given
+                        thresh = median(err);
+                    else
+                        thresh = opt.thresh;
+                    end
+                    
+                    k = err > thresh;
+                    cor(:,k) = [];
+                    m(k) = [];
+                end
             end
 
             if nargout > 1
@@ -157,7 +176,44 @@ classdef SurfPointFeature < OrientedScalePointFeature
         % provide convenient access to them
 
         function Ipts = surf(im, opt)
-            if exist('surfpoints') == 3
+            
+            if exist('detectSURFFeatures') && 0
+                % Use the CVST version
+                fprintf('Using CVST\n');
+                
+                % do some option translation
+                points = detectSURFFeatures(im);
+                
+                if ~isinf(opt.nfeat)
+                    % choose strongest
+                    points = points.selectStrongest(opt.nfeat);
+                end
+                
+                [features,valid_points] = extractFeatures(im, points);
+                
+                p = valid_points.Location;
+                Ipts = struct(...
+                    'x',           num2cell(p(:,1)), ...
+                    'y',           num2cell(p(:,2)), ...
+                    'scale',       num2cell(valid_points.Scale), ...
+                    'strength',    num2cell(valid_points.Metric), ...
+                    'orientation', num2cell(valid_points.Orientation), ...
+                    'descriptor',  num2cell(features, 2)   )';
+                
+            elseif exist('OpenSurf')
+                % Use OpenSurf (MATLAB)
+                params.octaves = opt.octaves;   % for OpenSurf
+                if ~isempty(opt.thresh)
+                    params.tresh = opt.thresh;      % for OpenSurf, (sic)
+                end
+
+                Ipts = OpenSurf(im, params);
+                
+
+            if false
+                % Use surfmex (mex OpenCV wrapper)
+                
+                %if exist('surfpoints') == 3
                 fprintf('MEX\n');
                 % do the OpenCV/MEX version
                 % put the results into the same return format as OpenSurf
@@ -190,16 +246,9 @@ classdef SurfPointFeature < OrientedScalePointFeature
                               'strength', num2cell(info(2,:)), ...
                               'orientation', num2cell(info(3,:)), ...
                               'descriptor', num2cell(d,1)   );
-                              
-            else
-                params.octaves = opt.octaves;   % for OpenSurf
-                if ~isempty(opt.thresh)
-                    params.tresh = opt.thresh;      % for OpenSurf, (sic)
-                end
 
-                Ipts = OpenSurf(im, params);
             end
         end
     end
-
+    end
 end % classdef
