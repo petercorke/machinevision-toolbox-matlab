@@ -67,7 +67,7 @@ function iblobs_test(tc)
     tc.verifyEqual(f(1).class, 0);
     tc.verifyEqual(f(1).label, 1);
     tc.verifyEqual(f(1).touch, true);
-    tc.verifyEqual(f(1).parent, 0);
+    tc.verifyEqual(f(1).parent, uint32(0));
     
     % im(4:16,1:6) = 1;
     tc.verifyEqual(f(2).area, A2);
@@ -77,7 +77,7 @@ function iblobs_test(tc)
     tc.verifyEqual(f(2).vmax, 16);
     tc.verifyEqual(f(2).class, 1);
     tc.verifyEqual(f(2).touch, true);
-    tc.verifyEqual(f(2).parent, 0);
+    tc.verifyEqual(f(2).parent, uint32(0));
     tc.assertEqual(f(2).uc, 3.5, 'absTol', 1e-3);
     tc.assertEqual(f(2).vc, 10, 'absTol', 1e-3);
     tc.assertEqual(f(2).aspect, 0.456, 'absTol', 1e-3);
@@ -92,7 +92,7 @@ function iblobs_test(tc)
     tc.verifyEqual(f(3).class, 1);
     tc.verifyEqual(f(3).label, 3);
     tc.verifyEqual(f(3).touch, false);
-    tc.verifyEqual(f(3).parent, 1);
+    tc.verifyEqual(f(3).parent, uint32(1));
     tc.assertEqual(f(3).uc, 15, 'absTol', 1e-3);
     tc.assertEqual(f(3).vc, 10, 'absTol', 1e-3);
     
@@ -167,15 +167,18 @@ function iblobs_test(tc)
 end
 
 function MSER_test(tc)
-    castle = iread('castle_sign2.png', 'double', 'grey');
+    % RVC2 pp.419
+    % if this is really slow, perhaps ilabel is not a MEX file
+    castle = iread('castle2.png', 'double');
     [mser,nsets] = imser(castle, 'area', [100 20000]);
-    tc.verifyEqual(nsets, 71);
+    tc.verifyEqual(nsets, 95);
     tc.verifyEqual(size(castle), size(mser));
     tc.verifyEqual( min(mser(:)), 0);
     tc.verifyEqual( max(mser(:)), nsets-1);
 end
 
 function graphseg_test(tc)
+    % RVC2 pp.426
     im = iread('58060.jpg');
     [label, m] = igraphseg(im, 1500, 100, 0.5);
     tc.verifyEqual(m, 28);
