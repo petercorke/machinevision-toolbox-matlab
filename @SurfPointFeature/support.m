@@ -33,9 +33,9 @@ function [out,TT] = support(sf, images, N)
 
     [Uo,Vo] = imeshgrid(N, N);
 
-    T = se2(sf.u_, sf.v_, sf.theta_) * diag([d/N,d/N,1]) * se2(-N/2, -N/2);
+    T = SE2(sf.u_, sf.v_, sf.theta_) * SE2(diag([d/N,d/N,1])) * SE2(-N/2, -N/2);
 
-    UV = homtrans(T, [Uo(:) Vo(:)]');
+    UV = T * [Uo(:) Vo(:)]';
     U = reshape(UV(1,:), size(Uo));
     V = reshape(UV(2,:), size(Vo));
 
