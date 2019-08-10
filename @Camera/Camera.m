@@ -464,20 +464,18 @@ classdef Camera < handle
             % 'textsize',S     Text size for annotation (default 12)
             % 'drawnow'        Execute MATLAB drawnow function
             %
-            % Additional options are considered MATLAB linestyle parameters and are passed
+            % Additional options are considered MATLAB line or marker style parameters and are passed
             % directly to plot.
             %
             % See also Camera.mesh, Camera.hold, Camera.clf, Plucker.
             
-            opt.objpose = [];
-            opt.pose = [];
             opt.fps = 5;
             opt.sequence = false;
             opt.textcolor = 'k';
             opt.textsize = 12;
             opt.drawnow = false;
             
-            [opt,arglist] = tb_optparse(opt, varargin);
+            [opt,arglist,ls] = tb_optparse(opt, varargin);
             
             % get handle for this camera image plane
             h = c.plot_create();
@@ -486,7 +484,7 @@ classdef Camera < handle
                 % plot lines
                 
                 % project 3D world lines using the class project() method
-                uv = c.project(points, varargin{:});
+                uv = c.project(points, arglist{:});
                 c.hold(true);
                 for line=uv
                     c.homline(line);
@@ -498,20 +496,21 @@ classdef Camera < handle
                 
                 if nr == 3
                     % project 3D world points using the class project() method
-                    uv = c.project(points, varargin{:});
+                    uv = c.project(points, arglist{:});
                 else
                     uv = points;
                 end
                 
-                if isempty(arglist)
+                if isempty(ls) || ~any(cellfun(@(x) ischar(x)&&contains(x, 'Marker'), arglist))
                     % set default style if none given
-                    %disp('set default plot args');
-                    arglist = {'Marker', 'o', 'MarkerFaceColor', 'k', 'MarkerEdgeColor', 'k', 'LineStyle', 'none'};
+                    ls = {'Marker', 'o', 'MarkerFaceColor', 'k', 'MarkerEdgeColor', 'k', 'LineStyle', 'none'};
+                else
+                    ls = {ls};
                 end
                 
                 for i=1:size(uv,3)
                     % for every frame in the animation sequence
-                    plot(uv(1,:,i), uv(2,:,i), arglist{:}, 'Parent', h);
+                    plot(uv(1,:,i), uv(2,:,i), ls{:}, 'Parent', h);
                     if opt.sequence
                         for j=1:size(uv,2)
                             text(uv(1,j,i), uv(2,j,i), sprintf('  %d', j), ...
