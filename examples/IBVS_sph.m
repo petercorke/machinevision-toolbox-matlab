@@ -64,8 +64,9 @@ classdef IBVS_sph < VisualServo
             opt.eterm = 0.01;
             opt.lambda = 0.04;         % control gain
             opt.depth = [];
-                        opt.example = false;
-
+            opt.example = false;
+            opt.T0 = SE3(0.3, 0.3, -2)*SE3.Rz(0.2);
+            opt.Tf = SE3(0, 0, -1.5)*SE3.Rz(1);
             
             opt = tb_optparse(opt, ibvs.arglist);
 
@@ -76,9 +77,12 @@ classdef IBVS_sph < VisualServo
                 fprintf('canned example, spherical IBVS with 4 points\n');
                 fprintf('---------------------------------------------------\n');
                 ibvs.P = mkgrid(2, 1.5, 'pose', SE3(0,0,0.5));
-                ibvs.Tf = SE3(0, 0, -1.5)*SE3.Rz(1);
-                ibvs.T0 = SE3(0.3, 0.3, -2)*SE3.Rz(0.2);
+                ibvs.Tf = SE3(0.3, 0.3, -2)*SE3.Rz(0.2);
+                ibvs.T0 = SE3.convert(opt.T0);
                 %ibvs.T0 = transl(-1,-0.1,-3);%*trotx(0.2);
+            else
+                ibvs.Tf = SE3(0, 0, -1.5)*SE3.Rz(1);
+                ibvs.T0 = SE3.convert(opt.T0);
             end
             
             ibvs.lambda = opt.lambda;
@@ -142,7 +146,7 @@ classdef IBVS_sph < VisualServo
             vs.camera.plot(vs.pt_star, 'r*'); 
             
             % compute the view
-            pt = vs.camera.project(vs.P, 'Tcam', vs.Tcam);
+            pt = vs.camera.project(vs.P, 'pose', vs.Tcam);
 
             % compute image plane error as a column
             e = pt - vs.pt_star;   % feature error

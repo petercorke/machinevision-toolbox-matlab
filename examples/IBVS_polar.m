@@ -112,7 +112,7 @@ classdef IBVS_polar < VisualServo
             vs.camera.clf()
             vs.camera.plot(vs.uv_star, '*'); % create the camera view
             vs.camera.hold(true);
-            vs.camera.plot(vs.P, 'Tcam', vs.T0, 'o'); % create the camera view
+            vs.camera.plot(vs.P, 'pose', vs.T0, 'o'); % create the camera view
             pause(2)
             vs.camera.hold(false);
             vs.camera.clf();
@@ -136,7 +136,7 @@ classdef IBVS_polar < VisualServo
             Zest = [];
             
             % compute the view
-            uv = vs.camera.project(vs.P, 'Tcam', vs.Tcam);
+            uv = vs.camera.project(vs.P, 'pose', vs.Tcam);
             rt = vs.project(vs.P);
 
             % compute image plane error as a column
