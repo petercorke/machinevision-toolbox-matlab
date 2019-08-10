@@ -44,7 +44,7 @@
 classdef SiftPointFeature < OrientedScalePointFeature
 
     properties
-        image_id_
+        %image_id_
     end % properties
 
     methods
@@ -96,7 +96,11 @@ classdef SiftPointFeature < OrientedScalePointFeature
         % use distance
         %
 
-            [matches,dist] = siftmatch([f1.descriptor], [f2.descriptor]);
+            if exist('vl_ucbmatch')
+                [matches,dist] = vl_ucbmatch([f1.descriptor], [f2.descriptor]);
+            else
+                [matches,dist] = siftmatch([f1.descriptor], [f2.descriptor]);
+            end
 
             % matches is a 2xM matrix, one column per match, each column is the index of the
             % matching features in image 1 and 2 respectively
@@ -132,11 +136,15 @@ classdef SiftPointFeature < OrientedScalePointFeature
         % provide convenient access to them
 
         function [k,d] = sift(varargin)
-            try
-            [k,d] = sift(varargin{:});
-            catch me
-                if strcmp(me.identifier, 'MATLAB:UndefinedFunction')
-                    error('MVTB:SiftPointFeature:notinstalled', 'Contributed software for SIFT features is not installed')
+            if exist('vl_sift')
+                [k,d] = vl_sift(idouble(varargin{1}, 'single'), varargin{2:end});
+            else
+                try
+                    [k,d] = sift(varargin{:});
+                catch me
+                    if strcmp(me.identifier, 'MATLAB:UndefinedFunction')
+                        error('MVTB:SiftPointFeature:notinstalled', 'Contributed software for SIFT features is not installed')
+                    end
                 end
             end
         end
