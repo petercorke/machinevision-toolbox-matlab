@@ -303,7 +303,7 @@ function im = fetchfromserver(filename, opt)
     end
     
     fprintf('downloading from server...')
-    im = imread(fullfile('http://petercorke.com/files/images', filename));
+    im = imread(['http://petercorke.com/files/images', filename]);
     fprintf('\n');
     
     % stash a copy away locally
