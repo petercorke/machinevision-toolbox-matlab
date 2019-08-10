@@ -35,10 +35,9 @@ function fileio_test(tc)
     tc.verifyEqual(size(z), [151 101 3]);
 
     % test pnmfilt if pnmtools is installed
-    if system('which pnmrotate') == 0
-        z2 = pnmfilt(z, 'pnmrotate 30');
-        tc.verifyEqual(size(z2), size(z));
-    end
+    tc.assumeTrue(system('which pnmrotate') == 0)
+    z2 = pnmfilt('pnmrotate 30', z);
+    tc.verifyEqual(ndims(z2), 3);
 end
 
 function idisp_test(tc)
