@@ -22,6 +22,7 @@
 % - Is a wrapper for vl_mser, part of VLFeat (vlfeat.org), by Andrea Vedaldi
 %   and Brian Fulkerson.
 % - vl_mser is a MEX file.
+% - Relies on ilabel, if this is not a MEX file will be slow to execute.
 %
 % Reference::
 %
@@ -30,7 +31,7 @@
 % Image and Vision Computing,
 % vol. 22, pp. 761-767, Sept. 2004.
 %
-% See also ITHRESH, IGRAPHSEG.
+% See also ITHRESH, ILABEL, IGRAPHSEG.
 
 
 % Copyright (C) 1993-2011, by Peter I. Corke
@@ -106,11 +107,9 @@ function [all,nsets,R] = imser(im, varargin)
         if r > 0
             bim = im <= im(r);
         else
-                        r = -r;
-
+            r = -r;
             bim = im >= im(r);
         end
-        % HACK bim = im <= im(r);
         lim = ilabel(bim);
         mser_blob = lim == lim(r);
 

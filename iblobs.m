@@ -75,109 +75,127 @@
 % along with MVTB.  If not, see <http://www.gnu.org/licenses/>.
 
 function [features,labimg] = iblobs(im, varargin)
-	
-	[nr,nc] = size(im);
-
+    
+    [nr,nc] = size(im);
+    
     opt.area = [0 Inf];
-    opt.aspect = [0 Inf];
+    opt.aspect = NaN;
     opt.class = NaN;
     opt.touch = NaN;
+    opt.circularity = [0 Inf];
     opt.pixelaspect = 1;
     opt.connect = 4;
     opt.greyscale = false;
     opt.moments = false;
     opt.boundary = false;
-
+    
     opt = tb_optparse(opt, varargin);
+    assert(length(opt.area) == 2, 'iblobs: area filter must have two elements');
+    assert(length(opt.circularity) == 2, 'iblobs: circularity filter must have two elements');
 
     % HACK ilabel should take int image
-	[li,nl,parent,color,edge] = ilabel(im, opt.connect);
-
-	blob = 0;
-	for i=1:nl
-		binimage = (li == i);
-
-		% determine the blob extent
-		[y,x] = find(binimage);
-		umin = min(x); umax = max(x);
-		vmin = min(y); vmax = max(y);
-
+    [li,nl,parent,color,edge] = ilabel(im, opt.connect);
+    
+    blob = 0;
+    for i=1:nl
+        binimage = (li == i);
+        
+        % determine the blob extent
+        [y,x] = find(binimage);
+        umin = min(x); umax = max(x);
+        vmin = min(y); vmax = max(y);
+        
         % it touches the edge if its parent is 0
-		t = (parent(i) == 0);
-
+        t = (parent(i) == 0);
+        
         % compute the moments
-		if opt.greyscale
-			F = imoments(binimage .* im, 'aspect', opt.pixelaspect);
-		else
-			F = imoments(binimage, 'aspect', opt.pixelaspect);
-		end
-
+        if opt.greyscale
+            F = imoments(binimage .* im, 'aspect', opt.pixelaspect);
+        else
+            F = imoments(binimage, 'aspect', opt.pixelaspect);
+        end
+        
         % compute shape property, accounting for degenerate case
-		if F.a_ == 0
-			aspect = NaN;
-		else
-			aspect = F.b_ / F.a_;
-		end
-
-		% apply various filters
-		if 	((t == opt.touch) || isnan(opt.touch)) && ...
-            ((color(i) == opt.class) || isnan(opt.class)) && ...
-			(F.area_ >= opt.area(1)) && ...
-			(F.area_ <= opt.area(2)) && ...
-			(					...
-				isnan(aspect) ||			...
-				(               ...
-					(aspect >= opt.aspect(1)) &&	...
-					(aspect <= opt.aspect(2))	...
-				)				...
-			)
-
-            % this blob matches the filter
-
-            % record a perimeter point
-            [y,x] = ind2sub(size(im), edge(i));
-            F.edgepoint = [x y];    % a point on the perimeter
-
-            % optionally follow the boundary
-            if opt.boundary
-                F.edge = edgelist(im, [x y]);;
-
-                ed = diff([F.edge F.edge(:,1)]')';
-                
-                % compute length:
-                %   - 1 for horizontal/vertical segment
-                %   - sqrt(2) for diagnonal
-                %
-                % Apply Kulpa's correction factor when computing
-                % circularity
-                kulpa = pi/8*(1+sqrt(2));
-                F.perimeter_ = sum( colnorm(ed) );
-                
-                F.circularity_ = 4*pi*F.area_/ (F.perimeter_*kulpa)^2;
+        if F.a_ == 0
+            aspect = NaN;
+        else
+            aspect = F.b_ / F.a_;
+        end
+        
+        % apply various filters
+        if (F.area_ < opt.area(1)) || (F.area_ > opt.area(2))
+            continue;
+        end
+        
+        if ~isnan(opt.aspect)
+            % we have an aspect filter
+            if isnan(aspect)
+                continue;
             end
+            assert(length(opt.aspect) == 2, 'iblobs: aspect filter must have two elements');
+            if ((F.aspect < opt.aspect(1)) || (F.aspect > opt.area(2)))
+                continue;
+            end
+        end
+        
+        if ~isnan(opt.touch) && (t ~= opt.touch)
+            continue;
+        end
+        if ~isnan(opt.class) && (color(i) ~= opt.class)
+            continue;
+        end
+        
+        % this blob matches the filter
+        
+        % record a perimeter point
+        [y,x] = ind2sub(size(im), edge(i));
+        F.edgepoint = [x y];    % a point on the perimeter
+        
+        % optionally follow the boundary
+        if opt.boundary
+            F.edge = edgelist(im, [x y]);;
+            
+            ed = diff([F.edge F.edge(:,1)]')';
+            
+            % compute length:
+            %   - 1 for horizontal/vertical segment
+            %   - sqrt(2) for diagnonal
+            %
+            % Apply Kulpa's correction factor when computing
+            % circularity
+            kulpa = pi/8*(1+sqrt(2));
+            F.perimeter_ = sum( colnorm(ed) );
+            
+            circularity = 4*pi*F.area_/ (F.perimeter_*kulpa)^2;
+            
+            % filter on circularity
+            if (circularity < opt.circularity(1)) || (circularity > opt.circularity(2))
+                continue;
+            end
+            F.circularity_ = circularity;
+        end
 
-            % set object properties
-			F.umin_ = umin;
-			F.umax_ = umax;
-			F.vmin_ = vmin;
-			F.vmax_ = vmax;
-			F.touch_ = t;
-            F.parent = parent(i);
-
-			F.aspect_ = aspect;
-            F.label_ = i;
-            F.class_ = color(i);
-
-            % save it in the feature vector
-			blob = blob+1;
-			features(blob) = F;
-		end
-	end
-
+        % set object properties
+        F.umin_ = umin;
+        F.umax_ = umax;
+        F.vmin_ = vmin;
+        F.vmax_ = vmax;
+        F.touch_ = t;
+        F.parent = parent(i);
+        
+        F.aspect_ = aspect;
+        F.label_ = i;
+        F.class_ = color(i);
+        
+        % save it in the feature vector
+        blob = blob+1;
+        features(blob) = F;
+    end
+    
     if blob == 0
         features = [];
     end
-
+    
     % add children property
     % the numbers in the children property refer to elements in the feature vector
     for i=1:length(features)
@@ -188,8 +206,9 @@ function [features,labimg] = iblobs(im, varargin)
             end
         end
     end
-
-	%fprintf('%d blobs in image, %d after filtering\n', nl, blob);
+    
+    %fprintf('%d blobs in image, %d after filtering\n', nl, blob);
     if nargout > 1
         labimg = li;
     end
+end

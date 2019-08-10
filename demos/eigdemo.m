@@ -29,7 +29,7 @@ for k=1:500
     arrow(l2, 'Stop', vp);
     
     %anim.add();
-    pause(0.05);
+    pause(0.1);
 end
     
     

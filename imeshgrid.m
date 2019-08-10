@@ -35,7 +35,7 @@ function [U,V] = imeshgrid(a1, a2)
         if length(a1) == 1
             % we specified a size for a square output image
             [U,V] = meshgrid(1:a1, 1:a1);
-        elseif length(a1) == 2
+        elseif numel(a1) == 2
             % we specified a size for a rectangular output image (w,h)
             [U,V] = meshgrid(1:a1(1), 1:a1(2));
         elseif ndims(a1) >= 2

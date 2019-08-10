@@ -625,7 +625,7 @@ classdef CentralCamera < Camera
             opt.objpose = [];
             opt.pose = [];
 
-            [opt,arglist] = tb_optparse(opt, varargin);
+            opt = tb_optparse(opt, varargin);
 
             np = numcols(P);
             

@@ -86,7 +86,7 @@ function features = isurf(im, varargin)
 
     if iscell(im)
         % images provided as a cell array, return a cell array
-        % of SIFT object vectors
+        % of SURF object vectors
         fprintf('extracting SIFT features for %d greyscale images\n', length(im));
         features = {};
         for i=1:length(im)
@@ -133,12 +133,11 @@ function features = isurf(im, varargin)
     % OpenSURF for Matlab
     %   written by D.Kroon University of Twente (July 2010)
     %   based on the C++ implementation by Chris Evans
-
-    try
+    %try  HACK
         Ipts = SurfPointFeature.surf(im, opt);
-    catch
-        error('Contributed software [OpenSurf] for SURF features is not installed');
-    end
+%     catch
+%         error('Contributed software [OpenSurf] for SURF features is not installed');
+%     end
 
     % Ipts is a structure array with elements x, y, scale, orientation, descriptor
 

@@ -6,8 +6,8 @@
 %              |1  0  -1|
 %
 % Notes::
-% - This kernel is an effective vertical edge detector
-% - The Sobel vertical derivative is K'
+% - This kernel is an effective vertical-edge detector
+% - The y-derivative (horizontal-edge) kernel is K'
 %
 % See also ISOBEL.
 

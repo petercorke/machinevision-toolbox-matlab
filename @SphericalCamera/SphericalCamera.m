@@ -164,7 +164,7 @@ classdef SphericalCamera < Camera
             opt.objpose = [];
             opt.pose = [];
             
-            [opt,arglist] = tb_optparse(opt, varargin);
+            opt = tb_optparse(opt, varargin);
             
             if isempty(opt.pose)
                 opt.pose = cam.T;
