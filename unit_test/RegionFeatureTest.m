@@ -167,18 +167,17 @@ function iblobs_test(tc)
 end
 
 function MSER_test(tc)
-    % RVC2 pp.419
-    % if this is really slow, perhaps ilabel is not a MEX file
-    castle = iread('castle2.png', 'double');
+    tc.assumeTrue(exist('vl_mser') > 0)
+    castle = iread('castle_sign2.png', 'double', 'grey');
     [mser,nsets] = imser(castle, 'area', [100 20000]);
-    tc.verifyEqual(nsets, 95);
+    tc.verifyEqual(nsets, 71);
     tc.verifyEqual(size(castle), size(mser));
     tc.verifyEqual( min(mser(:)), 0);
     tc.verifyEqual( max(mser(:)), nsets-1);
 end
 
 function graphseg_test(tc)
-    % RVC2 pp.426
+    tc.assumeTrue(exist('graphseg') > 0)
     im = iread('58060.jpg');
     [label, m] = igraphseg(im, 1500, 100, 0.5);
     tc.verifyEqual(m, 28);
