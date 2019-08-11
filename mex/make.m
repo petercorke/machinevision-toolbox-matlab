@@ -46,20 +46,22 @@ end
 %
 % then built the library, run make in the apriltags folder.
 
-fprintf('\n* Compiling: apriltags.c\n');
 
 % test for apriltag folder
-if ~exist('apriltag', 'file')
-    error('no apriltag folder found in current directory, download it from https://april.eecs.umich.edu/wiki/index.php/AprilTags');
+if exist('apriltag', 'file') > 0
+    fprintf('\n* Compiling: apriltags.c\n');
+
+    
+    p = which('apriltag.h');
+    p = fileparts(p);
+    
+    % test for a build library
+    if ~exist(fullfile(p, 'libapriltag.a'), 'file')
+        error('you need to first build the apriltag library: libapriltag.a');
+    end
+    
+    eval( sprintf('mex apriltags.c -I%s -I%s/common -L%s -lapriltag', p, p, p) )
+else
+    warning('no apriltag folder found in current directory, download it from https://april.eecs.umich.edu/wiki/index.php/AprilTags');
 end
-
-p = which('apriltag.h');
-p = fileparts(p);
-
-% test for a build library
-if ~exist(fullfile(p, 'libapriltag.a'), 'file')
-    error('you need to first build the apriltag library: libapriltag.a');
-end
-
-eval( sprintf('mex apriltags.c -I%s -I%s/common -L%s -lapriltag', p, p, p) )
 
