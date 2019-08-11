@@ -1,5 +1,7 @@
 \documentclass[a4paper,twoside]{report}
 
+\newcommand{\mvtbyear}{2018}
+
 \usepackage{times}
 \usepackage{graphicx}
 \usepackage{wrapfig}
@@ -66,13 +68,14 @@
 \setlength{\TPHorizModule}{1cm}
 \setlength{\TPVertModule}{1cm}
 
+%%%%%%%%%%%%%%%%% TITLE PAGE
 \begin{textblock}{19}(-3.0,-4.5)
 \includepdf{titlepage}
 \fontsize{75}{80}\selectfont
 \textbf{Machine Vision}\\[5pt]
 \textbf{Toolbox}\\[5pt]
 \fontsize{40}{45}\selectfont
-for MATLAB\\[5pt]
+for MATLAB\textsuperscript{\textregistered}\\[5pt]
 Release 4
 
 \vspace*{18cm}
@@ -80,7 +83,7 @@ Release 4
 \end{textblock}
 \thispagestyle{empty}
 \newpage
-% inside front cover
+%%%%%%%%%%%%%%%%% INSIDE FRONT COVER
 \vspace*{\fill}
 \begin{tabular}{ll}
 Release & \release \\
@@ -91,16 +94,16 @@ Discussion group & \url{http://groups.google.com.au/group/robotics-tool-box}
 \end{tabular}
 \vspace*{\fill}
 \hrule
-Copyright \textcopyright 2017 Peter Corke\\
+Copyright \textcopyright \mvtbyear Peter Corke\\
 peter.i.corke$@$gmail.com\\
 \url{http://www.petercorke.com}
 \vspace*{\fill}
 \setlength{\fboxsep}{10pt}%
 
-
+%%%%%%%%%%%%%%%% CONTENT
 \pagestyle{headings}        % Gives page headings at top of page
-\lfoot{Machine Vision Toolbox \release\ for \Mlab}
-\rfoot{Copyright \copyright Peter Corke 2017}
+\lfoot{Machine Vision Toolbox \release\ for \Mlab\textsuperscript{\textregistered}}
+\rfoot{Copyright \copyright Peter Corke \mvtbyear}
 
 \setcounter{section}{0}
 \addcontentsline{toc}{section}{Preface}
@@ -167,7 +170,7 @@ For elaboration on the underlying principles, extensive illustrations and worked
 \chapter*{Functions by category}
 \addcontentsline{toc}{section}{Functions by category}
 \begin{multicols}{2}
-\input{funcidx_body.tex}
+\IfFileExists{funcidx_body.tex}{\input{funcidx_body.tex}}{} 
 \end{multicols}
 \newpage
 \chapter{Introduction}
@@ -414,7 +417,7 @@ See the file \texttt{CONTRIB} for details.
 %\settocdepth{section}
 \newpage
 \chapter{Functions and classes}
-\input{all}
+\IfFileExists{all.tex}{\input{all.tex}}{} 
 
 \bibliographystyle{ieeetr}
 \bibliography{strings,robot,control,dynamics,kinematics,force,grind,publist,software}
