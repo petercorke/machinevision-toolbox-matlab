@@ -4,15 +4,16 @@
 % describe each connected region in the image IM.
 %
 % Options::
-%  'pixelaspect',A      set pixel aspect ratio, default 1.0
-%  'connect',C	        set connectivity, 4 (default) or 8
-%  'greyscale'	        compute greyscale moments 0 (default) or 1
-%  'boundary'           compute boundary (default off)
-%  'area',[A1,A2]       accept only blobs with area in the interval A1 to A2
-%  'aspect',[S1,S2]     accept only blobs with aspect ratio in the interval S1 to S2
-%  'touch',T            accept only blobs that touch (1) or do not touch (0)
-%                       the edge (default accept all)
-%  'class',C            accept only blobs of pixel value C (default all)
+%  'pixelaspect',A          set pixel aspect ratio, default 1.0
+%  'connect',C              set connectivity, 4 (default) or 8
+%  'greyscale'              compute greyscale moments 0 (default) or 1
+%  'boundary'               compute boundary (default off)
+%  'area',[A1,A2]           accept only blobs with area in the interval A1 to A2
+%  'aspect',[S1,S2]         accept only blobs with aspect ratio in the interval S1 to S2
+%  'circularity',[C1,C2]    accept only blobs with circulatirty in the interval
+%  'touch',T                accept only blobs that touch (1) or do not touch (0)
+%                           the edge (default accept all)
+%  'class',C                accept only blobs of pixel value C (default all)
 %
 % The RegionFeature object has many properties including:
 %
@@ -53,6 +54,7 @@
 %   point (smallest v coordinate) in each blob.
 % - Circularity is computed using the raw perimeter length scaled down by Kulpa's
 %   correction factor.
+% - Circularity is clamped to a maximum value of 1
 %
 % See also RegionFeature, ILABEL, IDISPLABEL, IMOMENTS.
 
@@ -92,6 +94,7 @@ function [features,labimg] = iblobs(im, varargin)
     opt = tb_optparse(opt, varargin);
     assert(length(opt.area) == 2, 'iblobs: area filter must have two elements');
     assert(length(opt.circularity) == 2, 'iblobs: circularity filter must have two elements');
+    assert(length(opt.aspect) == 2, 'iblobs: aspect ratio filter must have two elements');
 
     % HACK ilabel should take int image
     [li,nl,parent,color,edge] = ilabel(im, opt.connect);
@@ -141,11 +144,12 @@ function [features,labimg] = iblobs(im, varargin)
         if ~isnan(opt.touch) && (t ~= opt.touch)
             continue;
         end
+
         if ~isnan(opt.class) && (color(i) ~= opt.class)
             continue;
         end
         
-        % this blob matches the filter
+        % so far, this blob matches the filter rules
         
         % record a perimeter point
         [y,x] = ind2sub(size(im), edge(i));
