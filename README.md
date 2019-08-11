@@ -245,7 +245,7 @@ Note that this is a combo-installation that includes the Robotics Toolbox (RTB) 
 
 You need to have a recent version of MATLAB, R2016b or later.
 
-The Robotics Toolbox for MATLAB has dependency on two other GitHub repositories: [`spatial-math`](https://github.com/petercorke/spatial-math) and [`toolbox-common-matlab`](https://github.com/petercorke/toolbox-common-matlab).  
+The Machine Vision Toolbox for MATLAB has dependency on two other GitHub repositories: [`spatial-math`](https://github.com/petercorke/spatial-math) and [`toolbox-common-matlab`](https://github.com/petercorke/toolbox-common-matlab).  
 
 To install the Toolbox on your computer from github follow these simple instructions.
 
