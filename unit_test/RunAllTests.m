@@ -35,6 +35,7 @@ addpath ../lib/spatial-math
 addpath ..
 addpath ../data
 addpath ../images
+addpath ../mex
 
 
 %path
