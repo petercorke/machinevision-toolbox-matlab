@@ -35,7 +35,7 @@ mexfiles = {
 
 for file = mexfiles'
     fprintf('\n* Compiling: %s\n', file{1});
-#    mex('CFLAGS=-std=c99',  file{1})
+%    mex('CFLAGS=-std=c99',  file{1})
     mex(file{1})
 end
 
