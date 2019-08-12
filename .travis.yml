@@ -1,7 +1,14 @@
 language: java
 dist: xenial
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+  packages:
+      - g++-6
 
 before_install:
+- CC=gcc-6 && CXX=g++-6
 - wget petercorke.com/files/MVTB/images-RVC2a.zip
 - unzip images-RVC2a
 - mkdir lib
