@@ -8,14 +8,14 @@ function teardownOnce(tc)
 end
 
 function thresh_test(tc)
-    castle = iread('castle_sign.jpg', 'double', 'grey');
+    castle = iread('castle.png', 'double', 'grey');
 
     ithresh(castle);
     t = otsu(castle);
     t = niblack(castle, -0.2, 35);
     tc.verifyEqual(size(t), size(castle));
 
-    castle = iread('castle_sign.jpg', 'grey');
+    castle = iread('castle.png', 'grey');
     ithresh(castle);
     t = otsu(castle);
     tc.verifyTrue( t > 0 && t < 255);
@@ -168,7 +168,7 @@ end
 
 function MSER_test(tc)
     tc.assumeTrue(exist('vl_mser') > 0)
-    castle = iread('castle_sign2.png', 'double', 'grey');
+    castle = iread('castle2.png', 'double', 'grey');
     [mser,nsets] = imser(castle, 'area', [100 20000]);
     tc.verifyEqual(nsets, 71);
     tc.verifyEqual(size(castle), size(mser));
