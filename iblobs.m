@@ -81,7 +81,7 @@ function [features,labimg] = iblobs(im, varargin)
     [nr,nc] = size(im);
     
     opt.area = [0 Inf];
-    opt.aspect = NaN;
+    opt.aspect = [0 Inf];
     opt.class = NaN;
     opt.touch = NaN;
     opt.circularity = [0 Inf];
